@@ -13,7 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->api(prepend: [
-            \App\Infrastructure\Http\Middleware\TrimStrings::class,
+            \App\Presentation\Http\Middleware\TrimStrings::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 $errors = $e instanceof \App\Domain\Exception\ValidationException
                     ? $e->getErrors()
                     : null;
-                return \App\Infrastructure\Http\ApiResponse::error(
+                return \App\Presentation\Http\ApiResponse::error(
                     $e->getMessage(),
                     $e->getHttpStatusCode(),
                     $errors
@@ -31,7 +31,7 @@ return Application::configure(basePath: dirname(__DIR__))
         });
         $exceptions->render(function (\Illuminate\Validation\ValidationException $e, $request) {
             if ($request->expectsJson() || $request->is('api/*')) {
-                return \App\Infrastructure\Http\ApiResponse::error(
+                return \App\Presentation\Http\ApiResponse::error(
                     'Données invalides.',
                     422,
                     $e->errors()

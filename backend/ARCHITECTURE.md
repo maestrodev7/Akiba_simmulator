@@ -1,45 +1,61 @@
-# Architecture hexagonale (Clean Architecture) – Backend Akiba
+# Architecture hexagonale – Backend Akiba
 
-## Couches
+## Séparation des couches
 
 - **Domain** : Entités, interfaces (ports) des repositories, exceptions métier. Aucune dépendance vers l’extérieur.
-- **Application** : Cas d’usage (Use Cases), DTOs. Dépend uniquement du Domain via les **interfaces** (pas des implémentations).
-- **Infrastructure** : Implémentations des ports (repositories Eloquent), contrôleurs HTTP, middleware, structure de réponse API. Dépend du Domain et de l’Application.
+- **Application** : Cas d’usage (Use Cases), DTOs. Dépend uniquement du **Domain** via les interfaces.
+- **Infrastructure** : **Persistence uniquement** – modèles Eloquent, implémentations des repositories. Aucune logique HTTP.
+- **Presentation** : Contrôleurs HTTP, middleware, structure de réponse API (`ApiResponse`). Délègue à l’Application (Use Cases) et renvoie des réponses HTTP.
+
+La couche **Presentation** est distincte de l’**Infrastructure** : les contrôleurs et la forme des réponses n’appartiennent pas à la persistance.
 
 ## Communication entre couches
 
-- L’Application et l’Infrastructure **ne parlent qu’aux interfaces du Domain** (ex. `ClientRepositoryInterface`), jamais aux implémentations concrètes.
-- Le binding interface → implémentation se fait dans `AppServiceProvider` (Inversion de dépendances).
+- L’Application et l’Infrastructure dépendent **uniquement des interfaces du Domain** (ex. `ClientRepositoryInterface`). Le binding interface → implémentation est fait dans `AppServiceProvider`.
+- La Presentation appelle les Use Cases (Application) et utilise `App\Presentation\Http\ApiResponse` pour formater toutes les réponses.
+
+## Modules implémentés
+
+| Module | Domain | Application | Infrastructure | Presentation |
+|--------|--------|-------------|----------------|--------------|
+| **Client** | Entity, RepositoryInterface | DTOs, Create/Update/Get/List | ClientModel, ClientRepository | ClientController |
+| **Terrain** | Entity, RepositoryInterface | DTOs, Create/Update/Get/ListByClient | TerrainModel, TerrainRepository | TerrainController |
+| **Produit** | Entity, RepositoryInterface | DTOs, Create/Update/Get/ListByTerrain | ProduitModel, ProduitRepository | ProduitController |
+| **Piece** (catalogue) | Entity, RepositoryInterface | ListPieces | PieceModel, PieceRepository | PieceController |
+| **Programme** | LigneProgramme, RepositoryInterface | Add/Update/ListLignesByProduit | ProgrammeModel, ProgrammeRepository | ProgrammeController |
+| **Simulation** | — | CalculerSimulationUseCase | — | SimulationController |
+
+## Simulation financière (PDF §6)
+
+- **SP** (surface de plancher totale) = somme des (surface unitaire × nombre) pour chaque ligne du programme. Surface unitaire = `surface_personnalisee` si renseignée, sinon `surface_standard` de la pièce.
+- **Total** = SP × Prix/m² × Indice matériaux.
+- Standing : standard = 305 €/m², moyen = 475 €/m², haut = 610 €/m².
+- Indice matériaux : parpaings/béton = 1, brique = 0,75, bois = 0,65.
+
+Endpoint : `GET /api/clients/{clientId}/terrains/{terrainId}/produits/{produitId}/simulation`.
 
 ## Réponses API
 
-- Toutes les réponses passent par `App\Infrastructure\Http\ApiResponse` :
-  - Succès : `{ "success": true, "data": ..., "message"?: "..." }`
-  - Erreur : `{ "success": false, "message": "...", "errors"?: {...} }`
-  - Liste paginée : `{ "success": true, "data": [...], "meta": { "current_page", "per_page", "total", "last_page", "from", "to" } }`
+- Succès : `{ "success": true, "data": ..., "message"?: "..." }`.
+- Erreur : `{ "success": false, "message": "...", "errors"?: {...} }`.
+- Listes paginées (clients) : `data` + `meta` (current_page, per_page, total, last_page, from, to).
 
-## Exceptions
+## Exceptions (Domain)
 
-- Exceptions métier dans `App\Domain\Exception\*` : `NotFoundException` (404), `ValidationException` (422), `UnauthorizedException` (401), `ForbiddenException` (403), `ConflictException` (409).
-- Chaque exception expose `getHttpStatusCode()`. Le handler global (`bootstrap/app.php`) les convertit en JSON avec la structure d’erreur commune.
+- `NotFoundException` (404), `ValidationException` (422), `UnauthorizedException` (401), `ForbiddenException` (403), `ConflictException` (409).
+- Le handler dans `bootstrap/app.php` convertit ces exceptions en JSON via `Presentation\Http\ApiResponse::error`.
 
-## Mise à jour des ressources
+## Routes API (imbriquées)
 
-- **PUT** est utilisé pour la mise à jour (y compris partielle) : seuls les champs envoyés dans le body sont mis à jour.
+- `GET|POST /api/clients`, `GET|PUT /api/clients/{client}`.
+- `GET /api/pieces` (catalogue).
+- `GET|POST /api/clients/{clientId}/terrains`, `GET|PUT /api/clients/{clientId}/terrains/{terrain}`.
+- `GET|POST /api/clients/.../terrains/{terrainId}/produits`, `GET|PUT .../produits/{produit}`.
+- `GET|POST .../produits/{produit}/programme`, `PUT .../programme/{ligneId}`.
+- `GET .../produits/{produit}/simulation`.
 
-## Données et IDs
+## Données et techniques
 
-- **Trim** : le middleware `TrimStrings` (groupe `api`) trim toutes les entrées pour éviter les problèmes d’espaces.
-- **IDs** : chaînes courtes (12 caractères alphanumériques), uniques, générées dans l’Infrastructure (`HasShortId`). Clé primaire string en base (MySQL).
-
-## Pagination
-
-- Listes : paramètres `page` et `per_page` (défaut 15, max 100). Réponse avec `data` + `meta` (current_page, per_page, total, last_page, from, to).
-
-## SOLID
-
-- **S** : Use Cases et repositories ont une seule responsabilité.
-- **O** : Nouvelles règles métier via nouveaux Use Cases / nouvelles implémentations de ports.
-- **L** : Substitution des implémentations via les interfaces.
-- **I** : Interfaces du Domain limitées à un rôle (ex. `ClientRepositoryInterface`).
-- **D** : Application et Infrastructure dépendent des abstractions (interfaces Domain), pas des implémentations.
+- **Trim** : middleware `Presentation\Http\Middleware\TrimStrings` sur le groupe `api`.
+- **IDs** : chaînes courtes (12 caractères alphanumériques), générées dans l’Infrastructure (`HasShortId`).
+- **Mise à jour** : PUT avec saisie partielle (seuls les champs envoyés sont mis à jour).

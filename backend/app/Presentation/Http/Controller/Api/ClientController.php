@@ -2,21 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Http\Controller\Api;
+namespace App\Presentation\Http\Controller\Api;
 
 use App\Application\Client\Dto\ClientDto;
 use App\Application\Client\UseCase\CreateClientUseCase;
 use App\Application\Client\UseCase\GetClientUseCase;
 use App\Application\Client\UseCase\ListClientsUseCase;
 use App\Application\Client\UseCase\UpdateClientUseCase;
-use App\Infrastructure\Http\ApiResponse;
 use App\Http\Controllers\Controller;
+use App\Presentation\Http\ApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
- * Contrôleur API Client. Délègue aux Use Cases (Application).
- * Utilise PUT pour la mise à jour (mise à jour partielle autorisée).
+ * Contrôleur API Client. Couche Presentation : délègue aux Use Cases (Application).
  */
 final class ClientController extends Controller
 {
@@ -28,40 +27,15 @@ final class ClientController extends Controller
     ) {
     }
 
-    /**
-     * GET /api/clients (liste paginée).
-     */
     public function index(Request $request): JsonResponse
     {
         $page = (int) $request->input('page', 1);
         $perPage = (int) $request->input('per_page', 15);
-
         $result = $this->listClientsUseCase->execute($page, $perPage);
-
-        $items = array_map(
-            fn ($dto) => [
-                'id' => $dto->id,
-                'nom' => $dto->nom,
-                'prenom' => $dto->prenom,
-                'email' => $dto->email,
-                'telephone' => $dto->telephone,
-                'adresse' => $dto->adresse,
-                'numero_registre' => $dto->numeroRegistre,
-            ],
-            $result->getItems()
-        );
-
-        return ApiResponse::paginated(
-            $items,
-            $result->getTotal(),
-            $result->getPage(),
-            $result->getPerPage()
-        );
+        $items = array_map(fn ($dto) => $this->resourceToArray($dto), $result->getItems());
+        return ApiResponse::paginated($items, $result->getTotal(), $result->getPage(), $result->getPerPage());
     }
 
-    /**
-     * POST /api/clients (création, saisie partielle autorisée).
-     */
     public function store(Request $request): JsonResponse
     {
         $dto = ClientDto::fromArray($request->all());
@@ -69,18 +43,12 @@ final class ClientController extends Controller
         return ApiResponse::created($this->resourceToArray($resource), 'Client créé.');
     }
 
-    /**
-     * GET /api/clients/{id}.
-     */
     public function show(string $id): JsonResponse
     {
         $resource = $this->getClientUseCase->execute($id);
         return ApiResponse::success($this->resourceToArray($resource));
     }
 
-    /**
-     * PUT /api/clients/{id} (mise à jour partielle : seuls les champs envoyés sont mis à jour).
-     */
     public function update(Request $request, string $id): JsonResponse
     {
         $dto = ClientDto::fromArray($request->all());

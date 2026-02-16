@@ -2,15 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Http\Middleware;
+namespace App\Presentation\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Trim toutes les entrées de la requête pour éviter les problèmes d'espaces.
- * S'applique aux chaînes uniquement (récursif sur tableaux).
+ * Trim toutes les entrées de la requête (couche Presentation).
  */
 class TrimStrings
 {

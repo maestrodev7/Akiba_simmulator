@@ -2,16 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Infrastructure\Http;
+namespace App\Presentation\Http;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Structure de réponse API commune pour tout le backend.
- * Utilisée par les contrôleurs (Infrastructure) uniquement.
+ * Structure de réponse API commune. Couche Presentation uniquement.
  */
 final class ApiResponse
 {
@@ -19,44 +17,29 @@ final class ApiResponse
     {
     }
 
-    /**
-     * Succès avec données.
-     */
     public static function success(
         mixed $data = null,
         ?string $message = null,
         int $status = Response::HTTP_OK
     ): JsonResponse {
-        $body = [
-            'success' => true,
-            'data' => $data,
-        ];
+        $body = ['success' => true, 'data' => $data];
         if ($message !== null && $message !== '') {
             $body['message'] = $message;
         }
         return new JsonResponse($body, $status);
     }
 
-    /**
-     * Succès créé (201).
-     */
     public static function created(mixed $data = null, ?string $message = null): JsonResponse
     {
         return self::success($data, $message ?? 'Ressource créée.', Response::HTTP_CREATED);
     }
 
-    /**
-     * Erreur (success: false, message + optionnellement errors).
-     */
     public static function error(
         string $message,
         int $status = Response::HTTP_BAD_REQUEST,
         ?array $errors = null
     ): JsonResponse {
-        $body = [
-            'success' => false,
-            'message' => $message,
-        ];
+        $body = ['success' => false, 'message' => $message];
         if ($errors !== null && $errors !== []) {
             $body['errors'] = $errors;
         }
@@ -64,8 +47,6 @@ final class ApiResponse
     }
 
     /**
-     * Réponse paginée standard : data = liste, meta = pagination.
-     *
      * @param list<mixed> $items
      */
     public static function paginated(
@@ -94,9 +75,6 @@ final class ApiResponse
         return new JsonResponse($body, Response::HTTP_OK);
     }
 
-    /**
-     * À partir d'un LengthAwarePaginator Laravel (si besoin).
-     */
     public static function fromPaginator(LengthAwarePaginator $paginator): JsonResponse
     {
         return self::paginated(
