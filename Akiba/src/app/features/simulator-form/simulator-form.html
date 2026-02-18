@@ -5,39 +5,71 @@
         <p class="text-[#555555] sm:text-center text-lg">Ce formulaire intelligent est conçu pour transformer votre vision en un dossier technique concret. En quelques étapes, définissez les contraintes de votre terrain, choisissez votre style architectural et configurez vos espaces de vie.</p>
     </div>
 
-    <!-- stepper -->
     <article class="w-full max-w-7xl mx-auto py-12 px-6">
-        <div class="flex flex-col sm:flex-row items-start sm:items-start justify-center gap-y-12 sm:gap-y-0">
+        <!-- Mobile Carousel View -->
+        <div class="sm:hidden flex flex-col items-center w-full max-w-sm mx-auto">
+            <div class="flex items-center justify-between w-full mb-6 relative">
+                 <!-- Prev Button -->
+                 <button (click)="prevStep()" [disabled]="step() === 1"
+                         [class]="'p-2 rounded-full transition-all duration-200 ' + 
+                                  (step() === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-[#56CB4E] hover:bg-blue-50 active:scale-95')">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                     </svg>
+                 </button>
+
+                 <!-- Current Step Circle -->
+                 <div class="relative">
+                     <div class="w-14 h-14 rounded-full bg-white border-2 border-[#56CB4E] text-[#56CB4E] shadow-xl flex items-center justify-center ring-4 ring-blue-50">
+                         <span class="font-bold text-xl">{{ step() }}</span>
+                     </div>
+                 </div>
+
+                 <!-- Next Button -->
+                 <button (click)="nextStep()" [disabled]="step() === steps.length"
+                         [class]="'p-2 rounded-full transition-all duration-200 ' + 
+                                  (step() === steps.length ? 'text-gray-300 cursor-not-allowed' : 'text-[#56CB4E] hover:bg-blue-50 active:scale-95')">
+                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-8 h-8">
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                     </svg>
+                 </button>
+            </div>
+            
+            <!-- Label -->
+            <div class="text-center px-4 min-h-[3rem] flex items-center justify-center">
+                 <p class="text-[#56CB4E] font-bold text-lg leading-tight transition-all duration-300">
+                     {{ steps[step() - 1].label }}
+                 </p>
+            </div>
+        </div>
+
+        <!-- Desktop Stepper View -->
+        <div class="hidden sm:flex flex-row items-start justify-center gap-0">
             <div *ngFor="let s of steps; let i = index; let last = last" 
-                 class="flex flex-1 w-full sm:w-auto group cursor-pointer" 
+                 class="flex flex-1 w-auto group cursor-pointer" 
                  (click)="goToStep(s.id)">
                 
-                <div class="flex flex-row sm:flex-col items-center sm:text-center w-full relative">
+                <div class="flex flex-col items-center text-center w-full relative">
                     
                     <!-- Icon & Lines -->
-                    <div class="flex flex-col sm:flex-row items-center w-full relative">
+                    <div class="flex items-center w-full relative justify-center">
                         <!-- Circle -->
                         <div [class]="'w-10 h-10 min-w-[40px] rounded-full bg-white border-2 flex items-center justify-center z-10 transition-all duration-300 ' + 
-                                     (step() >= s.id ? 'border-[#1E3A8A] text-[#1E3A8A] shadow-lg' : 'border-gray-300 text-gray-400') +
+                                     (step() >= s.id ? 'border-[#56CB4E] text-[#56CB4E] shadow-lg' : 'border-gray-300 text-gray-400') +
                                      (step() === s.id ? ' ring-8 ring-blue-50/50 scale-110' : '')">
                             <span class="font-bold text-lg">{{ s.id }}</span>
                         </div>
 
-                        <!-- Connecting Line Desktop -->
+                        <!-- Connecting Line -->
                         <div *ngIf="!last" 
-                             class="hidden sm:block absolute left-1/2 w-full top-5 h-[1px] border-t border-dashed border-gray-200 -z-0">
-                        </div>
-                        
-                        <!-- Connecting Line Mobile -->
-                        <div *ngIf="!last" 
-                             class="sm:hidden absolute left-5 top-10 w-[1px] h-[calc(100%+3rem)] border-l border-dashed border-gray-200 -z-0">
+                             class="absolute left-1/2 w-full top-5 h-[1px] border-t border-dashed border-gray-200 -z-0">
                         </div>
                     </div>
 
                     <!-- Label -->
-                    <div class="ml-6 sm:ml-0 sm:mt-8 sm:w-full sm:px-3">
+                    <div class="mt-8 w-full px-3">
                         <p [class]="'text-sm leading-tight transition-all duration-300 ' + 
-                                   (step() === s.id ? 'text-[#1E3A8A] font-bold' : 'text-gray-500 font-medium group-hover:text-[#1E3A8A]')">
+                                   (step() === s.id ? 'text-[#56CB4E] font-bold' : 'text-gray-500 font-medium group-hover:text-[#56CB4E]')">
                             {{ s.label }}
                         </p>
                     </div>
@@ -47,23 +79,309 @@
     </article>
 
     <!-- form -->
-    <article>
+    <article class="w-full max-w-7xl mx-auto py-12 px-6">
 
-        <form *ngIf="step() === 1" action="">
+        <form *ngIf="step() === 1" action="" class="flex flex-col gap-2">
+            <label for="">Nom(s)</label>
+            <input type="text" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre nom(s)">
+
+            <label for="">Prénom(s)</label>
+            <input type="text" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre prénom(s)">
+
+            <label for="">E-mail</label>
+            <input type="text" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre e-mail">
+
+            <label for="">Téléphone</label>
+            <input type="text" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre téléphone">
+        </form>
+
+        <form *ngIf="step() === 2" class="flex flex-col gap-8 animate-fadeIn">
+                    
+            <div class="flex flex-col gap-6">
+                <h2 class="text-2xl font-bold text-[#070707] border-l-4 border-[#56CB4E] pl-4">Identification du Terrain</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Localisation</label>
+                        <input type="text" 
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Adresse complète ou coordonnées GPS (Géocodage)">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Superficie</label>
+                        <input type="number" 
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Entrez la superficie de votre terrain en m²">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Statut Juridique</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Choisissez le statut juridique</option>
+                            <option value="titre_foncier">Titre Foncier</option>
+                            <option value="bail_emphyteotique">Bail Emphytéotique</option>
+                            <option value="domaine_national">Domaine National</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">État du site</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Identifier l'état de votre site</option>
+                            <option value="vierge">Vierge (Non construit)</option>
+                            <option value="en_chantier">En chantier</option>
+                            <option value="renovation">À rénover</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Topographie</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Choisissez la topologie de votre site</option>
+                            <option value="plat">Plat</option>
+                            <option value="pente_douce">Pente douce</option>
+                            <option value="pente_forte">Forte pente / Escarpé</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Situation</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quelle est la situation de votre site</option>
+                            <option value="angle">En angle de rue</option>
+                            <option value="facade_unique">Façade unique</option>
+                            <option value="traversant">Traversant</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Voie existante</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Existe t-il une voie existante ?</option>
+                            <option value="oui">Oui (Goudronnée)</option>
+                            <option value="oui_terre">Oui (Terre)</option>
+                            <option value="non">Non</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Documents fournis</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quelle est la situation de votre site</option>
+                            <option value="plan_masse">Plan de masse</option>
+                            <option value="certificat_urbanisme">Certificat d'urbanisme</option>
+                            <option value="levé_topographique">Levé topographique</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-gray-100 my-4">
+
+            <div class="flex flex-col gap-6">
+                <h2 class="text-2xl font-bold text-[#070707] border-l-4 border-[#56CB4E] pl-4">Définition des Produits Terrain</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="font-medium text-gray-700">Choix du type de produit</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quelle est le choix du type de produit ?</option>
+                            <option value="maison_de_plain_pied">maison de plain-pied</option>
+                            <option value="maison_a_etage">maison à étage</option>
+                            <option value="clôture">clôture</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Nature des travaux</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quelle est la nature des travaux ?</option>
+                            <option value="neuf">Construction Neuve</option>
+                            <option value="extension">Extension</option>
+                            <option value="renov">Rénovation complète</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Type de construction souhaité</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quel type de construction souhaitez-vous avoir?</option>
+                            <option value="villa">Villa Individuelle</option>
+                            <option value="immeuble">Immeuble (R+)</option>
+                            <option value="duplex">Duplex</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Type d'architecture</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quelle type d'architecture souhaitez-vous avoir?</option>
+                            <option value="moderne">Moderne</option>
+                            <option value="contemporaine">Contemporaine</option>
+                            <option value="traditionnelle">Traditionnelle</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Style de construction</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quel style de construction souhaitez-vous avoir?</option>
+                            <option value="minimaliste">Minimaliste</option>
+                            <option value="industriel">Industriel</option>
+                            <option value="scandinave">Scandinave</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Matériaux de construction</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quel matériaux de construction souhaitez-vous avoir?</option>
+                            <option value="beton">Béton Armé</option>
+                            <option value="brique_terre">Briques de terre stabilisée</option>
+                            <option value="bois">Bois / Éco-matériaux</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Type de toiture</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quel type de toiture souhaitez-vous avoir?</option>
+                            <option value="terrasse">Dalle / Terrasse</option>
+                            <option value="toles">Tôles Bac / Ondulées</option>
+                            <option value="tuiles">Tuiles</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Habillage des façades</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quel Habillage des façades souhaitez-vous avoir?</option>
+                            <option value="peinture">Peinture simple</option>
+                            <option value="pierre">Pierres naturelles</option>
+                            <option value="composite">Bardage composite</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Menuiserie</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quel style de menuiserie souhaitez-vous avoir?</option>
+                            <option value="alu">Aluminium</option>
+                            <option value="bois_massif">Bois Massif</option>
+                            <option value="pvc">PVC</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-2 md:col-span-2">
+                        <label class="font-medium text-gray-700">Sécurisation des ouvertures</label>
+                        <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
+                            style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
+                            <option value="" disabled selected>Quelle sécurisation des ouvertures souhaitez-vous avoir?</option>
+                            <option value="grilles">Grilles de protection</option>
+                            <option value="volets">Volets roulants</option>
+                            <option value="alarme">Système d'alarme / Caméras</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <form *ngIf="step() === 3" class="flex flex-col gap-10 animate-fadeIn">
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="flex flex-col gap-3">
+                    <label class="font-bold text-[#070707] text-lg">Date de démarrage des travaux</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6B7280" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                            </svg>
+                        </div>
+                        <input type="date" 
+                            class="w-full p-4 pl-12 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all text-gray-500 appearance-none uppercase text-sm tracking-widest"
+                            placeholder="12/12/2020">
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3">
+                    <label class="font-bold text-[#070707] text-lg">Date de fin des travaux</label>
+                    <div class="relative group">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6B7280" class="w-6 h-6">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+                            </svg>
+                        </div>
+                        <input type="date" 
+                            class="w-full p-4 pl-12 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all text-gray-500 appearance-none uppercase text-sm tracking-widest"
+                            placeholder="12/12/2020">
+                    </div>
+                </div>
+            </div>
 
         </form>
 
-        <form *ngIf="step() === 2" action="">
+<div *ngIf="step() === 4" class="flex flex-col items-center gap-10 animate-fadeIn min-h-[200px]">
+    
+    <div class="bg-[#EFE3D8] text-[#8D5E32] px-4 py-1 rounded-md font-bold text-sm">
+        {{ currentQuestionIndex + 1 }}/{{ questions.length }}
+    </div>
 
-        </form>
+    <h2 class="text-2xl font-medium text-[#070707] text-center max-w-lg">
+        {{ currentQuestion.label }}
+    </h2>
 
-        <form *ngIf="step() === 3" action="">
+    <div class="flex items-center gap-8 md:gap-16">
+        
+        <button (click)="prevQuestion()" 
+                [disabled]="currentQuestionIndex === 0"
+                class="p-4 rounded-full bg-[#F5F5F5] hover:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-gray-600">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+        </button>
 
-        </form>
+        <div class="flex items-center bg-[#F5F5F5] rounded-xl p-2 min-w-[180px] justify-between shadow-sm">
+            <button (click)="updateValue(-1)" 
+                    class="w-12 h-12 flex items-center justify-center text-2xl font-bold text-gray-600 hover:text-black transition-colors">
+                <span class="mb-1">−</span>
+            </button>
+            
+            <span class="text-2xl font-bold text-[#070707] w-12 text-center">
+                {{ currentQuestion.value }}
+            </span>
 
-        <form *ngIf="step() === 4" action="">
+            <button (click)="updateValue(1)" 
+                    class="w-12 h-12 flex items-center justify-center text-2xl font-bold text-gray-600 hover:text-black transition-colors">
+                <span class="mb-1">+</span>
+            </button>
+        </div>
 
-        </form>
+        <button (click)="nextQuestion()" 
+                [disabled]="currentQuestionIndex === questions.length - 1"
+                class="p-4 rounded-full bg-[#F5F5F5] hover:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-gray-600">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+        </button>
+    </div>
+
+    </div>
 
         <form *ngIf="step() === 5" action="">
 
@@ -84,7 +402,7 @@
         
         <button *ngIf="step() < 6" 
                 (click)="nextStep()" 
-                class="px-8 py-3 rounded-lg bg-[#1E3A8A] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#1e2b58] transition-all transform active:scale-95">
+                class="px-8 py-3 rounded-lg bg-[#56CB4E] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#3FAE38] transition-all transform active:scale-95">
             Suivant
         </button>
         
