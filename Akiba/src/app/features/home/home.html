@@ -1,0 +1,106 @@
+<section class="flex flex-col gap-12">
+    <app-banner></app-banner>
+
+    <div class="flex flex-col gap-2 mx-auto sm:w-[50%]">
+        <h2 class="text-center text-[#070707] font-semibold text-3xl lg:text-4xl">Votre projet au Cameroun en 5 étapes simples</h2>
+        <p class="w-[86%] mx-auto text-[#555555] text-center">De la définition de vos besoins à la concrétisation finale, nous vous accompagnons à chaque étape de votre projet.</p>
+    </div>
+
+    <article class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6">
+        <div class="flex flex-col gap-6 w-full sm:w-[55%]">
+            <div>
+                <h2 class="text-[#222222] font-semibold text-3xl">Créez votre profil client</h2>
+                <p class="text-[#555555]">Remplissez une fiche de renseignements rapide pour nous permettre de suivre votre dossier.</p>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                @for(item of createProfil; track item.headLine; let i = $index){
+                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                }
+            </div>
+        </div>
+
+        <div data-aos="fade-left" class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300">
+            <!-- <img src="" alt=""> -->
+        </div>
+    </article>
+
+
+    <article class="w-[90%] mx-auto flex flex-wrap-reverse items-center justify-between gap-6">
+        <div data-aos="fade-right" class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300">
+            <!-- <img src="" alt=""> -->
+        </div>
+
+        <div class="flex flex-col gap-6 w-full sm:w-[55%]">
+            <div>
+                <h2 class="text-[#222222] font-semibold text-3xl">Décrivez votre terrain</h2>
+                <p class="text-[#555555]">Aidez-nous à comprendre l’environnement technique de votre future construction.</p>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                @for(item of descriveTerrain; track item.headLine; let i = $index){
+                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                }
+            </div>
+        </div>
+    </article>
+
+    <article class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6">
+        <div class="flex flex-col gap-6 w-full sm:w-[55%]">
+            <div>
+                <h2 class="text-[#222222] font-semibold text-3xl">Choisissez votre style d’architecture</h2>
+                <p class="text-[#555555]">Personnalisez l’aspect visuel et technique de votre habitat.</p>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                @for(item of chooseArchitecture; track item.headLine; let i = $index){
+                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                }
+            </div>
+        </div>
+
+        <div data-aos="fade-left" class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300">
+            <!-- <img src="" alt=""> -->
+        </div>
+    </article>
+
+    <article class="w-[90%] mx-auto flex flex-wrap-reverse items-center justify-between gap-6">
+        <div data-aos="fade-right" class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300">
+            <!-- <img src="" alt=""> -->
+        </div>
+
+        <div class="flex flex-col gap-6 w-full sm:w-[55%]">
+            <div>
+                <h2 class="text-[#222222] font-semibold text-3xl">Configurez vos pièces</h2>
+                <p class="text-[#555555]">Définissez le programme intérieur de votre maison pour calculer la surface nécessaire.</p>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                @for(item of configurePiece; track item.headLine; let i = $index){
+                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                }
+            </div>
+        </div>
+    </article>
+
+
+    <article class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6 mb-20">
+        <div class="flex flex-col gap-6 w-full sm:w-[55%]">
+            <div>
+                <h2 class="text-[#222222] font-semibold text-3xl">Obtenez votre estimation financière</h2>
+                <p class="text-[#555555]">Visualisez immédiatement le coût prévisionnel de vos travaux.</p>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                @for(item of obtainEstimation; track item.headLine; let i = $index){
+                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                }
+            </div>
+        </div>
+
+        <div class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300" data-aos="fade-left">
+            <!-- <img src="" alt=""> -->
+        </div>
+    </article>
+
+</section>

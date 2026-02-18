@@ -1,0 +1,97 @@
+<section class="py-15">
+
+    <div class="flex flex-col gap-4 sm:w-[60%] w-[90%] mx-auto">
+        <h1 class="text-[#070707] sm:text-center text-3xl md:text-5xl font-bold">Formulaire de simulateur de votre projet Immobilier</h1>
+        <p class="text-[#555555] sm:text-center text-lg">Ce formulaire intelligent est conçu pour transformer votre vision en un dossier technique concret. En quelques étapes, définissez les contraintes de votre terrain, choisissez votre style architectural et configurez vos espaces de vie.</p>
+    </div>
+
+    <!-- stepper -->
+    <article class="w-full max-w-7xl mx-auto py-12 px-6">
+        <div class="flex flex-col sm:flex-row items-start sm:items-start justify-center gap-y-12 sm:gap-y-0">
+            <div *ngFor="let s of steps; let i = index; let last = last" 
+                 class="flex flex-1 w-full sm:w-auto group cursor-pointer" 
+                 (click)="goToStep(s.id)">
+                
+                <div class="flex flex-row sm:flex-col items-center sm:text-center w-full relative">
+                    
+                    <!-- Icon & Lines -->
+                    <div class="flex flex-col sm:flex-row items-center w-full relative">
+                        <!-- Circle -->
+                        <div [class]="'w-10 h-10 min-w-[40px] rounded-full bg-white border-2 flex items-center justify-center z-10 transition-all duration-300 ' + 
+                                     (step() >= s.id ? 'border-[#1E3A8A] text-[#1E3A8A] shadow-lg' : 'border-gray-300 text-gray-400') +
+                                     (step() === s.id ? ' ring-8 ring-blue-50/50 scale-110' : '')">
+                            <span class="font-bold text-lg">{{ s.id }}</span>
+                        </div>
+
+                        <!-- Connecting Line Desktop -->
+                        <div *ngIf="!last" 
+                             class="hidden sm:block absolute left-1/2 w-full top-5 h-[1px] border-t border-dashed border-gray-200 -z-0">
+                        </div>
+                        
+                        <!-- Connecting Line Mobile -->
+                        <div *ngIf="!last" 
+                             class="sm:hidden absolute left-5 top-10 w-[1px] h-[calc(100%+3rem)] border-l border-dashed border-gray-200 -z-0">
+                        </div>
+                    </div>
+
+                    <!-- Label -->
+                    <div class="ml-6 sm:ml-0 sm:mt-8 sm:w-full sm:px-3">
+                        <p [class]="'text-sm leading-tight transition-all duration-300 ' + 
+                                   (step() === s.id ? 'text-[#1E3A8A] font-bold' : 'text-gray-500 font-medium group-hover:text-[#1E3A8A]')">
+                            {{ s.label }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <!-- form -->
+    <article>
+
+        <form *ngIf="step() === 1" action="">
+
+        </form>
+
+        <form *ngIf="step() === 2" action="">
+
+        </form>
+
+        <form *ngIf="step() === 3" action="">
+
+        </form>
+
+        <form *ngIf="step() === 4" action="">
+
+        </form>
+
+        <form *ngIf="step() === 5" action="">
+
+        </form>
+
+        <form *ngIf="step() === 6" action="">
+
+        </form>
+    </article>
+
+    <!-- navigation buttons -->
+    <article class="w-[90%] max-w-5xl mx-auto flex justify-between mt-12 pb-20">
+        <button (click)="prevStep()" 
+                [disabled]="step() === 1"
+                class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
+            Précédent
+        </button>
+        
+        <button *ngIf="step() < 6" 
+                (click)="nextStep()" 
+                class="px-8 py-3 rounded-lg bg-[#1E3A8A] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#1e2b58] transition-all transform active:scale-95">
+            Suivant
+        </button>
+        
+        <button *ngIf="step() === 6" 
+                (click)="submitForm()" 
+                class="px-8 py-3 rounded-lg bg-[#BD7A36] text-white font-semibold shadow-lg hover:bg-[#A26F45] transition-all">
+            Soumettre
+        </button>
+    </article>
+</section>
