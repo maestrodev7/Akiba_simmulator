@@ -1,0 +1,115 @@
+<section class="flex flex-col gap-4">
+    <app-first-step></app-first-step>
+    <app-second-step></app-second-step>
+    <app-third-step></app-third-step>
+
+    <article>
+        <form action="">
+            <hr class="border-gray-100 my-4">
+
+            <div class="flex flex-col gap-6 animate-fadeIn">
+                <h2 class="text-2xl font-bold text-[#070707] border-l-4 border-[#56CB4E] pl-4">Gestion des types de pièces</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de pièces de séjour voulez-vous ?</label>
+                        <input type="number" min="0" value="2"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de pièces de séjour">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Salle à manger voulez-vous ?</label>
+                        <input type="number" min="0" value="1"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de salles à manger">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de salon voulez-vous ?</label>
+                        <input type="number" min="0" value="2"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de salons">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Cuisine voulez-vous ?</label>
+                        <input type="number" min="0" value="1"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de cuisines">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Suite parentale voulez-vous ?</label>
+                        <input type="number" min="0" value="1"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de suites parentales">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Chambre voulez-vous ?</label>
+                        <input type="number" min="0" value="5"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de chambres">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Toilettes voulez-vous ?</label>
+                        <input type="number" min="0" value="4"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de toilettes">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de WC voulez-vous ?</label>
+                        <input type="number" min="0" value="2"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de WC">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Salle de bain voulez-vous ?</label>
+                        <input type="number" min="0" value="2"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de salles de bain">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Bureau voulez-vous ?</label>
+                        <input type="number" min="0" value="2"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de bureaux">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Reserve voulez-vous ?</label>
+                        <input type="number" min="0" value="1"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de réserves">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Véranda voulez-vous ?</label>
+                        <input type="number" min="0" value="1"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de vérandas">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Terrasse voulez-vous ?</label>
+                        <input type="number" min="0" value="2"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de terrasses">
+                    </div>
+
+                    <div class="flex flex-col gap-2">
+                        <label class="font-medium text-gray-700">Combien de Balcon voulez-vous ?</label>
+                        <input type="number" min="0" value="2"
+                            class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                            placeholder="Nombre de balcons">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </article>
+</section>
