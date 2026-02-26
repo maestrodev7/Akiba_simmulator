@@ -1,1 +1,73 @@
-<p>sixth-step works!</p>
+<section class="space-y-6">
+    <h2 class="text-center text-2xl font-semibold text-[#2B2D33]">Page de paiement</h2>
+    <ul class="flex w-max mx-auto items-center bg-[#EEF3F5] rounded-lg">
+        <li [class]=" pay_method=== 'CARD' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'" class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='CARD'">Paiement bancaire</li>
+        <li [class]=" pay_method=== 'MOBILE' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'" class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='MOBILE'">Paiement mobile</li>
+    </ul>
+
+    <div *ngIf="pay_method=='CARD'" class="w-max flex flex-wrap gap-8 mx-auto">
+        <label class="flex items-center gap-2"><img src="./assets/pay_method/visa_card.svg" alt=""><input type="radio" name="pay_method" id=""></label>
+        <label class="flex items-center gap-2"><img src="./assets/pay_method/paypal.svg" alt=""><input type="radio" name="pay_method" id=""></label>
+        <label class="flex items-center gap-2"><img src="./assets/pay_method/master_card.svg" alt=""><input type="radio" name="pay_method" id=""></label>
+    </div>
+
+    <form action="" class="w-full space-y-4">
+        <div *ngIf="pay_method=='CARD'" class="w-full md:w-[70%] mx-auto space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                    <p class="text-[#000000] font-semibold">Numéro de la carte</p>
+                    <p class="text-[#000000]/40 font-semibold">Entrer le numéro de la carte bancaire</p>
+                </div>
+                <input type="text" placeholder="000-000-000-000" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                    <p class="text-[#000000] font-semibold">CVV</p>
+                    <p class="text-[#000000]/40 font-semibold">Entrer 3 ou 4 chiffres</p>
+                </div>
+                <input type="number" placeholder="000" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div class="md:col-span-1">
+                    <p class="text-[#000000] font-semibold">Date d’expiration</p>
+                    <p class="text-[#000000]/40 font-semibold">Entrer la date d'expiration</p>
+                </div>
+                <div class="grid grid-cols-2 gap-2 md:col-span-2">
+                    <input type="month" placeholder="" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-1 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
+                    <input type="year" placeholder="" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-1 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                    <p class="text-[#000000] font-semibold">Mot de passe</p>
+                    <p class="text-[#000000]/40 font-semibold">Entrez votre mot de passe</p>
+                </div>
+                <input type="password" placeholder="" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all"> 
+            </div>
+        </div>
+        
+        <div *ngIf="pay_method=='MOBILE'" class="w-full md:w-[70%] mx-auto space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                    <p class="text-[#000000] font-semibold">Numéro de téléphone</p>
+                    <p class="text-[#000000]/40 font-semibold">Entrer le numéro de téléphone</p>
+                </div>
+                <input type="tel" placeholder="000 000 000 000" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3">
+                <div class="md:col-span-1">
+                    <p class="text-[#000000] font-semibold">Mot de passe</p>
+                    <p class="text-[#000000]/40 font-semibold">Entrez votre mot de passe</p>
+                </div>
+                <input type="password" placeholder="" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all"> 
+            </div>
+        </div>
+
+        <div class="w-max flex mx-auto text-lg font-semibold"><p>Montant à payer :</p>  <span>132 €</span></div>
+        <button class="mx-auto block w-[70%] bg-[#BB7A44] text-[#f2f2f2] font-semibold py-3 rounded-lg">Payer</button>
+    </form>
+</section>
