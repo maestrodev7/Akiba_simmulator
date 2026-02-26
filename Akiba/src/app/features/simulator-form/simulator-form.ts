@@ -27,7 +27,7 @@ export class SimulatorForm {
 
 
   nextStep() {
-    if (this.step() < 6) {
+    if (this.step() < 7) {
       this.step.update((step) => step + 1);
     }
   }

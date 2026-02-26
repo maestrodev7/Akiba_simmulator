@@ -106,7 +106,6 @@
             <app-sixth-step></app-sixth-step>
         </ng-container>
 
-
     </article>
 
     <!-- navigation buttons -->
@@ -117,16 +116,16 @@
             Précédent
         </button>
         
-        <button *ngIf="step() < 6" 
+        <button *ngIf="step() < 5" 
                 (click)="nextStep()" 
                 class="px-8 py-3 rounded-lg bg-[#56CB4E] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#3FAE38] transition-all transform active:scale-95">
             Suivant
         </button>
         
-        <button *ngIf="step() === 6" 
-                (click)="submitForm()" 
+        <button *ngIf="step() === 5" 
+                (click)="nextStep()" 
                 class="px-8 py-3 rounded-lg bg-[#BD7A36] text-white font-semibold shadow-lg hover:bg-[#A26F45] transition-all">
-            Soumettre
+            Finaliser
         </button>
     </article>
 </section>
