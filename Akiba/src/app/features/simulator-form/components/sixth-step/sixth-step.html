@@ -1,6 +1,6 @@
 <section class="space-y-6">
     <h2 class="text-center text-2xl font-semibold text-[#2B2D33]">Page de paiement</h2>
-    <ul class="flex w-max mx-auto items-center bg-[#EEF3F5] rounded-lg">
+    <ul class="flex flex-col gap-2 sm:flex-row sm:gap-0 w-max mx-auto items-center bg-[#EEF3F5] rounded-lg">
         <li [class]=" pay_method=== 'CARD' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'" class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='CARD'">Paiement bancaire</li>
         <li [class]=" pay_method=== 'MOBILE' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'" class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='MOBILE'">Paiement mobile</li>
     </ul>
