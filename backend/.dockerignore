@@ -1,0 +1,12 @@
+/.env
+/.env.*
+/storage/**/*.log
+/storage/framework/cache/**
+/storage/framework/sessions/**
+/storage/framework/views/**
+/storage/framework/testing/**
+/vendor
+/node_modules
+/public/hot
+/public/build
+/.git

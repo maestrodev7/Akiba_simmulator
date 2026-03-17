@@ -1,0 +1,92 @@
+services:
+  db:
+    image: mysql:8.0
+    container_name: akiba_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: akiba
+      MYSQL_USER: akiba
+      MYSQL_PASSWORD: akiba_password
+      MYSQL_ROOT_PASSWORD: root_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - akiba-net
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2025-02-03T21-03-04Z
+    container_name: akiba_minio
+    restart: unless-stopped
+    command: ["server", "/data", "--console-address=:9001"]
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # Console
+    volumes:
+      - minio-data:/data
+    networks:
+      - akiba-net
+
+  minio_init:
+    image: quay.io/minio/mc:RELEASE.2025-05-21T01-59-54Z
+    container_name: akiba_minio_init
+    depends_on:
+      - minio
+    networks:
+      - akiba-net
+    entrypoint:
+      - /bin/sh
+      - -lc
+      - |
+        until (/usr/bin/mc alias set local http://minio:9000 "$${MINIO_ROOT_USER}" "$${MINIO_ROOT_PASSWORD}") do sleep 2; done
+        /usr/bin/mc mb --ignore-existing local/akiba
+        /usr/bin/mc anonymous set download local/akiba || true
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin123
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: akiba_backend:latest
+    container_name: akiba_backend
+    restart: unless-stopped
+    depends_on:
+      - db
+      - minio
+      - minio_init
+    env_file:
+      - ./backend/.env.production
+    ports:
+      - "8080:80"
+    networks:
+      - akiba-net
+
+  frontend:
+    build:
+      context: ./Akiba
+      dockerfile: Dockerfile
+    image: akiba_frontend:latest
+    container_name: akiba_frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      PORT: "4000"
+    ports:
+      - "4200:4000"
+    networks:
+      - akiba-net
+
+networks:
+  akiba-net:
+    name: akiba-net
+
+volumes:
+  db-data:
+  minio-data:
