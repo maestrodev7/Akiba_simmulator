@@ -5,10 +5,16 @@ use App\Presentation\Http\Controller\Api\PieceController;
 use App\Presentation\Http\Controller\Api\ProduitController;
 use App\Presentation\Http\Controller\Api\ProgrammeController;
 use App\Presentation\Http\Controller\Api\SimulationController;
+use App\Presentation\Http\Controller\Api\SimulatorDraftController;
 use App\Presentation\Http\Controller\Api\TerrainController;
 use Illuminate\Support\Facades\Route;
 
 Route::apiResource('clients', ClientController::class);
+Route::prefix('simulator')->group(function (): void {
+    Route::post('draft/save-step', [SimulatorDraftController::class, 'saveStep']);
+    Route::get('draft/{produitId}', [SimulatorDraftController::class, 'showDraft']);
+    Route::get('draft/{produitId}/recap', [SimulatorDraftController::class, 'recap']);
+});
 
 Route::get('pieces', [PieceController::class, 'index']);
 
