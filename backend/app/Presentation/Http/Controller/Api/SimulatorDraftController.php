@@ -151,12 +151,12 @@ final class SimulatorDraftController extends Controller
         }
 
         $terrain->fill([
-            'adresse' => $payload['adresse'] ?? $terrain->adresse,
-            'superficie' => $payload['superficie'] ?? $terrain->superficie,
-            'titre_foncier' => $payload['titre_foncier'] ?? $terrain->titre_foncier,
-            'site' => $payload['site'] ?? $terrain->site,
-            'situation' => $payload['situation'] ?? $terrain->situation,
-            'topographie' => $payload['topographie'] ?? $terrain->topographie,
+            'adresse' => $this->asSingleString($payload['adresse'] ?? null) ?? $terrain->adresse,
+            'superficie' => $this->asSingleFloat($payload['superficie'] ?? null) ?? $terrain->superficie,
+            'titre_foncier' => $this->asSingleString($payload['titre_foncier'] ?? $payload['statut_juridique'] ?? null) ?? $terrain->titre_foncier,
+            'site' => $this->asSingleString($payload['site'] ?? $payload['etat_du_site'] ?? null) ?? $terrain->site,
+            'situation' => $this->asSingleString($payload['situation'] ?? null) ?? $terrain->situation,
+            'topographie' => $this->asSingleString($payload['topographie'] ?? null) ?? $terrain->topographie,
         ]);
         $terrain->save();
 
@@ -201,10 +201,10 @@ final class SimulatorDraftController extends Controller
         );
 
         $produit->fill([
-            'type_produit' => $payload['type_produit'] ?? $produit->type_produit,
-            'materiaux' => $payload['materiaux'] ?? $produit->materiaux,
-            'standing' => $payload['standing'] ?? $produit->standing,
-            'budget_previsionnel' => $payload['budget_previsionnel'] ?? $produit->budget_previsionnel,
+            'type_produit' => $this->asSingleString($payload['type_produit'] ?? null) ?? $produit->type_produit,
+            'materiaux' => $this->asSingleString($payload['materiaux'] ?? null) ?? $produit->materiaux,
+            'standing' => $this->asSingleString($payload['standing'] ?? null) ?? $produit->standing,
+            'budget_previsionnel' => $this->asSingleFloat($payload['budget_previsionnel'] ?? null) ?? $produit->budget_previsionnel,
             'caracteristiques' => $mergedCaracteristiques,
         ]);
         $produit->save();
@@ -323,6 +323,50 @@ final class SimulatorDraftController extends Controller
         }
 
         return null;
+    }
+
+    private function asSingleString(mixed $value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                if (is_scalar($item)) {
+                    $normalized = trim((string) $item);
+                    if ($normalized !== '') {
+                        return $normalized;
+                    }
+                }
+            }
+            return null;
+        }
+
+        if (is_scalar($value)) {
+            $normalized = trim((string) $value);
+            return $normalized === '' ? null : $normalized;
+        }
+
+        return null;
+    }
+
+    private function asSingleFloat(mixed $value): ?float
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                if (is_numeric($item)) {
+                    return (float) $item;
+                }
+            }
+            return null;
+        }
+
+        return is_numeric($value) ? (float) $value : null;
     }
 }
 
