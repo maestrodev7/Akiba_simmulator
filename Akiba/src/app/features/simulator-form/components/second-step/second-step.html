@@ -3,73 +3,86 @@
         <h2 class="text-2xl font-bold text-[#070707] border-l-4 border-[#56CB4E] pl-4">Identification du Terrain</h2>
         
         <div class="flex flex-col gap-2">
-            <label class="font-medium text-gray-700">Budget</label>
+            <label class="font-medium text-gray-700">Budget <span class="text-red-500">*</span></label>
             <input type="number" formControlName="budget_previsionnel"
-                class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                class="w-full p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                [class.border-red-400]="submitted && form.get('budget_previsionnel')?.invalid"
+                [class.border-gray-100]="!(submitted && form.get('budget_previsionnel')?.invalid)"
                 placeholder="Quel est votre projet prévisionnel">
+            <app-error-message *ngIf="submitted && form.get('budget_previsionnel')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Localisation</label>
+                <label class="font-medium text-gray-700">Localisation <span class="text-red-500">*</span></label>
                 <input type="text" formControlName="adresse"
-                    class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                    class="w-full p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                    [class.border-red-400]="submitted && form.get('adresse')?.invalid"
+                    [class.border-gray-100]="!(submitted && form.get('adresse')?.invalid)"
                     placeholder="Adresse complète ou coordonnées GPS (Géocodage)">
+                <app-error-message *ngIf="submitted && form.get('adresse')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Superficie</label>
+                <label class="font-medium text-gray-700">Superficie <span class="text-red-500">*</span></label>
                 <input type="number" formControlName="superficie"
-                    class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                    class="w-full p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                    [class.border-red-400]="submitted && form.get('superficie')?.invalid"
+                    [class.border-gray-100]="!(submitted && form.get('superficie')?.invalid)"
                     placeholder="Entrez la superficie de votre terrain en m²">
+                <app-error-message *ngIf="submitted && form.get('superficie')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Statut Juridique</label>
+                <label class="font-medium text-gray-700">Statut Juridique <span class="text-red-500">*</span></label>
                 <app-custom-select formControlName="statut_juridique" 
                     [options]="options.statutJuridique" 
                     placeholder="Choisissez le statut juridique"
                     [multiple]="false">
                 </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('statut_juridique')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">État du site</label>
+                <label class="font-medium text-gray-700">État du site <span class="text-red-500">*</span></label>
                 <app-custom-select formControlName="etat_du_site" 
                     [options]="options.etatSite" 
                     placeholder="Identifier l'état de votre site"
                     [multiple]="false">
                 </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('etat_du_site')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Topographie</label>
+                <label class="font-medium text-gray-700">Topographie <span class="text-red-500">*</span></label>
                 <app-custom-select formControlName="topographie" 
                     [options]="options.topographie" 
                     placeholder="Choisissez la topologie de votre site"
                     [multiple]="false">
                 </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('topographie')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Situation</label>
+                <label class="font-medium text-gray-700">Situation <span class="text-red-500">*</span></label>
                 <app-custom-select formControlName="situation" 
                     [options]="options.situation" 
                     placeholder="Quelle est la situation de votre site"
                     [multiple]="false">
                 </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('situation')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Voie existante</label>
+                <label class="font-medium text-gray-700">Voie existante <span class="text-red-500">*</span></label>
                 <app-custom-select formControlName="voie_existante" 
                     [options]="options.voieExistante" 
                     placeholder="Existe t-il une voie existante ?"
                     [multiple]="false">
                 </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('voie_existante')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Documents fournis</label>
                 <app-custom-select formControlName="documents_fournis" 
                     [options]="options.documentsFournis" 
@@ -87,7 +100,6 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="flex flex-col gap-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Choix du type de produit</label>
                 <app-custom-select formControlName="type_produit" 
                     [options]="options.typeProduit" 
@@ -97,16 +109,16 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Nature des travaux</label>
+                <label class="font-medium text-gray-700">Nature des travaux <span class="text-red-500">*</span></label>
                 <app-custom-select formControlName="nature_travaux" 
                     [options]="options.natureTravaux" 
                     placeholder="Quelle est la nature des travaux ?"
                     [multiple]="false">
                 </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('nature_travaux')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2  md:col-span-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Type de construction souhaité</label>
                 <app-custom-select formControlName="type_construction" 
                     [options]="options.typeConstruction" 
@@ -189,7 +201,6 @@
             </div>
 
             <div class="flex flex-col gap-2  md:col-span-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Matériaux de construction</label>
                 <app-custom-select formControlName="materiaux" 
                     [options]="options.materiaux" 
@@ -199,7 +210,6 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Style de construction</label>
                 <app-custom-select formControlName="style_construction" 
                     [options]="options.styleConstruction" 
@@ -209,11 +219,10 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Espace et annexe</label>
                 <app-custom-select formControlName="espace_annexe" 
                     [options]="options.espaceAnnexe" 
-                    placeholder="Quel espace annexe souhaitez vous ajouter?"
+                    placeholder="Quel space annexe souhaitez vous ajouter?"
                     [multiple]="true">
                 </app-custom-select>
             </div>
@@ -233,7 +242,6 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Type de toiture</label>
                 <app-custom-select formControlName="type_toiture" 
                     [options]="options.typeToiture" 
@@ -243,7 +251,6 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Habillage des façades</label>
                 <app-custom-select formControlName="habillage_facade" 
                     [options]="options.habillageFacade" 
@@ -253,7 +260,6 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Menuiserie</label>
                 <app-custom-select formControlName="menuiserie" 
                     [options]="options.menuiserie" 
@@ -263,7 +269,6 @@
             </div>
 
             <div class="flex flex-col gap-2">
-                <!-- multi-select -->
                 <label class="font-medium text-gray-700">Sécurisation des ouvertures</label>
                 <app-custom-select formControlName="securisation_ouvertures" 
                     [options]="options.securisationOuvertures" 

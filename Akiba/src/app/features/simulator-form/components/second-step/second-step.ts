@@ -1,12 +1,14 @@
 import { Component, EventEmitter, Output, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CustomSelect } from '../../../../shared/components/custom-select/custom-select';
+
+import { ErrorMessage } from '../../../../shared/components/error-message/error-message';
 
 @Component({
   selector: 'app-second-step',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelect],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelect, ErrorMessage],
   templateUrl: './second-step.html',
   styleUrl: './second-step.css',
 })
@@ -17,17 +19,17 @@ export class SecondStep {
   private fb = inject(FormBuilder);
 
   form: FormGroup = this.fb.group({
-    budget_previsionnel: [null],
-    adresse: [''],
-    superficie: [null],
-    statut_juridique: [[]],
-    etat_du_site: [[]],
-    topographie: [[]],
-    situation: [[]],
-    voie_existante: [[]],
+    budget_previsionnel: [null, [Validators.required]],
+    adresse: ['', [Validators.required]],
+    superficie: [null, [Validators.required]],
+    statut_juridique: [null, [Validators.required]],
+    etat_du_site: [null, [Validators.required]],
+    topographie: [null, [Validators.required]],
+    situation: [null, [Validators.required]],
+    voie_existante: [null, [Validators.required]],
     documents_fournis: [[]],
-    type_produit: [null],
-    nature_travaux: [[]],
+    type_produit: [[]], 
+    nature_travaux: [null, [Validators.required]],
     type_construction: [[]],
     type_architecture: [[]],
     materiaux: [[]],
@@ -141,6 +143,8 @@ export class SecondStep {
     ]
   };
 
+  submitted = false;
+
   isArchitectureSelected(value: string): boolean {
     const selected = this.form.get('type_architecture')?.value || [];
     return selected.includes(value);
@@ -157,6 +161,11 @@ export class SecondStep {
   }
 
   onSubmit() {
+    this.submitted = true;
+    if (this.form.invalid) {
+       this.form.markAllAsTouched();
+       return;
+    }
     this.next.emit(this.form);
   }
 }
