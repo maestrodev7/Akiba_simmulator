@@ -82,50 +82,30 @@
     <article class="w-full max-w-7xl mx-auto py-12 px-6">
 
         <ng-container *ngIf="step() === 1">
-            <app-first-step></app-first-step>
+            <app-first-step (next)="nextStep($event)" (prev)="prevStep()"></app-first-step>
         </ng-container>
 
         <ng-container *ngIf="step() === 2">
-            <app-second-step></app-second-step>
+            <app-second-step (next)="nextStep($event)" (prev)="prevStep()"></app-second-step>
         </ng-container>
 
         <ng-container *ngIf="step() === 3">
-            <app-third-step></app-third-step>
+            <app-third-step (next)="nextStep()" (prev)="prevStep()"></app-third-step>
         </ng-container>
 
         <ng-container *ngIf="step() === 4">
-            <app-fourth-step></app-fourth-step>
+            <app-fourth-step (next)="nextStep()" (prev)="prevStep()"></app-fourth-step>
         </ng-container>
 
 
         <ng-container *ngIf="step() === 5">
-            <app-fifth-step></app-fifth-step>
+            <app-fifth-step (next)="nextStep()" (prev)="prevStep()"></app-fifth-step>
         </ng-container>
 
         <ng-container *ngIf="step() === 6">
-            <app-sixth-step></app-sixth-step>
+            <app-sixth-step (next)="nextStep()" (prev)="prevStep()"></app-sixth-step>
         </ng-container>
 
     </article>
 
-    <!-- navigation buttons -->
-    <article class="w-[90%] max-w-5xl mx-auto flex justify-between mt-12 pb-20">
-        <button (click)="prevStep()" 
-                [disabled]="step() === 1"
-                class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all disabled:opacity-30 disabled:cursor-not-allowed">
-            Précédent
-        </button>
-        
-        <button *ngIf="step() < 5" 
-                (click)="nextStep()" 
-                class="px-8 py-3 rounded-lg bg-[#56CB4E] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#3FAE38] transition-all transform active:scale-95">
-            Suivant
-        </button>
-        
-        <button *ngIf="step() === 5" 
-                (click)="nextStep()" 
-                class="px-8 py-3 rounded-lg bg-[#BD7A36] text-white font-semibold shadow-lg hover:bg-[#A26F45] transition-all">
-            Finaliser
-        </button>
-    </article>
 </section>

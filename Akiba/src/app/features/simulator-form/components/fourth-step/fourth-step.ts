@@ -1,12 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 
 @Component({
   selector: 'app-fourth-step',
+  standalone: true,
   imports: [],
   templateUrl: './fourth-step.html',
   styleUrl: './fourth-step.css',
 })
 export class FourthStep {
+  @Output() next = new EventEmitter<void>();
+  @Output() prev = new EventEmitter<void>();
     // Dans votre classe SimulatorFormComponent
   questions = [
     { label: 'Combien de pièces de séjour voulez-vous ?', value: 1, key: 'sejour' },
