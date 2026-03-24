@@ -1,0 +1,95 @@
+export interface projectData {
+    client_id?:string;
+    terrain_id?:string;
+    produit_id?:string;
+    stepOne?:stepOneForm;
+    stepTwo?:stepTwoForm;
+    stepThree?:stepThreeForm;
+    stepFour?:stepFourForm;
+    stepFive?:stepFiveForm;
+    stepSix?:stepSixForm;
+    stepSeven?:stepSevenForm;
+    stepEight?:stepEightForm;
+    stepNine?:stepNineForm;
+    stepTen?:stepTenForm;
+}
+
+export interface stepOneForm {
+  step: 1,
+  data: {
+    nom: string;
+    prenom: string;
+    email: string;
+    telephone: string;
+    adresse: string;
+    numero_registre: string;
+  }
+}
+
+export interface stepTwoForm {
+  step: 2,
+  client_id: string,
+  terrain_id?: string,
+  produit_id?: string,
+  data: {
+    budget_previsionnel: number;
+    adresse: string;
+    superficie: number;
+
+    statut_juridique: string[];
+    etat_du_site: string[];
+    topographie: string[];
+    situation: string[];
+    voie_existante: string[];
+    documents_fournis: string[];
+
+    type_produit: string;
+    nature_travaux: string[];
+    type_construction: string[];
+    type_architecture: string[];
+
+    materiaux: string[];
+    style_construction: string[];
+    espace_annexe: string[];
+
+    nombre_etages: number;
+    nombre_sous_sol: number;
+
+    type_toiture: string[];
+    habillage_facade: string[];
+    menuiserie: string[];
+    securisation_ouvertures: string[];
+  }
+}
+
+export interface stepThreeForm {
+    
+}
+
+export interface stepFourForm {
+    
+}
+
+export interface stepFiveForm {
+    
+}
+
+export interface stepSixForm {
+    
+}
+
+export interface stepSevenForm {
+    
+}
+
+export interface stepEightForm {
+    
+}
+
+export interface stepNineForm {
+    
+}
+
+export interface stepTenForm {
+    
+}

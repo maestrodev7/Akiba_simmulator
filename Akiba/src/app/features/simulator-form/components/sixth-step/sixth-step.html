@@ -68,6 +68,14 @@
         </div>
 
         <div class="w-max flex mx-auto text-lg font-semibold"><p>Montant à payer :</p>  <span>132 €</span></div>
-        <button class="mx-auto block w-[70%] bg-[#BB7A44] text-[#f2f2f2] font-semibold py-3 rounded-lg">Payer</button>
+        <article class="flex justify-between items-center w-[70%] mx-auto mt-8 pb-20">
+            <button type="button" (click)="prev.emit()" 
+                    class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">
+                Précédent
+            </button>
+            <button type="submit" class="bg-[#BB7A44] text-[#f2f2f2] font-semibold py-3 px-12 rounded-lg shadow-lg hover:bg-[#A26F45] transition-all">
+                Payer
+            </button>
+        </article>
     </form>
 </section>
