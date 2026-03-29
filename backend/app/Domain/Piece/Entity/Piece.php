@@ -12,6 +12,7 @@ final class Piece
         private string $designation,
         private float $surfaceStandard,
         private int $ordre = 0,
+        private bool $isCustom = false,
     ) {
     }
 
@@ -19,4 +20,5 @@ final class Piece
     public function getDesignation(): string { return $this->designation; }
     public function getSurfaceStandard(): float { return $this->surfaceStandard; }
     public function getOrdre(): int { return $this->ordre; }
+    public function isCustom(): bool { return $this->isCustom; }
 }

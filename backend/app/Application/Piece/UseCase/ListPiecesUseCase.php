@@ -23,6 +23,7 @@ final class ListPiecesUseCase
             'designation' => $p->getDesignation(),
             'surface_standard' => $p->getSurfaceStandard(),
             'ordre' => $p->getOrdre(),
+            'is_custom' => $p->isCustom(),
         ], $pieces);
     }
 }

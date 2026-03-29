@@ -17,6 +17,7 @@ Route::prefix('simulator')->group(function (): void {
 });
 
 Route::get('pieces', [PieceController::class, 'index']);
+Route::post('pieces', [PieceController::class, 'store']);
 
 Route::prefix('clients/{clientId}')->group(function (): void {
     Route::apiResource('terrains', TerrainController::class)->except(['destroy']);

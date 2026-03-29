@@ -11,4 +11,6 @@ interface PieceRepositoryInterface
     public function getById(string $id): ?Piece;
     /** @return list<Piece> */
     public function listAll(): array;
+
+    public function createCustom(string $designation, float $surfaceStandard): Piece;
 }

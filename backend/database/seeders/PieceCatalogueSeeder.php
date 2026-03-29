@@ -8,34 +8,39 @@ use App\Infrastructure\Persistence\Eloquent\PieceModel;
 use Illuminate\Database\Seeder;
 
 /**
- * Référentiel des pièces (PDF tableau §5).
+ * Catalogue par défaut (wizard simulateur, aligné fiche programme / estimation SP).
+ * Surfaces standards indicatives pour le calcul Total = SP × Prix/m² × Indice.
  */
 class PieceCatalogueSeeder extends Seeder
 {
     public function run(): void
     {
         $pieces = [
-            ['designation' => 'Séjour', 'surface_standard' => 30, 'ordre' => 1],
+            ['designation' => 'Pièce de séjour', 'surface_standard' => 30, 'ordre' => 1],
             ['designation' => 'Salle à manger', 'surface_standard' => 20, 'ordre' => 2],
-            ['designation' => 'Cuisine', 'surface_standard' => 15, 'ordre' => 3],
-            ['designation' => 'Suite parentale', 'surface_standard' => 18, 'ordre' => 4],
-            ['designation' => 'Chambre', 'surface_standard' => 12, 'ordre' => 5],
-            ['designation' => 'WC / Toilettes', 'surface_standard' => 4, 'ordre' => 6],
-            ['designation' => 'Bureau', 'surface_standard' => 12, 'ordre' => 7],
-            ['designation' => 'Salle de bain', 'surface_standard' => 5, 'ordre' => 8],
-            ['designation' => 'Magasin', 'surface_standard' => 10, 'ordre' => 9],
-            ['designation' => 'Salon', 'surface_standard' => 15, 'ordre' => 10],
-            ['designation' => 'Garage', 'surface_standard' => 20, 'ordre' => 11],
-            ['designation' => 'Terrasse', 'surface_standard' => 15, 'ordre' => 12],
-            ['designation' => 'Véranda', 'surface_standard' => 10, 'ordre' => 13],
-            ['designation' => 'Balcon', 'surface_standard' => 5, 'ordre' => 14],
+            ['designation' => 'Salon', 'surface_standard' => 25, 'ordre' => 3],
+            ['designation' => 'Cuisine', 'surface_standard' => 15, 'ordre' => 4],
+            ['designation' => 'Suite parentale', 'surface_standard' => 18, 'ordre' => 5],
+            ['designation' => 'Chambre', 'surface_standard' => 12, 'ordre' => 6],
+            ['designation' => 'Toilettes', 'surface_standard' => 4, 'ordre' => 7],
+            ['designation' => 'WC', 'surface_standard' => 2, 'ordre' => 8],
+            ['designation' => 'Salle de bain', 'surface_standard' => 8, 'ordre' => 9],
+            ['designation' => 'Bureau', 'surface_standard' => 12, 'ordre' => 10],
+            ['designation' => 'Réserve', 'surface_standard' => 8, 'ordre' => 11],
+            ['designation' => 'Véranda', 'surface_standard' => 12, 'ordre' => 12],
+            ['designation' => 'Terrasse', 'surface_standard' => 15, 'ordre' => 13],
+            ['designation' => 'Balcon', 'surface_standard' => 8, 'ordre' => 14],
             ['designation' => 'Autres', 'surface_standard' => 10, 'ordre' => 15],
         ];
 
         foreach ($pieces as $p) {
-            PieceModel::firstOrCreate(
+            PieceModel::updateOrCreate(
                 ['designation' => $p['designation']],
-                ['id' => PieceModel::generateShortId(), 'surface_standard' => $p['surface_standard'], 'ordre' => $p['ordre']]
+                [
+                    'surface_standard' => $p['surface_standard'],
+                    'ordre' => $p['ordre'],
+                    'is_custom' => false,
+                ],
             );
         }
     }

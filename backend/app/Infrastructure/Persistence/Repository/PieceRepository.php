@@ -19,8 +19,26 @@ final class PieceRepository implements PieceRepositoryInterface
     /** @return list<Piece> */
     public function listAll(): array
     {
-        return PieceModel::orderBy('ordre')->orderBy('designation')->get()
-            ->map(fn (PieceModel $m) => $this->toEntity($m))->all();
+        return PieceModel::query()
+            ->orderBy('is_custom')
+            ->orderBy('ordre')
+            ->orderBy('designation')
+            ->get()
+            ->map(fn (PieceModel $m) => $this->toEntity($m))
+            ->all();
+    }
+
+    public function createCustom(string $designation, float $surfaceStandard): Piece
+    {
+        $maxOrdre = (int) PieceModel::query()->max('ordre');
+        $model = new PieceModel();
+        $model->designation = trim($designation);
+        $model->surface_standard = $surfaceStandard;
+        $model->ordre = $maxOrdre + 1;
+        $model->is_custom = true;
+        $model->save();
+
+        return $this->toEntity($model);
     }
 
     private function toEntity(PieceModel $m): Piece
@@ -30,6 +48,7 @@ final class PieceRepository implements PieceRepositoryInterface
             designation: $m->designation,
             surfaceStandard: (float) $m->surface_standard,
             ordre: (int) $m->ordre,
+            isCustom: (bool) ($m->is_custom ?? false),
         );
     }
 }

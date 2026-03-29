@@ -15,8 +15,11 @@ class PieceModel extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = ['id', 'designation', 'surface_standard', 'ordre'];
-    protected $casts = ['surface_standard' => 'float'];
+    protected $fillable = ['id', 'designation', 'surface_standard', 'ordre', 'is_custom'];
+    protected $casts = [
+        'surface_standard' => 'float',
+        'is_custom' => 'boolean',
+    ];
 
     public static function boot(): void
     {
