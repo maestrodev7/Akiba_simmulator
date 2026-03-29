@@ -1,92 +1,94 @@
-<form class="flex flex-col gap-8 animate-fadeIn">   
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-8 animate-fadeIn">   
     <div class="flex flex-col gap-6">
         <h2 class="text-2xl font-bold text-[#070707] border-l-4 border-[#56CB4E] pl-4">Identification du Terrain</h2>
         
         <div class="flex flex-col gap-2">
-            <label class="font-medium text-gray-700">Budget</label>
-            <input type="text" 
-                class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+            <label class="font-medium text-gray-700">Budget <span class="text-red-500">*</span></label>
+            <input type="number" formControlName="budget_previsionnel"
+                class="w-full p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                [class.border-red-400]="submitted && form.get('budget_previsionnel')?.invalid"
+                [class.border-gray-100]="!(submitted && form.get('budget_previsionnel')?.invalid)"
                 placeholder="Quel est votre projet prévisionnel">
+            <app-error-message *ngIf="submitted && form.get('budget_previsionnel')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Localisation</label>
-                <input type="text" 
-                    class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                <label class="font-medium text-gray-700">Localisation <span class="text-red-500">*</span></label>
+                <input type="text" formControlName="adresse"
+                    class="w-full p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                    [class.border-red-400]="submitted && form.get('adresse')?.invalid"
+                    [class.border-gray-100]="!(submitted && form.get('adresse')?.invalid)"
                     placeholder="Adresse complète ou coordonnées GPS (Géocodage)">
+                <app-error-message *ngIf="submitted && form.get('adresse')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Superficie</label>
-                <input type="number" 
-                    class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                <label class="font-medium text-gray-700">Superficie <span class="text-red-500">*</span></label>
+                <input type="number" formControlName="superficie"
+                    class="w-full p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                    [class.border-red-400]="submitted && form.get('superficie')?.invalid"
+                    [class.border-gray-100]="!(submitted && form.get('superficie')?.invalid)"
                     placeholder="Entrez la superficie de votre terrain en m²">
+                <app-error-message *ngIf="submitted && form.get('superficie')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Statut Juridique</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Choisissez le statut juridique</option>
-                    <option value="titre_foncier">Titre Foncier</option>
-                    <option value="bail_emphyteotique">Bail Emphytéotique</option>
-                    <option value="domaine_national">Domaine National</option>
-                </select>
+                <label class="font-medium text-gray-700">Statut Juridique <span class="text-red-500">*</span></label>
+                <app-custom-select formControlName="statut_juridique" 
+                    [options]="options.statutJuridique" 
+                    placeholder="Choisissez le statut juridique"
+                    [multiple]="false">
+                </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('statut_juridique')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">État du site</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Identifier l'état de votre site</option>
-                    <option value="vierge">Vierge (Non construit)</option>
-                    <option value="en_chantier">En chantier</option>
-                    <option value="renovation">À rénover</option>
-                </select>
+                <label class="font-medium text-gray-700">État du site <span class="text-red-500">*</span></label>
+                <app-custom-select formControlName="etat_du_site" 
+                    [options]="options.etatSite" 
+                    placeholder="Identifier l'état de votre site"
+                    [multiple]="false">
+                </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('etat_du_site')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Topographie</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Choisissez la topologie de votre site</option>
-                    <option value="plat">Plat</option>
-                    <option value="pente_douce">Pente douce</option>
-                    <option value="pente_forte">Forte pente / Escarpé</option>
-                </select>
+                <label class="font-medium text-gray-700">Topographie <span class="text-red-500">*</span></label>
+                <app-custom-select formControlName="topographie" 
+                    [options]="options.topographie" 
+                    placeholder="Choisissez la topologie de votre site"
+                    [multiple]="false">
+                </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('topographie')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Situation</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quelle est la situation de votre site</option>
-                    <option value="angle">En angle de rue</option>
-                    <option value="facade_unique">Façade unique</option>
-                    <option value="traversant">Traversant</option>
-                </select>
+                <label class="font-medium text-gray-700">Situation <span class="text-red-500">*</span></label>
+                <app-custom-select formControlName="situation" 
+                    [options]="options.situation" 
+                    placeholder="Quelle est la situation de votre site"
+                    [multiple]="false">
+                </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('situation')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Voie existante</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Existe t-il une voie existante ?</option>
-                    <option value="oui">Oui (Goudronnée)</option>
-                    <option value="oui_terre">Oui (Terre)</option>
-                    <option value="non">Non</option>
-                </select>
+                <label class="font-medium text-gray-700">Voie existante <span class="text-red-500">*</span></label>
+                <app-custom-select formControlName="voie_existante" 
+                    [options]="options.voieExistante" 
+                    placeholder="Existe t-il une voie existante ?"
+                    [multiple]="false">
+                </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('voie_existante')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2">
                 <label class="font-medium text-gray-700">Documents fournis</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quelle est la situation de votre site</option>
-                    <option value="plan_masse">Plan de masse</option>
-                    <option value="certificat_urbanisme">Certificat d'urbanisme</option>
-                    <option value="levé_topographique">Levé topographique</option>
-                </select>
+                <app-custom-select formControlName="documents_fournis" 
+                    [options]="options.documentsFournis" 
+                    placeholder="Quels documents avez-vous ?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
         </div>
     </div>
@@ -99,120 +101,192 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="flex flex-col gap-2">
                 <label class="font-medium text-gray-700">Choix du type de produit</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quelle est le choix du type de produit ?</option>
-                    <option value="maison_de_plain_pied">maison de plain-pied</option>
-                    <option value="maison_a_etage">maison à étage</option>
-                    <option value="clôture">clôture</option>
-                </select>
+                <app-custom-select formControlName="type_produit" 
+                    [options]="options.typeProduit" 
+                    placeholder="Quelle est le choix du type de produit ?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Nature des travaux</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quelle est la nature des travaux ?</option>
-                    <option value="neuf">Construction Neuve</option>
-                    <option value="extension">Extension</option>
-                    <option value="renov">Rénovation complète</option>
-                </select>
+                <label class="font-medium text-gray-700">Nature des travaux <span class="text-red-500">*</span></label>
+                <app-custom-select formControlName="nature_travaux" 
+                    [options]="options.natureTravaux" 
+                    placeholder="Quelle est la nature des travaux ?"
+                    [multiple]="false">
+                </app-custom-select>
+                <app-error-message *ngIf="submitted && form.get('nature_travaux')?.errors?.['required']" message="Ce champ est requis"></app-error-message>
             </div>
 
             <div class="flex flex-col gap-2  md:col-span-2">
                 <label class="font-medium text-gray-700">Type de construction souhaité</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quel type de construction souhaitez-vous avoir?</option>
-                    <option value="villa">Villa Individuelle</option>
-                    <option value="immeuble">Immeuble (R+)</option>
-                    <option value="duplex">Duplex</option>
-                </select>
+                <app-custom-select formControlName="type_construction" 
+                    [options]="options.typeConstruction" 
+                    placeholder="Quel type de construction souhaitez-vous avoir?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
 
             <div class="flex flex-col gap-2  md:col-span-2">
                 <label class="font-medium text-gray-700">Type d'architecture</label>
-                <div class="flex flex-wrap justify-around items-center gap-2 md:gap-4">
-                    <label class="flex flex-col gap-2">
-                        <span class="flex gap-2"><input type="checkbox" name="">traditionnelle</span>
-                        <img src="./assets/house_architecture/traditional_architecture.svg" alt=""></label>
-                    <label class="flex flex-col gap-2">
-                        <span class="flex gap-2"><input type="checkbox" name="">moderne</span>
-                        <img src="./assets/house_architecture/modern_architecture.svg" alt=""></label>
-                    <label class="flex flex-col gap-2">
-                        <span class="flex gap-2"><input type="checkbox" name="">contemporaine</span>
-                        <img src="./assets/house_architecture/luxial_architecture.svg" alt=""></label>
-                    <label class="flex flex-col gap-2">
-                        <span class="flex gap-2"><input type="checkbox" name="">Futuriste</span>
-                        <img src="./assets/house_architecture/futurist_architecture.svg" alt=""></label>
+                <div class="flex flex-wrap justify-around items-center gap-4 md:gap-8 bg-white">
+                    <!-- Traditionnelle -->
+                    <label class="flex flex-col items-center gap-3 cursor-pointer group">
+                        <span class="flex gap-2 items-center font-semibold text-gray-800">
+                            <div class="custom-checkbox" [class.checked]="isArchitectureSelected('traditionnelle')">
+                                <div class="checkmark" *ngIf="isArchitectureSelected('traditionnelle')"></div>
+                            </div>
+                            Traditionnelle
+                        </span>
+                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('traditionnelle')" (change)="toggleArchitecture('traditionnelle')">
+                        <div class="relative w-40 h-40 rounded-xl overflow-hidden border-4 transition-all"
+                             [class.border-[#5EC50A]]="isArchitectureSelected('traditionnelle')"
+                             [class.border-transparent]="!isArchitectureSelected('traditionnelle')">
+                            <img src="./assets/house_architecture/traditional_architecture.svg" class="w-full h-full object-cover transition-transform group-hover:scale-110" alt="traditionnelle">
+                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all"></div>
+                        </div>
+                    </label>
+
+                    <!-- Moderne -->
+                    <label class="flex flex-col items-center gap-3 cursor-pointer group">
+                        <span class="flex gap-2 items-center font-semibold text-gray-800">
+                            <div class="custom-checkbox" [class.checked]="isArchitectureSelected('moderne')">
+                                <div class="checkmark" *ngIf="isArchitectureSelected('moderne')"></div>
+                            </div>
+                            Moderne
+                        </span>
+                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('moderne')" (change)="toggleArchitecture('moderne')">
+                        <div class="relative w-40 h-40 rounded-xl overflow-hidden border-4 transition-all"
+                             [class.border-[#5EC50A]]="isArchitectureSelected('moderne')"
+                             [class.border-transparent]="!isArchitectureSelected('moderne')">
+                            <img src="./assets/house_architecture/modern_architecture.svg" class="w-full h-full object-cover transition-transform group-hover:scale-110" alt="moderne">
+                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all"></div>
+                        </div>
+                    </label>
+
+                    <!-- Contemporaine -->
+                    <label class="flex flex-col items-center gap-3 cursor-pointer group">
+                        <span class="flex gap-2 items-center font-semibold text-gray-800">
+                            <div class="custom-checkbox" [class.checked]="isArchitectureSelected('contemporaine')">
+                                <div class="checkmark" *ngIf="isArchitectureSelected('contemporaine')"></div>
+                            </div>
+                            Contemporaine
+                        </span>
+                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('contemporaine')" (change)="toggleArchitecture('contemporaine')">
+                        <div class="relative w-40 h-40 rounded-xl overflow-hidden border-4 transition-all"
+                             [class.border-[#5EC50A]]="isArchitectureSelected('contemporaine')"
+                             [class.border-transparent]="!isArchitectureSelected('contemporaine')">
+                            <img src="./assets/house_architecture/luxial_architecture.svg" class="w-full h-full object-cover transition-transform group-hover:scale-110" alt="contemporaine">
+                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all"></div>
+                        </div>
+                    </label>
+
+                    <!-- Futuriste -->
+                    <label class="flex flex-col items-center gap-3 cursor-pointer group">
+                        <span class="flex gap-2 items-center font-semibold text-gray-800">
+                            <div class="custom-checkbox" [class.checked]="isArchitectureSelected('futuriste')">
+                                <div class="checkmark" *ngIf="isArchitectureSelected('futuriste')"></div>
+                            </div>
+                            Futuriste
+                        </span>
+                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('futuriste')" (change)="toggleArchitecture('futuriste')">
+                        <div class="relative w-40 h-40 rounded-xl overflow-hidden border-4 transition-all"
+                             [class.border-[#5EC50A]]="isArchitectureSelected('futuriste')"
+                             [class.border-transparent]="!isArchitectureSelected('futuriste')">
+                            <img src="./assets/house_architecture/futurist_architecture.svg" class="w-full h-full object-cover transition-transform group-hover:scale-110" alt="futuriste">
+                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all"></div>
+                        </div>
+                    </label>
                 </div>
+            </div>
+
+            <div class="flex flex-col gap-2  md:col-span-2">
+                <label class="font-medium text-gray-700">Matériaux de construction</label>
+                <app-custom-select formControlName="materiaux" 
+                    [options]="options.materiaux" 
+                    placeholder="Quel matériaux de construction souhaitez-vous avoir?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
 
             <div class="flex flex-col gap-2">
                 <label class="font-medium text-gray-700">Style de construction</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quel style de construction souhaitez-vous avoir?</option>
-                    <option value="minimaliste">Minimaliste</option>
-                    <option value="industriel">Industriel</option>
-                    <option value="scandinave">Scandinave</option>
-                </select>
+                <app-custom-select formControlName="style_construction" 
+                    [options]="options.styleConstruction" 
+                    placeholder="Quel style de construction souhaitez-vous avoir?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
 
             <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Matériaux de construction</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quel matériaux de construction souhaitez-vous avoir?</option>
-                    <option value="beton">Béton Armé</option>
-                    <option value="brique_terre">Briques de terre stabilisée</option>
-                    <option value="bois">Bois / Éco-matériaux</option>
-                </select>
+                <label class="font-medium text-gray-700">Espace et annexe</label>
+                <app-custom-select formControlName="espace_annexe" 
+                    [options]="options.espaceAnnexe" 
+                    placeholder="Quel space annexe souhaitez vous ajouter?"
+                    [multiple]="true">
+                </app-custom-select>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="font-medium text-gray-700">Configuration du nombre d’étage</label>
+                <input type="number" formControlName="nombre_etages"
+                    class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                    placeholder="nombre d’étage souhaité">
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="font-medium text-gray-700">Configuration du nombre de sous sol</label>
+                <input type="number" formControlName="nombre_sous_sol"
+                    class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all" 
+                    placeholder="nombre de sous sol souhaité">
             </div>
 
             <div class="flex flex-col gap-2">
                 <label class="font-medium text-gray-700">Type de toiture</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quel type de toiture souhaitez-vous avoir?</option>
-                    <option value="terrasse">Dalle / Terrasse</option>
-                    <option value="toles">Tôles Bac / Ondulées</option>
-                    <option value="tuiles">Tuiles</option>
-                </select>
+                <app-custom-select formControlName="type_toiture" 
+                    [options]="options.typeToiture" 
+                    placeholder="Quel type de toiture souhaitez-vous avoir?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
 
             <div class="flex flex-col gap-2">
                 <label class="font-medium text-gray-700">Habillage des façades</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quel Habillage des façades souhaitez-vous avoir?</option>
-                    <option value="peinture">Peinture simple</option>
-                    <option value="pierre">Pierres naturelles</option>
-                    <option value="composite">Bardage composite</option>
-                </select>
+                <app-custom-select formControlName="habillage_facade" 
+                    [options]="options.habillageFacade" 
+                    placeholder="Quel Habillage des façades souhaitez-vous avoir?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
 
             <div class="flex flex-col gap-2">
                 <label class="font-medium text-gray-700">Menuiserie</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quel style de menuiserie souhaitez-vous avoir?</option>
-                    <option value="alu">Aluminium</option>
-                    <option value="bois_massif">Bois Massif</option>
-                    <option value="pvc">PVC</option>
-                </select>
+                <app-custom-select formControlName="menuiserie" 
+                    [options]="options.menuiserie" 
+                    placeholder="Quel style de menuiserie souhaitez-vous avoir?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
 
             <div class="flex flex-col gap-2">
                 <label class="font-medium text-gray-700">Sécurisation des ouvertures</label>
-                <select class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all appearance-none cursor-pointer pr-10 bg-no-repeat bg-[length:1.2em] bg-[position:right_12px_center]"
-                    style="background-image: url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2F2000%2Fsvg%22 fill%3D%22none%22 viewBox%3D%220 0 24 24%22 stroke%3D%22%236B7280%22 stroke-width%3D%222%22%3E%3Cpath stroke-linecap%3D%22round%3D%22 stroke-linejoin%3D%22round%22 d%3D%22M19 9l-7 7-7-7%22%2F%3E%3C%2Fsvg%3E');">
-                    <option value="" disabled selected>Quelle sécurisation des ouvertures souhaitez-vous avoir?</option>
-                    <option value="grilles">Grilles de protection</option>
-                    <option value="volets">Volets roulants</option>
-                    <option value="alarme">Système d'alarme / Caméras</option>
-                </select>
+                <app-custom-select formControlName="securisation_ouvertures" 
+                    [options]="options.securisationOuvertures" 
+                    placeholder="Quelle sécurisation des ouvertures souhaitez-vous avoir?"
+                    [multiple]="true">
+                </app-custom-select>
             </div>
         </div>
     </div>
+    <article class="flex justify-between mt-12 pb-20">
+        <button type="button" (click)="prev.emit()" 
+                class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">
+            Précédent
+        </button>
+        
+        <button type="submit" 
+                class="px-8 py-3 rounded-lg bg-[#56CB4E] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#3FAE38] transition-all transform active:scale-95">
+            Suivant
+        </button>
+    </article>
 </form>
