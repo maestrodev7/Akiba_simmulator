@@ -1,56 +1,111 @@
-        <div class="flex flex-col items-center gap-10 animate-fadeIn min-h-[200px]">
-
-        <div class="bg-[#EFE3D8] text-[#8D5E32] px-4 py-1 rounded-md font-bold text-sm">
-            {{ currentQuestionIndex + 1 }}/{{ questions.length }}
-        </div>
-
-        <h2 class="text-2xl font-medium text-[#070707] text-center max-w-lg">
-            {{ currentQuestion.label }}
-        </h2>
-
-        <div class="flex items-center gap-8 md:gap-16">
-            
-            <button (click)="prevQuestion()" 
-                    [disabled]="currentQuestionIndex === 0"
-                    class="p-4 rounded-full bg-[#F5F5F5] hover:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-gray-600">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                </svg>
-            </button>
-
-            <div class="flex items-center bg-[#F5F5F5] rounded-xl p-2 min-w-[180px] justify-between shadow-sm">
-                <button (click)="updateValue(-1)" 
-                        class="w-12 h-12 flex items-center justify-center text-2xl font-bold text-gray-600 hover:text-black transition-colors">
-                    <span class="mb-1">−</span>
-                </button>
-                
-                <span class="text-2xl font-bold text-[#070707] w-12 text-center">
-                    {{ currentQuestion.value }}
-                </span>
-
-                <button (click)="updateValue(1)" 
-                        class="w-12 h-12 flex items-center justify-center text-2xl font-bold text-gray-600 hover:text-black transition-colors">
-                    <span class="mb-1">+</span>
-                </button>
+<div class="flex flex-col items-center gap-10 animate-fadeIn min-h-[200px] w-full max-w-4xl mx-auto">
+    
+    <ng-container *ngIf="!isLoading; else loadingTemplate">
+        <!-- Question Slide -->
+        <ng-container *ngIf="!isAddingPiece && questions.length > 0">
+            <div class="bg-[#EFE3D8] text-[#8D5E32] px-4 py-1 rounded-md font-bold text-sm">
+                {{ currentQuestionIndex + 1 }}/{{ questions.length }}
             </div>
 
-            <button (click)="nextQuestion()" 
-                    [disabled]="currentQuestionIndex === questions.length - 1"
-                    class="p-4 rounded-full bg-[#F5F5F5] hover:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-6 h-6 text-gray-600">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
-            </button>
-        </div>
+            <h2 class="text-2xl font-medium text-[#070707] text-center max-w-lg">
+                {{ currentQuestion?.label }}
+            </h2>
 
-        <article class="flex justify-between items-center w-full mt-12 pb-20 px-8">
-            <button type="button" (click)="prev.emit()" 
-                    class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">
-                Précédent
-            </button>
-            <button type="button" (click)="next.emit()" 
-                    class="px-8 py-3 rounded-lg bg-[#56CB4E] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#3FAE38] transition-all transform active:scale-95">
-                Suivant
-            </button>
-        </article>
-    </div>
+            <div class="flex items-center gap-8 md:gap-16">
+                <button (click)="prevQuestion()" [disabled]="currentQuestionIndex === 0"
+                    class="p-4 rounded-full bg-[#F5F5F5] hover:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-6 h-6 text-gray-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+
+                <div class="flex items-center bg-[#F5F5F5] rounded-xl p-2 min-w-[150px] justify-between shadow-sm">
+                    <button *ngIf="!isReadOnly" (click)="updateValue(-1)"
+                        class="w-12 h-12 flex items-center justify-center text-2xl font-bold text-gray-600 hover:text-black transition-colors">
+                        <span class="mb-1">−</span>
+                    </button>
+
+                    <span class="text-2xl font-bold text-[#070707] w-12 text-center" [class.w-full]="isReadOnly">
+                        {{ currentQuestion?.value }}
+                    </span>
+
+                    <button *ngIf="!isReadOnly" (click)="updateValue(1)"
+                        class="w-12 h-12 flex items-center justify-center text-2xl font-bold text-gray-600 hover:text-black transition-colors">
+                        <span class="mb-1">+</span>
+                    </button>
+                </div>
+
+                <button (click)="nextQuestion()"
+                    class="p-4 rounded-full bg-[#F5F5F5] hover:bg-gray-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-6 h-6 text-gray-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </button>
+            </div>
+        </ng-container>
+
+        <!-- Custom Piece Slide -->
+        <ng-container *ngIf="isAddingPiece && !isReadOnly">
+            <div class="flex flex-col md:flex-row gap-8 w-full items-end justify-center relative">
+                <!-- Back Arrow -->
+                <button (click)="prevQuestion()" 
+                    class="absolute -left-12 top-1/2 -translate-y-1/2 p-4 rounded-full bg-[#F5F5F5] hover:bg-gray-200 transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-6 h-6 text-gray-600">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+
+                <div class="flex flex-col gap-2 flex-1 max-w-[300px]">
+                    <label class="text-lg font-medium text-[#070707]">Nom de la pièce</label>
+                    <input type="text" [(ngModel)]="newPieceName" placeholder="Entrez le nom de la pièce"
+                        class="px-5 py-4 rounded-xl bg-[#F5F5F5] border-none focus:ring-2 focus:ring-[#B27D4B] outline-none text-gray-700 placeholder-gray-400">
+                </div>
+
+                <div class="flex flex-col gap-2 flex-1 max-w-[300px]">
+                    <label class="text-lg font-medium text-[#070707]">Superficie</label>
+                    <input type="number" [(ngModel)]="newPieceSurface" placeholder="Entrez la superficie de la pièce en m²"
+                        class="px-5 py-4 rounded-xl bg-[#F5F5F5] border-none focus:ring-2 focus:ring-[#B27D4B] outline-none text-gray-700 placeholder-gray-400">
+                </div>
+
+                <button (click)="createCustomPiece()" [disabled]="!newPieceName || !newPieceSurface || isCreatingPiece"
+                    class="px-8 py-4 rounded-xl bg-[#B27D4B] text-white font-semibold flex items-center gap-2 hover:bg-[#96693F] transition-all disabled:opacity-50">
+                    <span *ngIf="!isCreatingPiece">+ Ajouter</span>
+                    <span *ngIf="isCreatingPiece" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                </button>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="questions.length === 0 && !isAddingPiece">
+            <div class="flex flex-col items-center gap-4 py-10 text-center">
+                <p class="text-gray-500 font-medium">Aucune pièce disponible pour le moment.</p>
+            </div>
+        </ng-container>
+    </ng-container>
+
+    <ng-template #loadingTemplate>
+        <div class="flex flex-col items-center gap-4 py-10">
+            <div class="w-12 h-12 border-4 border-[#EFE3D8] border-t-[#8D5E32] rounded-full animate-spin"></div>
+            <p class="text-gray-500 font-medium">Chargement...</p>
+        </div>
+    </ng-template>
+
+    <article *ngIf="!isReadOnly" class="flex justify-between items-center w-full mt-12 pb-20 px-8">
+        <button type="button" (click)="prevStep()"
+            class="px-10 py-4 rounded-xl bg-[#E5E5E5] text-gray-700 font-bold hover:bg-gray-300 transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+            </svg>
+            Précédent
+        </button>
+        <button type="button" (click)="nextStep()" [disabled]="isLoading || questions.length === 0"
+            class="px-12 py-4 rounded-xl bg-[#B27D4B] text-white font-bold shadow-lg hover:shadow-xl hover:bg-[#96693F] transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+            Suivant
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+        </button>
+    </article>
+</div>

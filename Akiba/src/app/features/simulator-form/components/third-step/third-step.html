@@ -1,4 +1,4 @@
-<form class="flex flex-col gap-10 animate-fadeIn">
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-10 animate-fadeIn">
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="flex flex-col gap-3">
@@ -9,9 +9,12 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                     </svg>
                 </div>
-                <input type="date" 
+                <input type="date" formControlName="date_debut_travaux"
                     class="w-full p-4 pl-12 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all text-gray-500 appearance-none uppercase text-sm tracking-widest"
                     placeholder="12/12/2020">
+            </div>
+            <div *ngIf="submitted && form.get('date_debut_travaux')?.invalid" class="text-red-500 text-sm mt-1">
+                La date de début est requise.
             </div>
         </div>
 
@@ -23,20 +26,23 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                     </svg>
                 </div>
-                <input type="date" 
+                <input type="date" formControlName="date_fin_travaux"
                     class="w-full p-4 pl-12 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all text-gray-500 appearance-none uppercase text-sm tracking-widest"
                     placeholder="12/12/2020">
+            </div>
+            <div *ngIf="submitted && form.get('date_fin_travaux')?.invalid" class="text-red-500 text-sm mt-1">
+                La date de fin est requise.
             </div>
         </div>
     </div>
 
-    <article class="flex justify-between mt-12 pb-20">
-        <button type="button" (click)="prev.emit()" 
+    <article *ngIf="!isReadOnly" class="flex justify-between mt-12 pb-20">
+        <button type="button" (click)="prevStep()" 
                 class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">
             Précédent
         </button>
         
-        <button type="button" (click)="next.emit()" 
+        <button type="submit" 
                 class="px-8 py-3 rounded-lg bg-[#56CB4E] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#3FAE38] transition-all transform active:scale-95">
             Suivant
         </button>

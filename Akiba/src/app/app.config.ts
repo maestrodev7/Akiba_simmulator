@@ -1,13 +1,15 @@
 import { ApplicationConfig, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, PreloadAllModules, withPreloading } from '@angular/router';
+import { provideHttpClient, withFetch } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-import { PreloadAllModules, withPreloading } from '@angular/router';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes,withPreloading(PreloadAllModules)), provideClientHydration(withEventReplay())
+    provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideHttpClient(withFetch()),
+    provideClientHydration(withEventReplay())
   ]
 };

@@ -1,5 +1,6 @@
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -10,6 +11,10 @@ import { Component, EventEmitter, Output } from '@angular/core';
   styleUrl: './sixth-step.css',
 })
 export class SixthStep {
-  @Output() prev = new EventEmitter<void>();
-  pay_method : "CARD"|"MOBILE"="CARD"
+  private router = inject(Router);
+  pay_method: "CARD" | "MOBILE" = "CARD"
+
+  prevStep() {
+    this.router.navigate(['/votre-projet/fifth-step']);
+  }
 }

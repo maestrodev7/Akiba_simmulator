@@ -16,4 +16,12 @@ export class YourProject {
   saveStepTwoDraft(data: any): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/simulator/draft/save-step`, data);
   }
+
+  getPieces(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/pieces`);
+  }
+
+  createPiece(data: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/pieces`, data);
+  }
 }
