@@ -1,36 +1,45 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-2">
     <label for="nom">Nom(s)</label>
-    <input type="text" id="nom" formControlName="nom" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre nom(s)">
+    <input type="text" id="nom" formControlName="nom"
+        class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg focus:outline-2 focus:outline-[#56CB4E]"
+        placeholder="Entrez votre nom(s)">
     <app-error-message [message]="getErrorMessage('nom')"></app-error-message>
 
     <label for="prenom">Prénom(s)</label>
-    <input type="text" id="prenom" formControlName="prenom" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre prénom(s)">
+    <input type="text" id="prenom" formControlName="prenom"
+        class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg focus:outline-2 focus:outline-[#56CB4E]"
+        placeholder="Entrez votre prénom(s)">
     <app-error-message [message]="getErrorMessage('prenom')"></app-error-message>
 
     <label for="email">E-mail</label>
-    <input type="email" id="email" formControlName="email" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre e-mail">
+    <input type="email" id="email" formControlName="email"
+        class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg focus:outline-2 focus:outline-[#56CB4E]"
+        placeholder="Entrez votre e-mail">
     <app-error-message [message]="getErrorMessage('email')"></app-error-message>
 
     <label for="telephone">Téléphone</label>
-    <input type="text" id="telephone" formControlName="telephone" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre téléphone">
+    <input type="text" id="telephone" formControlName="telephone"
+        class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg focus:outline-2 focus:outline-[#56CB4E]"
+        placeholder="Entrez votre téléphone">
     <app-error-message [message]="getErrorMessage('telephone')"></app-error-message>
 
     <label for="adresse">Adresse</label>
-    <input type="text" id="adresse" formControlName="adresse" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre adresse">
+    <input type="text" id="adresse" formControlName="adresse"
+        class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg focus:outline-2 focus:outline-[#56CB4E]"
+        placeholder="Entrez votre adresse">
     <app-error-message [message]="getErrorMessage('adresse')"></app-error-message>
 
-    <label for="numero_registre">Numéro de registre</label>
+    <!-- <label for="numero_registre">Numéro de registre</label>
     <input type="text" id="numero_registre" formControlName="numero_registre" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre numéro de registre">
-    <app-error-message [message]="getErrorMessage('numero_registre')"></app-error-message>
-    <article class="flex justify-between mt-12">
-        <button type="button" (click)="prev.emit()" 
-                disabled
-                class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold opacity-30 cursor-not-allowed">
+    <app-error-message [message]="getErrorMessage('numero_registre')"></app-error-message> -->
+    <article *ngIf="!isReadOnly" class="flex justify-between mt-12">
+        <button type="button" disabled
+            class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold opacity-30 cursor-not-allowed">
             Précédent
         </button>
-        
-        <button type="button" (click)="onSubmit()" 
-                class="px-8 py-3 rounded-lg bg-[#56CB4E] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#3FAE38] transition-all transform active:scale-95">
+
+        <button type="button" (click)="onSubmit()"
+            class="px-8 py-3 rounded-lg bg-[#56CB4E] text-white font-semibold shadow-lg hover:shadow-xl hover:bg-[#3FAE38] transition-all transform active:scale-95">
             Suivant
         </button>
     </article>

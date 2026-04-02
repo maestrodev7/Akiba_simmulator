@@ -1,17 +1,17 @@
 export interface projectData {
-    client_id?:string;
-    terrain_id?:string;
-    produit_id?:string;
-    stepOne?:stepOneForm;
-    stepTwo?:stepTwoForm;
-    stepThree?:stepThreeForm;
-    stepFour?:stepFourForm;
-    stepFive?:stepFiveForm;
-    stepSix?:stepSixForm;
-    stepSeven?:stepSevenForm;
-    stepEight?:stepEightForm;
-    stepNine?:stepNineForm;
-    stepTen?:stepTenForm;
+  client_id?: string;
+  terrain_id?: string;
+  produit_id?: string;
+  stepOne?: stepOneForm;
+  stepTwo?: stepTwoForm;
+  stepThree?: stepThreeForm;
+  stepFour?: stepFourForm;
+  stepFive?: stepFiveForm;
+  stepSix?: stepSixForm;
+  stepSeven?: stepSevenForm;
+  stepEight?: stepEightForm;
+  stepNine?: stepNineForm;
+  stepTen?: stepTenForm;
 }
 
 export interface stepOneForm {
@@ -63,33 +63,46 @@ export interface stepTwoForm {
 }
 
 export interface stepThreeForm {
-    
+  step: 3;
+  produit_id: string;
+  data: {
+    date_debut_travaux: string;
+    date_fin_travaux: string;
+    budget_previsionnel: number;
+  }
 }
 
 export interface stepFourForm {
-    
+  step: 4;
+  produit_id: string;
+  data: {
+    lignes: {
+      piece_id: string;
+      nombre: number;
+    }[];
+  }
 }
 
 export interface stepFiveForm {
-    
+
 }
 
 export interface stepSixForm {
-    
+
 }
 
 export interface stepSevenForm {
-    
+
 }
 
 export interface stepEightForm {
-    
+
 }
 
 export interface stepNineForm {
-    
+
 }
 
 export interface stepTenForm {
-    
+
 }

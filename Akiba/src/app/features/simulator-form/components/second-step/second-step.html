@@ -138,7 +138,7 @@
                             </div>
                             Traditionnelle
                         </span>
-                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('traditionnelle')" (change)="toggleArchitecture('traditionnelle')">
+                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('traditionnelle')" (change)="!isReadOnly && toggleArchitecture('traditionnelle')" [disabled]="isReadOnly">
                         <div class="relative w-40 h-40 rounded-xl overflow-hidden border-4 transition-all"
                              [class.border-[#5EC50A]]="isArchitectureSelected('traditionnelle')"
                              [class.border-transparent]="!isArchitectureSelected('traditionnelle')">
@@ -155,7 +155,7 @@
                             </div>
                             Moderne
                         </span>
-                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('moderne')" (change)="toggleArchitecture('moderne')">
+                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('moderne')" (change)="!isReadOnly && toggleArchitecture('moderne')" [disabled]="isReadOnly">
                         <div class="relative w-40 h-40 rounded-xl overflow-hidden border-4 transition-all"
                              [class.border-[#5EC50A]]="isArchitectureSelected('moderne')"
                              [class.border-transparent]="!isArchitectureSelected('moderne')">
@@ -172,7 +172,7 @@
                             </div>
                             Contemporaine
                         </span>
-                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('contemporaine')" (change)="toggleArchitecture('contemporaine')">
+                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('contemporaine')" (change)="!isReadOnly && toggleArchitecture('contemporaine')" [disabled]="isReadOnly">
                         <div class="relative w-40 h-40 rounded-xl overflow-hidden border-4 transition-all"
                              [class.border-[#5EC50A]]="isArchitectureSelected('contemporaine')"
                              [class.border-transparent]="!isArchitectureSelected('contemporaine')">
@@ -189,7 +189,7 @@
                             </div>
                             Futuriste
                         </span>
-                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('futuriste')" (change)="toggleArchitecture('futuriste')">
+                        <input type="checkbox" class="hidden" [checked]="isArchitectureSelected('futuriste')" (change)="!isReadOnly && toggleArchitecture('futuriste')" [disabled]="isReadOnly">
                         <div class="relative w-40 h-40 rounded-xl overflow-hidden border-4 transition-all"
                              [class.border-[#5EC50A]]="isArchitectureSelected('futuriste')"
                              [class.border-transparent]="!isArchitectureSelected('futuriste')">
@@ -278,8 +278,8 @@
             </div>
         </div>
     </div>
-    <article class="flex justify-between mt-12 pb-20">
-        <button type="button" (click)="prev.emit()" 
+    <article *ngIf="!isReadOnly" class="flex justify-between mt-12 pb-20">
+        <button type="button" (click)="prevStep()" 
                 class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">
             Précédent
         </button>

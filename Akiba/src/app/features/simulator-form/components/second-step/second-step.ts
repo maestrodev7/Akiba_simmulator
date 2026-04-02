@@ -1,9 +1,12 @@
-import { Component, EventEmitter, Output, inject } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CustomSelect } from '../../../../shared/components/custom-select/custom-select';
 
 import { ErrorMessage } from '../../../../shared/components/error-message/error-message';
+import { YourProject } from '../../../../services/project/your-project';
+import { ProjectData } from '../../../../services/project-data/project-data';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-second-step',
@@ -12,9 +15,11 @@ import { ErrorMessage } from '../../../../shared/components/error-message/error-
   templateUrl: './second-step.html',
   styleUrl: './second-step.css',
 })
-export class SecondStep {
-  @Output() next = new EventEmitter<FormGroup>();
-  @Output() prev = new EventEmitter<void>();
+export class SecondStep implements OnInit {
+  @Input() isReadOnly = false;
+  private projectService = inject(YourProject);
+  private projectDataService = inject(ProjectData);
+  private router = inject(Router);
 
   private fb = inject(FormBuilder);
 
@@ -28,7 +33,7 @@ export class SecondStep {
     situation: [null, [Validators.required]],
     voie_existante: [null, [Validators.required]],
     documents_fournis: [[]],
-    type_produit: [[]], 
+    type_produit: [[]],
     nature_travaux: [null, [Validators.required]],
     type_construction: [[]],
     type_architecture: [[]],
@@ -42,6 +47,16 @@ export class SecondStep {
     menuiserie: [[]],
     securisation_ouvertures: [[]],
   });
+
+  ngOnInit() {
+    const savedData = this.projectDataService.getProjectData();
+    if (savedData.stepTwo?.data) {
+      this.form.patchValue(savedData.stepTwo.data);
+    }
+    if (this.isReadOnly) {
+      this.form.disable();
+    }
+  }
 
   options = {
     statutJuridique: [
@@ -160,12 +175,46 @@ export class SecondStep {
     }
   }
 
+  prevStep() {
+    this.router.navigate(['/votre-projet']);
+  }
+
   onSubmit() {
     this.submitted = true;
-    if (this.form.invalid) {
-       this.form.markAllAsTouched();
-       return;
+    if (!this.form || this.form.invalid) {
+      this.form?.markAllAsTouched();
+      return;
     }
-    this.next.emit(this.form);
+
+    const val = this.form.value;
+    const projectData = this.projectDataService.getProjectData();
+
+    const payload: any = {
+      step: 2,
+      client_id: projectData?.client_id,
+      terrain_id: projectData?.terrain_id,
+      produit_id: projectData?.produit_id,
+      data: {
+        ...val
+      }
+    };
+
+    this.projectService.saveStepTwoDraft(payload).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.projectDataService.setProjectData({
+            ...projectData,
+            terrain_id: response.data.terrain_id,
+            produit_id: response.data.produit_id,
+            stepTwo: payload as any
+          });
+          console.log("Step 2 saved successfully", response);
+          this.router.navigate(['/votre-projet/third-step']);
+        }
+      },
+      error: (err) => {
+        console.error('Error saving step 2', err);
+      }
+    });
   }
 }

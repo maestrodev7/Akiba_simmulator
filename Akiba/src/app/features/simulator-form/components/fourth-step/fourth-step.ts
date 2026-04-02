@@ -1,55 +1,170 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { Router } from '@angular/router';
+import { YourProject } from '../../../../services/project/your-project';
+import { ProjectData } from '../../../../services/project-data/project-data';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { finalize } from 'rxjs/operators';
+
+interface Question {
+  label: string;
+  value: number;
+  key: string;
+}
 
 @Component({
   selector: 'app-fourth-step',
   standalone: true,
-  imports: [],
+  imports: [CommonModule, FormsModule],
   templateUrl: './fourth-step.html',
   styleUrl: './fourth-step.css',
 })
-export class FourthStep {
-  @Output() next = new EventEmitter<void>();
-  @Output() prev = new EventEmitter<void>();
-    // Dans votre classe SimulatorFormComponent
-  questions = [
-    { label: 'Combien de pièces de séjour voulez-vous ?', value: 1, key: 'sejour' },
-    { label: 'Combien de Salle à manger voulez-vous ?', value: 1, key: 'manger' },
-    { label: 'Combien de salon voulez-vous ?', value: 1, key: 'salon' },
-    { label: 'Combien de Cuisine voulez-vous ?', value: 1, key: 'cuisine' },
-    { label: 'Combien de Suite parentale voulez-vous ?', value: 1, key: 'suite' },
-    { label: 'Combien de Chambre voulez-vous ?', value: 1, key: 'chambre' },
-    { label: 'Combien de Toilettes voulez-vous ?', value: 1, key: 'toilettes' },
-    { label: 'Combien de WC voulez-vous ?', value: 1, key: 'wc' },
-    { label: 'Combien de Salle de bain voulez-vous ?', value: 1, key: 'sdb' },
-    { label: 'Combien de Bureau voulez-vous ?', value: 1, key: 'bureau' },
-    { label: 'Combien de Reserve voulez-vous ?', value: 1, key: 'reserve' },
-    { label: 'Combien de Véranda voulez-vous ?', value: 1, key: 'veranda' },
-    { label: 'Combien de Terrasse voulez-vous ?', value: 1, key: 'terrasse' },
-    { label: 'Combien de Balcon voulez-vous ?', value: 1, key: 'balcon' }
-  ];
+export class FourthStep implements OnInit {
+  @Input() isReadOnly = false;
+  private router = inject(Router);
+  private projectService = inject(YourProject);
+  private projectDataService = inject(ProjectData);
 
+  questions: Question[] = [];
   currentQuestionIndex = 0;
+  isLoading = false; // Start with false, set true in fetchPieces
+
+  // For custom piece creation
+  isAddingPiece = false;
+  newPieceName = '';
+  newPieceSurface: number | null = null;
+  isCreatingPiece = false;
+
+  ngOnInit() {
+    this.fetchPieces();
+  }
+
+  fetchPieces() {
+    this.isLoading = true;
+    const savedData = this.projectDataService.getProjectData();
+    const savedLignes = savedData.stepFour?.data?.lignes || [];
+
+    this.projectService.getPieces()
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (response) => {
+          if (response && response.success && Array.isArray(response.data)) {
+            this.questions = response.data.map((piece: any) => {
+              const savedPiece = savedLignes.find((l: any) => String(l.piece_id) === String(piece.id));
+              return {
+                label: `Combien de ${piece.designation} voulez-vous ?`,
+                value: savedPiece ? savedPiece.nombre : 1,
+                key: piece.id
+              };
+            });
+          } else {
+            console.warn('Invalid response from getPieces:', response);
+          }
+        },
+        error: (error) => {
+          console.error('Error fetching pieces:', error);
+        }
+      });
+  }
 
   get currentQuestion() {
-    return this.questions[this.currentQuestionIndex];
+    return (this.isAddingPiece || this.questions.length === 0) ? null : this.questions[this.currentQuestionIndex];
+  }
+
+  get allQuestionsAnswered() {
+    return this.questions.length > 0 && this.currentQuestionIndex === this.questions.length - 1;
   }
 
   nextQuestion() {
     if (this.currentQuestionIndex < this.questions.length - 1) {
       this.currentQuestionIndex++;
+    } else {
+      this.isAddingPiece = true;
     }
   }
 
   prevQuestion() {
-    if (this.currentQuestionIndex > 0) {
+    if (this.isAddingPiece) {
+      this.isAddingPiece = false;
+    } else if (this.currentQuestionIndex > 0) {
       this.currentQuestionIndex--;
     }
   }
 
   updateValue(amount: number) {
-    const newValue = this.currentQuestion.value + amount;
-    if (newValue >= 0) {
-      this.currentQuestion.value = newValue;
+    if (this.currentQuestion) {
+      const newValue = this.currentQuestion.value + amount;
+      if (newValue >= 0) {
+        this.currentQuestion.value = newValue;
+      }
     }
   }
+
+  createCustomPiece() {
+    if (!this.newPieceName || !this.newPieceSurface) return;
+
+    this.isCreatingPiece = true;
+    this.projectService.createPiece({
+      designation: this.newPieceName,
+      surface_standard: this.newPieceSurface
+    })
+    .pipe(finalize(() => this.isCreatingPiece = false))
+    .subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          const newPiece = response.data;
+          this.questions.push({
+            label: `Combien de ${newPiece.designation} voulez-vous ?`,
+            value: 1,
+            key: newPiece.id
+          });
+          // Reset custom piece form and go to that new question
+          this.newPieceName = '';
+          this.newPieceSurface = null;
+          this.isAddingPiece = false;
+          this.currentQuestionIndex = this.questions.length - 1;
+        }
+      },
+      error: (error) => {
+        console.error('Error creating piece:', error);
+      }
+    });
+  }
+
+  nextStep() {
+    const projectData = this.projectDataService.getProjectData();
+    const payload: any = {
+      step: 4,
+      produit_id: projectData.produit_id,
+      data: {
+        lignes: this.questions.map(q => ({
+          piece_id: q.key,
+          nombre: q.value
+        }))
+      }
+    };
+
+    this.isLoading = true;
+    this.projectService.saveStepDraft(payload)
+      .pipe(finalize(() => this.isLoading = false))
+      .subscribe({
+        next: (response) => {
+          if (response.success) {
+            // Save to local storage for recap
+            this.projectDataService.setProjectData({
+              stepFour: payload
+            });
+            this.router.navigate(['/votre-projet/fifth-step']);
+          }
+        },
+        error: (error) => {
+          console.error('Error saving step draft:', error);
+        }
+      });
+  }
+
+  prevStep() {
+    this.router.navigate(['/votre-projet/third-step']);
+  }
 }
+

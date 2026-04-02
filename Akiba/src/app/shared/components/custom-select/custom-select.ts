@@ -10,9 +10,9 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
     <div class="relative w-full" #container>
       <!-- Select Header -->
       <div 
-        (click)="toggleDropdown()"
+        (click)="!isDisabled && toggleDropdown()"
         class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all cursor-pointer flex items-center justify-between pr-4 min-h-[52px]"
-        [ngClass]="{'border-[#56CB4E]': isOpen}"
+        [ngClass]="{'border-[#56CB4E]': isOpen, 'opacity-60 cursor-not-allowed': isDisabled}"
       >
         <div class="flex flex-wrap gap-1">
           <span *ngIf="!hasValue" class="text-gray-400">{{ placeholder }}</span>
@@ -100,6 +100,7 @@ export class CustomSelect implements ControlValueAccessor {
 
   selectedValue: any | any[] = null;
   isOpen: boolean = false;
+  isDisabled: boolean = false;
   private elementRef = inject(ElementRef);
 
   onChange: any = () => {};
@@ -173,5 +174,9 @@ export class CustomSelect implements ControlValueAccessor {
 
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
+  }
+
+  setDisabledState(isDisabled: boolean): void {
+    this.isDisabled = isDisabled;
   }
 }
