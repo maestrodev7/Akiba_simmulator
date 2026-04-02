@@ -9,7 +9,7 @@ services:
       MYSQL_PASSWORD: akiba_password
       MYSQL_ROOT_PASSWORD: root_password
     ports:
-      - "3307:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - db-data:/var/lib/mysql
     networks:
@@ -24,8 +24,8 @@ services:
       MINIO_ROOT_USER: minioadmin
       MINIO_ROOT_PASSWORD: minioadmin123
     ports:
-      - "9000:9000" # S3 API
-      - "9001:9001" # Console
+      - "127.0.0.1:9000:9000" # S3 API
+      - "127.0.0.1:9001:9001" # Console
     volumes:
       - minio-data:/data
     networks:
@@ -63,7 +63,7 @@ services:
     env_file:
       - ./backend/.env.production
     ports:
-      - "8080:80"
+      - "127.0.0.1:8080:80"
     networks:
       - akiba-net
 
@@ -79,7 +79,7 @@ services:
     environment:
       PORT: "4000"
     ports:
-      - "4200:4000"
+      - "127.0.0.1:4200:4000"
     networks:
       - akiba-net
 

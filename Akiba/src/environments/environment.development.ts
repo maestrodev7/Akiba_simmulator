@@ -1,6 +1,6 @@
 export const environment = {
     production: false,
-    apiUrl: 'https://135.125.226.143:8080/api',
+    apiUrl: 'https://akimmo.center/api/api',
     enableDebug: true,
     version: '1.0.0-dev'
 };
