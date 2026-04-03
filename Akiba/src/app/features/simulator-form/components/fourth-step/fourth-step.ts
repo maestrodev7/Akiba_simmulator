@@ -1,10 +1,11 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { finalize } from 'rxjs/operators';
+import { finalize, timeout, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 interface Question {
   label: string;
@@ -27,7 +28,7 @@ export class FourthStep implements OnInit {
 
   questions: Question[] = [];
   currentQuestionIndex = 0;
-  isLoading = false; // Start with false, set true in fetchPieces
+  isLoading = signal<boolean>(false);
 
   // For custom piece creation
   isAddingPiece = false;
@@ -40,21 +41,29 @@ export class FourthStep implements OnInit {
   }
 
   fetchPieces() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     const savedData = this.projectDataService.getProjectData();
     const savedLignes = savedData.stepFour?.data?.lignes || [];
 
     this.projectService.getPieces()
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(
+        timeout(10000),
+        catchError(error => {
+          console.error('Request timed out or failed in fetchPieces:', error);
+          return of({ success: false, data: [] });
+        }),
+        finalize(() => this.isLoading.set(false))
+      )
       .subscribe({
         next: (response) => {
           if (response && response.success && Array.isArray(response.data)) {
             this.questions = response.data.map((piece: any) => {
-              const savedPiece = savedLignes.find((l: any) => String(l.piece_id) === String(piece.id));
+              const piece_id = piece.id || piece.key;
+              const savedPiece = savedLignes.find((l: any) => String(l.piece_id) === String(piece_id));
               return {
                 label: `Combien de ${piece.designation} voulez-vous ?`,
                 value: savedPiece ? savedPiece.nombre : 1,
-                key: piece.id
+                key: piece_id
               };
             });
           } else {
@@ -63,6 +72,7 @@ export class FourthStep implements OnInit {
         },
         error: (error) => {
           console.error('Error fetching pieces:', error);
+          this.isLoading.set(false);
         }
       });
   }
@@ -108,27 +118,27 @@ export class FourthStep implements OnInit {
       designation: this.newPieceName,
       surface_standard: this.newPieceSurface
     })
-    .pipe(finalize(() => this.isCreatingPiece = false))
-    .subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          const newPiece = response.data;
-          this.questions.push({
-            label: `Combien de ${newPiece.designation} voulez-vous ?`,
-            value: 1,
-            key: newPiece.id
-          });
-          // Reset custom piece form and go to that new question
-          this.newPieceName = '';
-          this.newPieceSurface = null;
-          this.isAddingPiece = false;
-          this.currentQuestionIndex = this.questions.length - 1;
+      .pipe(finalize(() => this.isCreatingPiece = false))
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            const newPiece = response.data;
+            this.questions.push({
+              label: `Combien de ${newPiece.designation} voulez-vous ?`,
+              value: 1,
+              key: newPiece.id
+            });
+            // Reset custom piece form and go to that new question
+            this.newPieceName = '';
+            this.newPieceSurface = null;
+            this.isAddingPiece = false;
+            this.currentQuestionIndex = this.questions.length - 1;
+          }
+        },
+        error: (error) => {
+          console.error('Error creating piece:', error);
         }
-      },
-      error: (error) => {
-        console.error('Error creating piece:', error);
-      }
-    });
+      });
   }
 
   nextStep() {
@@ -144,9 +154,16 @@ export class FourthStep implements OnInit {
       }
     };
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.projectService.saveStepDraft(payload)
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(
+        timeout(10000),
+        catchError(error => {
+          console.error('Request timed out or failed in nextStep:', error);
+          return of({ success: false });
+        }),
+        finalize(() => this.isLoading.set(false))
+      )
       .subscribe({
         next: (response) => {
           if (response.success) {
@@ -159,6 +176,7 @@ export class FourthStep implements OnInit {
         },
         error: (error) => {
           console.error('Error saving step draft:', error);
+          this.isLoading.set(false);
         }
       });
   }
@@ -167,4 +185,3 @@ export class FourthStep implements OnInit {
     this.router.navigate(['/votre-projet/third-step']);
   }
 }
-
