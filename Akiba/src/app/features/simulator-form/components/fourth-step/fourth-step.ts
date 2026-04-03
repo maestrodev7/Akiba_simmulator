@@ -34,7 +34,7 @@ export class FourthStep implements OnInit {
   isAddingPiece = false;
   newPieceName = '';
   newPieceSurface: number | null = null;
-  isCreatingPiece = false;
+  isCreatingPiece = signal<boolean>(false);
 
   ngOnInit() {
     this.fetchPieces();
@@ -113,12 +113,12 @@ export class FourthStep implements OnInit {
   createCustomPiece() {
     if (!this.newPieceName || !this.newPieceSurface) return;
 
-    this.isCreatingPiece = true;
+    this.isCreatingPiece.set(true);
     this.projectService.createPiece({
       designation: this.newPieceName,
       surface_standard: this.newPieceSurface
     })
-      .pipe(finalize(() => this.isCreatingPiece = false))
+      .pipe(finalize(() => this.isCreatingPiece.set(false)))
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
