@@ -1,6 +1,7 @@
 <?php
 
 use App\Presentation\Http\Controller\Api\ClientController;
+use App\Presentation\Http\Controller\Api\AdminAuthController;
 use App\Presentation\Http\Controller\Api\PieceController;
 use App\Presentation\Http\Controller\Api\ProduitController;
 use App\Presentation\Http\Controller\Api\ProgrammeController;
@@ -8,6 +9,12 @@ use App\Presentation\Http\Controller\Api\SimulationController;
 use App\Presentation\Http\Controller\Api\SimulatorDraftController;
 use App\Presentation\Http\Controller\Api\TerrainController;
 use Illuminate\Support\Facades\Route;
+
+Route::prefix('admin')->group(function (): void {
+    Route::post('register', [AdminAuthController::class, 'register']);
+    Route::post('login', [AdminAuthController::class, 'login']);
+    Route::middleware('jwt')->get('me', [AdminAuthController::class, 'me']);
+});
 
 Route::apiResource('clients', ClientController::class);
 Route::prefix('simulator')->group(function (): void {
