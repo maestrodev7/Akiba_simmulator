@@ -83,6 +83,20 @@ services:
     networks:
       - akiba-net
 
+  dashboard:
+    build:
+      context: ./Dashboard_Akiba
+      dockerfile: Dockerfile
+    image: akiba_dashboard:latest
+    container_name: akiba_dashboard
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "127.0.0.1:4300:4173"
+    networks:
+      - akiba-net
+
 networks:
   akiba-net:
     name: akiba-net
