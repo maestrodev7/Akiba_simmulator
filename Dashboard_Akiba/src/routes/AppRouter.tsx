@@ -1,8 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router'
-import Login from '../pages/login/Login'
-import DemandList from '../pages/demand/DemandList'
-import DemandDetail from '../pages/demand/DemandDetail'
-import DashboardLayout from '../components/layout/DashboardLayout'
+import Login from '../pages/login/Login.tsx'
+import DemandList from '../pages/demand/DemandList.tsx'
+import DemandDetail from '../pages/demand/DemandDetail.tsx'
+import DashboardLayout from '../components/layout/DashboardLayout.tsx'
 
 export default function AppRouter() {
   return (

@@ -1,19 +1,15 @@
 import inbox from "../../assets/incoming_demand.svg"
 import check from "../../assets/black_accept_demand.svg"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router";
+import { getClients } from "../../services/clientService.ts";
+import type { Client } from "../../types/client.ts";
 
 type Filter = "received" | "accepted"
 
-interface Demand {
-  id: string;
-  num_demande: string;
-  date_creation: string;
-}
-
 interface Column {
   header: string;
-  render: (item: Demand) => React.ReactNode;
+  render: (item: Client) => React.ReactNode;
   minWidth?: string;
 }
 
@@ -21,45 +17,56 @@ export default function DemandList() {
   const navigate = useNavigate();
 
   const [filter, setFilter] = useState<Filter>("received")
+  const [clients, setClients] = useState<Client[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        const response = await getClients();
+        if (response.success) {
+          setClients(response.data);
+        }
+      } catch (err) {
+        console.error("Error fetching clients:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchClients();
+  }, []);
 
   const handleFilter = (filter: Filter) => {
     setFilter(filter)
   }
 
-  // Données de test correspondant à la capture d'écran
-  const demands: Demand[] = [
-    { id: "001", num_demande: "DE-CA-AU-20250630162023450002", date_creation: "02/01/2025" },
-    { id: "002", num_demande: "DE-CA-MO-20250630163455770015", date_creation: "02/01/2025" },
-    { id: "003", num_demande: "DE-CA-AU-20250630162023450002", date_creation: "02/01/2025" },
-    { id: "004", num_demande: "DE-CA-MO-20250630163455770015", date_creation: "02/01/2025" },
-    { id: "005", num_demande: "DE-CA-AU-20250630162023450002", date_creation: "02/01/2025" },
-    { id: "006", num_demande: "DE-CA-AU-20250630162023450002", date_creation: "02/01/2025" },
-    { id: "007", num_demande: "DE-CA-MO-20250630163455770015", date_creation: "02/01/2025" },
-    { id: "008", num_demande: "DE-CA-AU-20250630162023450002", date_creation: "02/01/2025" },
-  ];
-
   const columns: Column[] = [
     {
       header: "Id",
-      render: (demand) => <span className="text-base text-[#344054] font-medium">{demand.id}</span>,
-      minWidth: "80px"
+      render: (client) => <span className="text-base text-[#344054] font-medium">{client.id}</span>,
+      minWidth: "120px"
     },
     {
-      header: "Numéro de demande",
-      render: (demand) => <span className="text-base text-[#344054]">{demand.num_demande}</span>,
-      minWidth: "300px"
+      header: "Nom du client",
+      render: (client) => <span className="text-base text-[#344054]">{client.nom} {client.prenom}</span>,
+      minWidth: "250px"
     },
     {
-      header: "Date de création",
-      render: (demand) => <span className="text-base text-[#344054]">{demand.date_creation}</span>,
-      minWidth: "200px"
+      header: "Email",
+      render: (client) => <span className="text-base text-[#344054]">{client.email}</span>,
+      minWidth: "250px"
+    },
+    {
+      header: "Téléphone",
+      render: (client) => <span className="text-base text-[#344054]">{client.telephone}</span>,
+      minWidth: "150px"
     },
     {
       header: "",
-      render: (demand) => (
+      render: (client) => (
         <button
           className="bg-[#F2F2F7] text-[#344054] px-5 py-2 rounded-lg text-sm font-semibold hover:bg-[#BB7A44] hover:text-white transition-all duration-300 shadow-sm hover:shadow-md active:scale-95"
-          onClick={() => navigate(`${demand.id}`)}
+          onClick={() => navigate(`/demand/${client.id}`)}
         >
           Consulter
         </button>
@@ -71,7 +78,7 @@ export default function DemandList() {
   return (
     <section className="space-y-4">
       <div className="flex flex-col justify-between gap-4">
-        <h1 className="text-3xl font-semibold text-[#000000]">Liste des demandes</h1>
+        <h1 className="text-3xl font-semibold text-[#000000]">Liste des Clients</h1>
 
         <div className="flex flex-wrap w-full sm:w-max p-1 bg-[#F5F5FA] rounded-[1.5rem] min-[390px]:rounded-full gap-1 min-[390px]:gap-0">
           <button
@@ -121,12 +128,18 @@ export default function DemandList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F5F5FA]">
-              {demands.length > 0 ? (
-                demands.map((demand) => (
-                  <tr key={demand.id} className="hover:bg-blue-50/30 transition-colors group">
+              {isLoading ? (
+                <tr>
+                   <td colSpan={columns.length} className="py-20 text-center text-[#8181A5]">
+                    Chargement en cours...
+                  </td>
+                </tr>
+              ) : clients.length > 0 ? (
+                clients.map((client) => (
+                  <tr key={client.id} className="hover:bg-blue-50/30 transition-colors group">
                     {columns.map((column, index) => (
                       <td key={index} className="py-3 px-6 text-sm text-[#344054]">
-                        {column.render(demand)}
+                        {column.render(client)}
                       </td>
                     ))}
                   </tr>
