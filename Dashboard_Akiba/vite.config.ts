@@ -3,6 +3,8 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import tailwindcss from '@tailwindcss/vite'
 
+const allowedHosts = ['dashboard.akimmo.center']
+
 const proxyConfig = {
   '/api-proxy': {
     target: 'https://akimmo.center',
@@ -26,9 +28,13 @@ export default defineConfig({
     tailwindcss(),
   ],
   server: {
-    proxy: proxyConfig
+    host: '0.0.0.0',
+    allowedHosts,
+    proxy: proxyConfig,
   },
   preview: {
-    proxy: proxyConfig
+    host: '0.0.0.0',
+    allowedHosts,
+    proxy: proxyConfig,
   },
 })
