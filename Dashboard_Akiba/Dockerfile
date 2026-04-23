@@ -15,6 +15,7 @@ COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev
 
 COPY --from=build /app/dist ./dist
+COPY vite.preview.config.ts ./vite.preview.config.ts
 
 EXPOSE 4173
-CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173"]
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0", "--port", "4173", "--config", "vite.preview.config.ts"]
