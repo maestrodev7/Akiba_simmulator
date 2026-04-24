@@ -4,7 +4,7 @@ import type { LoginResponse, AuthInfo } from "../types/auth";
 const USER_KEY = "user";
 
 export const login = async (payload: any): Promise<LoginResponse> => {
-    const response = await api.post<LoginResponse>("/api/admin/login", payload);
+    const response = await api.post<LoginResponse>("/admin/login", payload);
     if (response.data.success) {
         saveAuthInfo({
             accessToken: response.data.data.token,
