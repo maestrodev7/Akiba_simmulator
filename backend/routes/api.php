@@ -32,6 +32,10 @@ Route::prefix('payments')->group(function (): void {
     Route::get('status/{reference}', [PaymentController::class, 'status']);
 });
 
+Route::prefix('transactions')->group(function (): void {
+    Route::get('reference/{reference}', [PaymentController::class, 'status']);
+});
+
 Route::prefix('clients/{clientId}')->group(function (): void {
     Route::apiResource('terrains', TerrainController::class)->except(['destroy']);
 
