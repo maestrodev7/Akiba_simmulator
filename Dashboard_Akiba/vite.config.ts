@@ -10,14 +10,4 @@ export default defineConfig({
     babel({ presets: [reactCompilerPreset()] }),
     tailwindcss(),
   ],
-  server: {
-    proxy: {
-      '/api-proxy': {
-        target: 'https://akimmo.center',
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api-proxy/, '/api'),
-        secure: false,
-      }
-    }
-  }
 })

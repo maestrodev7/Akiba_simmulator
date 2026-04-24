@@ -14,9 +14,11 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
     (response) => {
+        console.log("response log intercepteur", response);
         return response;
     },
     (error) => {
+        console.log("error log intercepteur", error);
         if (error.response?.status === 401) {
             window.dispatchEvent(new CustomEvent("notification", {
                 detail: {
