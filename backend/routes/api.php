@@ -3,6 +3,7 @@
 use App\Presentation\Http\Controller\Api\ClientController;
 use App\Presentation\Http\Controller\Api\AdminAuthController;
 use App\Presentation\Http\Controller\Api\PieceController;
+use App\Presentation\Http\Controller\Api\PaymentController;
 use App\Presentation\Http\Controller\Api\ProduitController;
 use App\Presentation\Http\Controller\Api\ProgrammeController;
 use App\Presentation\Http\Controller\Api\SimulationController;
@@ -25,6 +26,15 @@ Route::prefix('simulator')->group(function (): void {
 
 Route::get('pieces', [PieceController::class, 'index']);
 Route::post('pieces', [PieceController::class, 'store']);
+
+Route::prefix('payments')->group(function (): void {
+    Route::post('deposit', [PaymentController::class, 'deposit']);
+    Route::get('status/{reference}', [PaymentController::class, 'status']);
+});
+
+Route::prefix('transactions')->group(function (): void {
+    Route::get('reference/{reference}', [PaymentController::class, 'status']);
+});
 
 Route::prefix('clients/{clientId}')->group(function (): void {
     Route::apiResource('terrains', TerrainController::class)->except(['destroy']);

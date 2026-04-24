@@ -48,3 +48,4 @@ final class PieceController extends Controller
         return ApiResponse::created($resource, 'Pièce créée.');
     }
 }
+
