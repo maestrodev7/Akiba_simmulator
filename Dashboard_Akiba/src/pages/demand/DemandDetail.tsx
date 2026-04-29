@@ -156,7 +156,7 @@ export default function DemandDetail() {
                 </div>
             </div>
 
-            {/* Actions */}
+            {/* Actions
             <div className="pt-10 flex justify-end gap-4 border-t border-gray-100">
                 <button className="px-6 py-2.5 rounded-md border border-[#BB7A44] text-[#BB7A44] font-medium hover:bg-[#BB7A44]/5 transition-colors">
                     Refuser
@@ -164,7 +164,7 @@ export default function DemandDetail() {
                 <button className="px-6 py-2.5 rounded-md bg-[#BB7A44] text-white font-medium hover:bg-[#a16b43] transition-colors shadow-sm">
                     Accepter la demande
                 </button>
-            </div>
+            </div> */}
         </section>
     );
 }
