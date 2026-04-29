@@ -25,5 +25,17 @@ final class InitiateDepositUseCase
         $accessToken = $this->paymentGateway->issueAccessTokenFromRefreshToken();
         return $this->paymentGateway->initiateDeposit($accessToken, $payload);
     }
+
+    /**
+     * @param array{
+     *   amount:float
+     * } $payload
+     * @return array<string,mixed>
+     */
+    public function executeCard(array $payload): array
+    {
+        $accessToken = $this->paymentGateway->issueAccessTokenFromRefreshToken();
+        return $this->paymentGateway->initiateCardDeposit($accessToken, $payload);
+    }
 }
 

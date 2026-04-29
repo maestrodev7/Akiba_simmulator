@@ -29,6 +29,7 @@ Route::post('pieces', [PieceController::class, 'store']);
 
 Route::prefix('payments')->group(function (): void {
     Route::post('deposit', [PaymentController::class, 'deposit']);
+    Route::post('deposit/card', [PaymentController::class, 'depositCard']);
     Route::get('status/{reference}', [PaymentController::class, 'status']);
 });
 

@@ -37,9 +37,11 @@ return [
 
     'kratospay' => [
         'base_url' => env('KRATOSPAY_BASE_URL', 'https://backendpay.kratospay.com'),
+        'card_payment_page_base_url' => env('KRATOSPAY_CARD_PAYMENT_PAGE_BASE_URL', 'https://master.kratos-travel.com/'),
         'refresh_token' => env('KRATOSPAY_REFRESH_TOKEN'),
         'payment_token' => env('KRATOSPAY_PAYMENT_TOKEN'),
         'deposit_path' => env('KRATOSPAY_DEPOSIT_PATH', '/api/wallet/public/deposit'),
+        'card_deposit_path' => env('KRATOSPAY_CARD_DEPOSIT_PATH', '/api/wallet/deposit/card'),
         'connect_timeout' => (int) env('KRATOSPAY_CONNECT_TIMEOUT', 10),
         'timeout' => (int) env('KRATOSPAY_TIMEOUT', 20),
     ],

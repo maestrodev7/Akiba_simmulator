@@ -77,6 +77,39 @@ final class KratosPayGateway implements PaymentGatewayInterface
         return $response->json();
     }
 
+    public function initiateCardDeposit(string $accessToken, array $payload): array
+    {
+        $paymentToken = (string) config('services.kratospay.payment_token', '');
+        if ($paymentToken === '') {
+            throw new RuntimeException('Configuration KratosPay manquante: payment token.');
+        }
+
+        $requestPayload = [
+            'amount' => $payload['amount'] ?? null,
+            'payment_token' => $paymentToken,
+        ];
+
+        try {
+            $response = Http::baseUrl($this->baseUrl())
+                ->acceptJson()
+                ->asJson()
+                ->connectTimeout($this->connectTimeout())
+                ->timeout($this->timeout())
+                ->withToken($accessToken)
+                ->post($this->cardDepositPath(), $requestPayload);
+        } catch (ConnectionException) {
+            throw new RuntimeException('Timeout pendant l’initiation du paiement carte chez KratosPay.');
+        }
+
+        if (!$response->successful()) {
+            $message = (string) data_get($response->json(), 'message', 'Échec du paiement carte.');
+            throw new RuntimeException($message);
+        }
+
+        /** @var array<string,mixed> */
+        return $response->json();
+    }
+
     public function getTransactionByReference(string $accessToken, string $reference): array
     {
         try {
@@ -118,6 +151,11 @@ final class KratosPayGateway implements PaymentGatewayInterface
     private function depositPath(): string
     {
         return (string) config('services.kratospay.deposit_path', '/api/wallet/public/deposit');
+    }
+
+    private function cardDepositPath(): string
+    {
+        return (string) config('services.kratospay.card_deposit_path', '/api/wallet/deposit/card');
     }
 }
 
