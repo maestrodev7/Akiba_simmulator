@@ -14,11 +14,11 @@ import { YourProject } from '../../../../services/project/your-project';
 export class SixthStep {
   private router = inject(Router);
   private projectService = inject(YourProject);
-  
+
   pay_method: "CARD" | "MOBILE" = "CARD";
-  
+
   account_number: string = '';
-  amount: number = 100;
+  amount: number = 50;
   loading: boolean = false;
 
   prevStep() {

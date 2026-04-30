@@ -16,7 +16,8 @@
     </div>
 
     <form (ngSubmit)="onSubmit()" class="w-full space-y-4">
-        <div class="w-full md:w-[70%] mx-auto space-y-4 text-lg text-center text-[#BB7A44] font-semibold">
+        <div *ngIf="pay_method=='CARD'"
+            class="w-full md:w-[70%] mx-auto space-y-4 text-lg text-center text-[#BB7A44] font-semibold">
             continue le payement avec Master card
         </div>
         <!-- <div *ngIf="pay_method=='CARD'" class="w-full md:w-[70%] mx-auto space-y-4">
