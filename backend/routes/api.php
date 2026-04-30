@@ -34,6 +34,7 @@ Route::prefix('payments')->group(function (): void {
 });
 
 Route::prefix('transactions')->group(function (): void {
+    Route::get('/', [PaymentController::class, 'index']);
     Route::get('reference/{reference}', [PaymentController::class, 'status']);
 });
 

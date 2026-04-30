@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reverb Transactions Listener</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 24px; background: #f8fafc; color: #0f172a; }
+    h1 { margin: 0 0 16px; }
+    .card { background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+    label { display: block; font-size: 12px; margin-bottom: 4px; color: #475569; }
+    input { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
+    button { padding: 8px 12px; border: none; border-radius: 6px; cursor: pointer; margin-right: 8px; }
+    .primary { background: #0ea5e9; color: white; }
+    .danger { background: #ef4444; color: white; }
+    .log { background: #0b1220; color: #cbd5e1; padding: 12px; border-radius: 6px; height: 340px; overflow: auto; white-space: pre-wrap; font-family: Consolas, monospace; font-size: 12px; }
+    .ok { color: #16a34a; }
+    .warn { color: #f59e0b; }
+    .err { color: #ef4444; }
+  </style>
+</head>
+<body>
+  <h1>Ecouteur Reverb - Transactions</h1>
+
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label for="key">REVERB_APP_KEY</label>
+        <input id="key" placeholder="ex: app-key" />
+      </div>
+      <div>
+        <label for="host">Host</label>
+        <input id="host" value="127.0.0.1" />
+      </div>
+      <div>
+        <label for="port">Port</label>
+        <input id="port" value="8080" />
+      </div>
+      <div>
+        <label for="scheme">Scheme</label>
+        <input id="scheme" value="http" />
+      </div>
+      <div>
+        <label for="channel">Channel</label>
+        <input id="channel" value="transactions" />
+      </div>
+      <div>
+        <label for="event">Event</label>
+        <input id="event" value="transaction.status.updated" />
+      </div>
+    </div>
+    <div style="margin-top: 12px;">
+      <button id="connectBtn" class="primary">Connecter</button>
+      <button id="disconnectBtn" class="danger">Deconnecter</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div id="log" class="log"></div>
+  </div>
+
+  <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+  <script>
+    let pusher = null;
+    let channel = null;
+
+    const logEl = document.getElementById("log");
+    const connectBtn = document.getElementById("connectBtn");
+    const disconnectBtn = document.getElementById("disconnectBtn");
+
+    function stamp() {
+      return new Date().toLocaleTimeString();
+    }
+
+    function log(message, level) {
+      const line = document.createElement("div");
+      if (level === "ok") line.className = "ok";
+      if (level === "warn") line.className = "warn";
+      if (level === "err") line.className = "err";
+      line.textContent = "[" + stamp() + "] " + message;
+      logEl.appendChild(line);
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+
+    function disconnect() {
+      if (channel) {
+        channel.unbind_all();
+        channel = null;
+      }
+      if (pusher) {
+        pusher.disconnect();
+        pusher = null;
+      }
+      log("Deconnecte.", "warn");
+    }
+
+    connectBtn.addEventListener("click", function () {
+      disconnect();
+
+      const key = document.getElementById("key").value.trim();
+      const host = document.getElementById("host").value.trim();
+      const port = Number(document.getElementById("port").value.trim());
+      const scheme = document.getElementById("scheme").value.trim().toLowerCase();
+      const channelName = document.getElementById("channel").value.trim();
+      const eventName = document.getElementById("event").value.trim();
+
+      if (!key) {
+        log("REVERB_APP_KEY est requis.", "err");
+        return;
+      }
+
+      const useTLS = scheme === "https";
+
+      pusher = new Pusher(key, {
+        wsHost: host,
+        wsPort: port,
+        wssPort: port,
+        forceTLS: useTLS,
+        enabledTransports: ["ws", "wss"],
+        disableStats: true,
+      });
+
+      pusher.connection.bind("connected", function () {
+        log("WebSocket connecte.", "ok");
+      });
+      pusher.connection.bind("error", function (error) {
+        log("Erreur connection: " + JSON.stringify(error), "err");
+      });
+      pusher.connection.bind("disconnected", function () {
+        log("WebSocket deconnecte.", "warn");
+      });
+
+      channel = pusher.subscribe(channelName);
+
+      channel.bind("pusher:subscription_succeeded", function () {
+        log("Abonne au canal: " + channelName, "ok");
+      });
+
+      channel.bind(eventName, function (payload) {
+        log("Evenement recu (" + eventName + "): " + JSON.stringify(payload));
+      });
+
+      log("Connexion en cours...", "warn");
+    });
+
+    disconnectBtn.addEventListener("click", disconnect);
+  </script>
+</body>
+</html>

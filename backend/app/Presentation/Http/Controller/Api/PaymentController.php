@@ -98,6 +98,18 @@ final class PaymentController extends Controller
         ], 'Paiement carte initié.');
     }
 
+    public function index(Request $request): JsonResponse
+    {
+        $perPage = (int) $request->query('per_page', 20);
+        $perPage = min(max($perPage, 1), 100);
+
+        $paginator = PaymentTransaction::query()
+            ->orderByDesc('updated_at')
+            ->paginate($perPage);
+
+        return ApiResponse::fromPaginator($paginator);
+    }
+
     public function status(string $reference): JsonResponse
     {
         if ($reference === '') {
