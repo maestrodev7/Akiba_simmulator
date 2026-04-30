@@ -24,4 +24,12 @@ export class YourProject {
   createPiece(data: any): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/pieces`, data);
   }
+
+  depositMobile(payload: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/payments/deposit`, payload);
+  }
+
+  depositCard(payload: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/payments/deposit/card`, payload);
+  }
 }
