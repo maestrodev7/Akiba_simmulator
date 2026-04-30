@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Domain\Client\Repository\ClientRepositoryInterface;
+use App\Domain\Payment\Repository\PaymentGatewayInterface;
 use App\Domain\Piece\Repository\PieceRepositoryInterface;
 use App\Domain\Produit\Repository\ProduitRepositoryInterface;
 use App\Domain\Programme\Repository\ProgrammeRepositoryInterface;
 use App\Domain\Terrain\Repository\TerrainRepositoryInterface;
+use App\Infrastructure\Payment\KratosPayGateway;
 use App\Infrastructure\Persistence\Repository\ClientRepository;
 use App\Infrastructure\Persistence\Repository\PieceRepository;
 use App\Infrastructure\Persistence\Repository\ProduitRepository;
@@ -27,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ProduitRepositoryInterface::class, ProduitRepository::class);
         $this->app->bind(PieceRepositoryInterface::class, PieceRepository::class);
         $this->app->bind(ProgrammeRepositoryInterface::class, ProgrammeRepository::class);
+        $this->app->bind(PaymentGatewayInterface::class, KratosPayGateway::class);
     }
 
     /**

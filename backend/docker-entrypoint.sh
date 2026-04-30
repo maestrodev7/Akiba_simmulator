@@ -30,5 +30,8 @@ while (true) {
 echo "Running migrations..."
 php artisan migrate --force
 
+echo "Seeding piece catalogue..."
+php artisan db:seed --class=Database\\Seeders\\PieceCatalogueSeeder --force
+
 echo "Starting Apache..."
 exec apache2-foreground
