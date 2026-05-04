@@ -80,6 +80,16 @@
         <!-- <div class="w-max flex mx-auto text-lg font-semibold">
             <p>Montant à payer :</p> <span>132 €</span>
         </div> -->
+        
+        <div *ngIf="transactionStatus()" class="w-full md:w-[70%] mx-auto mt-4 p-4 rounded-lg bg-gray-50 border border-gray-100 text-center">
+            <p class="font-semibold text-lg" 
+               [class.text-orange-500]="transactionStatus() === 'EN_ATTENTE' || transactionStatus() === 'pending'"
+               [class.text-green-600]="transactionStatus() === 'SUCCESS' || transactionStatus() === 'VALIDE' || transactionStatus() === 'TERMINE'"
+               [class.text-red-500]="transactionStatus() === 'ECHEC'">
+                Statut de la transaction : {{ transactionStatus() }}
+            </p>
+        </div>
+
         <article class="flex justify-between items-center w-[70%] mx-auto mt-8 pb-20">
             <button type="button" (click)="prevStep()"
                 class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">
