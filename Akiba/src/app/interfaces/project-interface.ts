@@ -109,59 +109,51 @@ export interface stepTenForm {
 
 export interface TransactionContent {
   id: number;
-  paymentMethod: string;
+  nom: string;
+  date: string;
   amount: number;
   statut: string;
-  date: string;
+  wallet: number;
+  userType: string;
   operation: string;
-  numeroDeCompte: string;
   reference: string;
   utilisateur: number;
-  wallet: number;
-  nom: string;
-  userType?: string;
-}
-
-export interface TransactionContentCheck {
-  id: number;
   paymentMethod: string;
-  amount: number;
-  status: string;
-  date: string;
-  operation: string;
   numeroDeCompte: string;
-  reference: string;
-  utilisateur: number;
-  wallet: number;
-  nom: string;
-  userType?: string;
 }
 
-export interface TransactionData {
-  transaction: {
-    id: number;
-    reference: string;
-    session_id: string | null;
-    amount: string;
-    channel: string;
-    status: string;
-    provider_response: any;
-    last_status_payload: any;
-    last_checked_at: string;
-    created_at: string;
-    updated_at: string;
-  };
-  provider_response: {
-    content: TransactionContentCheck;
-    status: number;
-    message: string | null;
-  };
-  status_changed: boolean;
+export interface ProviderResponseDetail {
+  data: any | null;
+  message: string;
+  success: boolean;
+  reference: string;
+  transaction: TransactionContent;
+}
+
+export interface ProviderResponseWrapper {
+  content: TransactionContent;
+  status: number;
+  message: string | null;
 }
 
 export interface TransactionResponse {
-  success: boolean;
-  data: TransactionData;
+  data: {
+    transaction: {
+      id: number;
+      reference: string;
+      session_id: string | null;
+      amount: string;
+      channel: string;
+      status: string;
+      provider_response: ProviderResponseDetail;
+      last_status_payload: ProviderResponseWrapper;
+      last_checked_at: string;
+      created_at: string;
+      updated_at: string;
+    };
+    provider_response: ProviderResponseWrapper;
+    status_changed: boolean;
+  }
 }
 
 export interface DepositData {
