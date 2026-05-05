@@ -30,13 +30,13 @@ export class SixthStep {
     this.projectService.checkTransactionStatus(reference).subscribe({
       next: (res) => {
         console.log("response du check statut", res)
-        const statut = res.data?.transaction?.status;
+        const statut = res.data?.transaction?.last_status_payload.content.statut;
         this.transactionStatus.set(statut ?? null);
         console.log("voici le statut du check", statut);
         if (statut === 'EN_ATTENTE' || statut === "pending") {
           setTimeout(() => {
             this.checkPaymentStatus(reference);
-          }, 20000);
+          }, 7000);
         } else {
           this.loading = false;
           if (statut === 'SUCCESS' || statut === 'VALIDE' || statut === 'TERMINE') {
