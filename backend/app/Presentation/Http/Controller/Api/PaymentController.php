@@ -9,6 +9,7 @@ use App\Application\Payment\Support\PaymentAmountSetting;
 use App\Application\Payment\UseCase\InitiateDepositUseCase;
 use App\Application\Payment\Support\ProviderTransactionData;
 use App\Http\Controllers\Controller;
+use App\Infrastructure\Persistence\Eloquent\ClientModel;
 use App\Models\PaymentTransaction;
 use App\Presentation\Http\ApiResponse;
 use Illuminate\Http\JsonResponse;
@@ -27,6 +28,7 @@ final class PaymentController extends Controller
     public function deposit(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
+            'client_id' => 'required|string|max:24',
             'account_number' => 'required|string|max:30',
         ]);
 
@@ -35,6 +37,10 @@ final class PaymentController extends Controller
         }
 
         $data = $validator->validated();
+        $clientId = (string) $data['client_id'];
+        if (!ClientModel::query()->whereKey($clientId)->exists()) {
+            return ApiResponse::error('Client introuvable.', 422);
+        }
         $amount = PaymentAmountSetting::get();
         if ($amount === null) {
             return ApiResponse::error('Montant de paiement non défini. Configurez /api/payments/amount.', 422);
@@ -52,6 +58,7 @@ final class PaymentController extends Controller
         $this->recordTransaction(
             providerResponse: $result,
             amount: $amount,
+            clientId: $clientId,
             channel: 'mobile_money'
         );
 
@@ -60,6 +67,20 @@ final class PaymentController extends Controller
 
     public function depositCard(Request $request): JsonResponse
     {
+        $validator = Validator::make($request->all(), [
+            'client_id' => 'required|string|max:24',
+        ]);
+
+        if ($validator->fails()) {
+            return ApiResponse::error('Données invalides.', 422, $validator->errors()->toArray());
+        }
+
+        $data = $validator->validated();
+        $clientId = (string) $data['client_id'];
+        if (!ClientModel::query()->whereKey($clientId)->exists()) {
+            return ApiResponse::error('Client introuvable.', 422);
+        }
+
         $amount = PaymentAmountSetting::get();
         if ($amount === null) {
             return ApiResponse::error('Montant de paiement non défini. Configurez /api/payments/amount.', 422);
@@ -76,6 +97,7 @@ final class PaymentController extends Controller
         $transaction = $this->recordTransaction(
             providerResponse: $result,
             amount: $amount,
+            clientId: $clientId,
             channel: 'card'
         );
 
@@ -137,6 +159,7 @@ final class PaymentController extends Controller
     private function recordTransaction(
         array $providerResponse,
         float $amount,
+        string $clientId,
         string $channel,
     ): PaymentTransaction
     {
@@ -151,6 +174,7 @@ final class PaymentController extends Controller
         }
 
         $transaction->reference = $reference ?? $transaction->reference;
+        $transaction->client_id = $clientId;
         $transaction->session_id = $sessionId ?? $transaction->session_id;
         $transaction->amount = $amount;
         $transaction->channel = $channel;

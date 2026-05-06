@@ -70,6 +70,9 @@ final class ClientController extends Controller
             'telephone' => $resource->telephone,
             'adresse' => $resource->adresse,
             'numero_registre' => $resource->numeroRegistre,
+            'simulation_payment_status' => $resource->simulationPaymentStatus,
+            'simulation_paid_at' => $resource->simulationPaidAt,
+            'created_at' => $resource->createdAt,
         ];
     }
 }

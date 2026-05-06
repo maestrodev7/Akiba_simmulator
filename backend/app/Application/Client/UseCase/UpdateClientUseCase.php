@@ -33,7 +33,8 @@ final class UpdateClientUseCase
 
         $client = $this->applyDto($client, $dto);
         $this->clientRepository->save($client);
-        return $this->toResource($client);
+        $savedClient = $this->clientRepository->getById($id) ?? $client;
+        return $this->toResource($savedClient);
     }
 
     private function applyDto(Client $client, ClientDto $dto): Client
@@ -69,6 +70,9 @@ final class UpdateClientUseCase
             telephone: $client->getTelephone(),
             adresse: $client->getAdresse(),
             numeroRegistre: $client->getNumeroRegistre(),
+            simulationPaymentStatus: $client->getSimulationPaymentStatus(),
+            simulationPaidAt: $client->getSimulationPaidAt(),
+            createdAt: $client->getCreatedAt(),
         );
     }
 }

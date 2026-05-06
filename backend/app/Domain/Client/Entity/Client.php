@@ -17,6 +17,9 @@ final class Client
         private ?string $telephone = null,
         private ?string $adresse = null,
         private ?string $numeroRegistre = null,
+        private ?string $simulationPaymentStatus = null,
+        private ?string $simulationPaidAt = null,
+        private ?string $createdAt = null,
     ) {
     }
 
@@ -53,6 +56,21 @@ final class Client
     public function getNumeroRegistre(): ?string
     {
         return $this->numeroRegistre;
+    }
+
+    public function getSimulationPaymentStatus(): ?string
+    {
+        return $this->simulationPaymentStatus;
+    }
+
+    public function getSimulationPaidAt(): ?string
+    {
+        return $this->simulationPaidAt;
+    }
+
+    public function getCreatedAt(): ?string
+    {
+        return $this->createdAt;
     }
 
     public function withNom(?string $nom): self
@@ -94,6 +112,20 @@ final class Client
     {
         $clone = clone $this;
         $clone->numeroRegistre = $numeroRegistre;
+        return $clone;
+    }
+
+    public function withSimulationPaymentStatus(?string $status): self
+    {
+        $clone = clone $this;
+        $clone->simulationPaymentStatus = $status;
+        return $clone;
+    }
+
+    public function withSimulationPaidAt(?string $paidAt): self
+    {
+        $clone = clone $this;
+        $clone->simulationPaidAt = $paidAt;
         return $clone;
     }
 }

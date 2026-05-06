@@ -32,6 +32,12 @@ final class ClientRepository implements ClientRepositoryInterface
         $model->telephone = $client->getTelephone();
         $model->adresse = $client->getAdresse();
         $model->numero_registre = $client->getNumeroRegistre();
+        if ($client->getSimulationPaymentStatus() !== null) {
+            $model->simulation_payment_status = $client->getSimulationPaymentStatus();
+        }
+        if ($client->getSimulationPaidAt() !== null) {
+            $model->simulation_paid_at = $client->getSimulationPaidAt();
+        }
         $model->save();
     }
 
@@ -72,6 +78,9 @@ final class ClientRepository implements ClientRepositoryInterface
             telephone: $model->telephone,
             adresse: $model->adresse,
             numeroRegistre: $model->numero_registre,
+            simulationPaymentStatus: $model->simulation_payment_status,
+            simulationPaidAt: $model->simulation_paid_at?->toIso8601String(),
+            createdAt: $model->created_at?->toIso8601String(),
         );
     }
 }

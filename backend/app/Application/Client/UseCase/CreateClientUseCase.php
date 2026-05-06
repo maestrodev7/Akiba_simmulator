@@ -31,9 +31,11 @@ final class CreateClientUseCase
             telephone: $dto->telephone,
             adresse: $dto->adresse,
             numeroRegistre: $dto->numeroRegistre,
+            simulationPaymentStatus: 'unpaid',
         );
         $this->clientRepository->save($client);
-        return $this->toResource($client);
+        $savedClient = $this->clientRepository->getById($id) ?? $client;
+        return $this->toResource($savedClient);
     }
 
     private function toResource(Client $client): ClientResourceDto
@@ -46,6 +48,9 @@ final class CreateClientUseCase
             telephone: $client->getTelephone(),
             adresse: $client->getAdresse(),
             numeroRegistre: $client->getNumeroRegistre(),
+            simulationPaymentStatus: $client->getSimulationPaymentStatus(),
+            simulationPaidAt: $client->getSimulationPaidAt(),
+            createdAt: $client->getCreatedAt(),
         );
     }
 }

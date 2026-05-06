@@ -45,6 +45,7 @@ final class PaymentTransactionStatusUpdated implements ShouldBroadcastNow
     {
         return [
             'id' => $this->transaction->id,
+            'client_id' => $this->transaction->client_id,
             'reference' => $this->transaction->reference,
             'session_id' => $this->transaction->session_id,
             'status' => $this->transaction->status,

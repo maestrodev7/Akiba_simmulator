@@ -29,9 +29,13 @@ class ClientModel extends Model
         'telephone',
         'adresse',
         'numero_registre',
+        'simulation_payment_status',
+        'simulation_paid_at',
     ];
 
-    protected $casts = [];
+    protected $casts = [
+        'simulation_paid_at' => 'datetime',
+    ];
 
     public static function boot(): void
     {

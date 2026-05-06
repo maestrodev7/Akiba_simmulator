@@ -41,6 +41,9 @@ final class GetClientUseCase
             telephone: $client->getTelephone(),
             adresse: $client->getAdresse(),
             numeroRegistre: $client->getNumeroRegistre(),
+            simulationPaymentStatus: $client->getSimulationPaymentStatus(),
+            simulationPaidAt: $client->getSimulationPaidAt(),
+            createdAt: $client->getCreatedAt(),
         );
     }
 }

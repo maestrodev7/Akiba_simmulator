@@ -7,6 +7,7 @@ namespace App\Application\Payment\Service;
 use App\Application\Payment\Support\ProviderTransactionData;
 use App\Application\Payment\UseCase\GetTransactionStatusUseCase;
 use App\Events\PaymentTransactionStatusUpdated;
+use App\Infrastructure\Persistence\Eloquent\ClientModel;
 use App\Models\PaymentTransaction;
 use Illuminate\Support\Carbon;
 use Throwable;
@@ -49,6 +50,7 @@ final class PaymentTransactionStatusSyncer
         $transaction->save();
 
         $statusChanged = $previousStatus !== $nextStatus;
+        $this->updateClientPaymentStatusIfNeeded($transaction, $nextStatus);
         if ($statusChanged) {
             event(new PaymentTransactionStatusUpdated($transaction->fresh()));
         }
@@ -93,6 +95,34 @@ final class PaymentTransactionStatusSyncer
             'updated' => $updated,
             'failed' => $failed,
         ];
+    }
+
+    private function updateClientPaymentStatusIfNeeded(PaymentTransaction $transaction, string $status): void
+    {
+        if (!$this->isPaidStatus($status)) {
+            return;
+        }
+
+        $clientId = (string) ($transaction->client_id ?? '');
+        if ($clientId === '') {
+            return;
+        }
+
+        $client = ClientModel::query()->find($clientId);
+        if ($client === null) {
+            return;
+        }
+
+        $client->simulation_payment_status = 'paid';
+        if ($client->simulation_paid_at === null) {
+            $client->simulation_paid_at = Carbon::now();
+        }
+        $client->save();
+    }
+
+    private function isPaidStatus(string $status): bool
+    {
+        return in_array(strtolower($status), ['paid', 'success', 'successful', 'completed'], true);
     }
 }
 
