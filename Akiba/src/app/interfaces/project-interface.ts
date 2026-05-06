@@ -106,3 +106,67 @@ export interface stepNineForm {
 export interface stepTenForm {
 
 }
+
+export interface TransactionContent {
+  id: number;
+  nom: string;
+  date: string;
+  amount: number;
+  statut: string;
+  wallet: number;
+  userType: string;
+  operation: string;
+  reference: string;
+  utilisateur: number;
+  paymentMethod: string;
+  numeroDeCompte: string;
+}
+
+export interface ProviderResponseDetail {
+  data: any | null;
+  message: string;
+  success: boolean;
+  reference: string;
+  transaction: TransactionContent;
+}
+
+export interface ProviderResponseWrapper {
+  content: TransactionContent;
+  status: number;
+  message: string | null;
+}
+
+export interface TransactionResponse {
+  data: {
+    transaction: {
+      id: number;
+      reference: string;
+      session_id: string | null;
+      amount: string;
+      channel: string;
+      status: string;
+      provider_response: ProviderResponseDetail;
+      last_status_payload: ProviderResponseWrapper;
+      last_checked_at: string;
+      created_at: string;
+      updated_at: string;
+    };
+    provider_response: ProviderResponseWrapper;
+    status_changed: boolean;
+  }
+}
+
+export interface DepositData {
+  success: boolean;
+  data: any;
+  message: string;
+  reference?: string;
+  transaction?: TransactionContent;
+  payment_url?: string;
+}
+
+export interface DepositResponse {
+  success: boolean;
+  data: DepositData;
+  message: string;
+}

@@ -2,6 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { DepositResponse, TransactionResponse } from '../../interfaces/project-interface';
+
 
 @Injectable({
   providedIn: 'root',
@@ -23,5 +25,17 @@ export class YourProject {
 
   createPiece(data: any): Observable<any> {
     return this.http.post<any>(`${environment.apiUrl}/pieces`, data);
+  }
+
+  depositMobile(payload: any): Observable<DepositResponse> {
+    return this.http.post<DepositResponse>(`${environment.apiUrl}/payments/deposit`, payload);
+  }
+
+  depositCard(payload: any): Observable<any> {
+    return this.http.post<any>(`${environment.apiUrl}/payments/deposit/card`, payload);
+  }
+
+  checkTransactionStatus(reference: string): Observable<TransactionResponse> {
+    return this.http.get<TransactionResponse>(`${environment.apiUrl}/transactions/reference/${reference}`);
   }
 }

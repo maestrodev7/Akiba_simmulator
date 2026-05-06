@@ -13,7 +13,7 @@
         <div class="sm:hidden flex flex-col items-center w-full max-w-sm mx-auto">
             <div class="flex items-center justify-between w-full mb-6 relative">
                 <!-- Prev Button -->
-                <button (click)="prevStep()" [disabled]="step() === 1"
+                <button [disabled]="step() === 1"
                     [class]="'p-2 rounded-full transition-all duration-200 ' + 
                                   (step() === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-[#56CB4E] hover:bg-blue-50 active:scale-95')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -31,7 +31,7 @@
                 </div>
 
                 <!-- Next Button -->
-                <button (click)="nextStep()" [disabled]="step() === steps.length"
+                <button [disabled]="step() === steps.length"
                     [class]="'p-2 rounded-full transition-all duration-200 ' + 
                                   (step() === steps.length ? 'text-gray-300 cursor-not-allowed' : 'text-[#56CB4E] hover:bg-blue-50 active:scale-95')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -51,8 +51,8 @@
 
         <!-- Desktop Stepper View -->
         <div class="hidden sm:flex flex-row items-start justify-center gap-0">
-            <div *ngFor="let s of steps; let i = index; let last = last" class="flex flex-1 w-auto group cursor-pointer"
-                (click)="goToStep(s.id)">
+            <div *ngFor="let s of steps; let i = index; let last = last"
+                class="flex flex-1 w-auto group cursor-pointer">
 
                 <div class="flex flex-col items-center text-center w-full relative">
 

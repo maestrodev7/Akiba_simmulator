@@ -1,18 +1,26 @@
 <section class="space-y-6">
     <h2 class="text-center text-2xl font-semibold text-[#2B2D33]">Page de paiement</h2>
     <ul class="flex flex-col gap-2 sm:flex-row sm:gap-0 w-max mx-auto items-center bg-[#EEF3F5] rounded-lg">
-        <li [class]=" pay_method=== 'CARD' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'" class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='CARD'">Paiement bancaire</li>
-        <li [class]=" pay_method=== 'MOBILE' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'" class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='MOBILE'">Paiement mobile</li>
+        <li [class]=" pay_method=== 'CARD' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'"
+            class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='CARD'">Paiement
+            bancaire</li>
+        <li [class]=" pay_method=== 'MOBILE' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'"
+            class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='MOBILE'">
+            Paiement mobile</li>
     </ul>
 
     <div *ngIf="pay_method=='CARD'" class="w-max flex flex-wrap gap-8 mx-auto">
-        <label class="flex items-center gap-2"><img src="./assets/pay_method/visa_card.svg" alt=""><input type="radio" name="pay_method" id=""></label>
-        <label class="flex items-center gap-2"><img src="./assets/pay_method/paypal.svg" alt=""><input type="radio" name="pay_method" id=""></label>
-        <label class="flex items-center gap-2"><img src="./assets/pay_method/master_card.svg" alt=""><input type="radio" name="pay_method" id=""></label>
+        <label class="flex items-center gap-2"><img src="./assets/pay_method/visa_card.svg" alt=""></label>
+        <label class="flex items-center gap-2"><img src="./assets/pay_method/paypal.svg" alt=""></label>
+        <label class="flex items-center gap-2"><img src="./assets/pay_method/master_card.svg" alt=""></label>
     </div>
 
-    <form action="" class="w-full space-y-4">
-        <div *ngIf="pay_method=='CARD'" class="w-full md:w-[70%] mx-auto space-y-4">
+    <form (ngSubmit)="onSubmit()" class="w-full space-y-4">
+        <div *ngIf="pay_method=='CARD'"
+            class="w-full md:w-[70%] mx-auto space-y-4 text-lg text-center text-[#BB7A44] font-semibold">
+            continue le payement avec Master card
+        </div>
+        <!-- <div *ngIf="pay_method=='CARD'" class="w-full md:w-[70%] mx-auto space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-3">
                 <div class="md:col-span-1">
                     <p class="text-[#000000] font-semibold">Numéro de la carte</p>
@@ -47,34 +55,51 @@
                 </div>
                 <input type="password" placeholder="" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all"> 
             </div>
-        </div>
-        
+        </div> -->
+
         <div *ngIf="pay_method=='MOBILE'" class="w-full md:w-[70%] mx-auto space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-3">
                 <div class="md:col-span-1">
                     <p class="text-[#000000] font-semibold">Numéro de téléphone</p>
-                    <p class="text-[#000000]/40 font-semibold">Entrer le numéro de téléphone</p>
+                    <p class="text-[#000000]/40 font-semibold">Entrer le numéro de téléphone payeur</p>
                 </div>
-                <input type="tel" placeholder="000 000 000 000" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
+                <input type="tel" name="account_number" [(ngModel)]="account_number" placeholder="000 000 000 000"
+                    class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3">
+            <!-- <div class="grid grid-cols-1 md:grid-cols-3">
                 <div class="md:col-span-1">
                     <p class="text-[#000000] font-semibold">Mot de passe</p>
                     <p class="text-[#000000]/40 font-semibold">Entrez votre mot de passe</p>
                 </div>
-                <input type="password" placeholder="" class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all"> 
-            </div>
+                <input type="password" placeholder=""
+                    class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
+            </div> -->
         </div>
 
-        <div class="w-max flex mx-auto text-lg font-semibold"><p>Montant à payer :</p>  <span>132 €</span></div>
+        <div class="w-max flex mx-auto text-lg font-semibold">
+            <p>Montant à payer :</p> <span>132 FCFA</span>
+        </div>
+
+        <div *ngIf="transactionStatus()"
+            class="w-full md:w-[70%] mx-auto mt-4 p-4 rounded-lg bg-gray-50 border border-gray-100 text-center">
+            <p class="font-semibold text-lg"
+                [class.text-orange-500]="transactionStatus() === 'EN_ATTENTE' || transactionStatus() === 'pending'"
+                [class.text-green-600]="transactionStatus() === 'SUCCESS' || transactionStatus() === 'VALIDE' || transactionStatus() === 'TERMINE'"
+                [class.text-red-500]="transactionStatus() === 'ECHEC'">
+                Statut de la transaction : {{ transactionStatus() }}
+            </p>
+        </div>
+
         <article class="flex justify-between items-center w-[70%] mx-auto mt-8 pb-20">
-            <button type="button" (click)="prevStep()" 
-                    class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">
+            <button type="button" (click)="prevStep()"
+                class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">
                 Précédent
             </button>
-            <button type="submit" class="bg-[#BB7A44] text-[#f2f2f2] font-semibold py-3 px-12 rounded-lg shadow-lg hover:bg-[#A26F45] transition-all">
-                Payer
+            <button type="submit" [disabled]="loading"
+                class="bg-[#BB7A44] text-[#f2f2f2] font-semibold py-3 px-12 rounded-lg shadow-lg hover:bg-[#A26F45] transition-all disabled:opacity-50">
+                <span *ngIf="!loading">Payer</span>
+                <span *ngIf="loading">Patientez...</span>
             </button>
         </article>
     </form>
