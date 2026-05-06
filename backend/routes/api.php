@@ -4,6 +4,7 @@ use App\Presentation\Http\Controller\Api\ClientController;
 use App\Presentation\Http\Controller\Api\AdminAuthController;
 use App\Presentation\Http\Controller\Api\PieceController;
 use App\Presentation\Http\Controller\Api\PaymentController;
+use App\Presentation\Http\Controller\Api\PaymentSettingsController;
 use App\Presentation\Http\Controller\Api\ProduitController;
 use App\Presentation\Http\Controller\Api\ProgrammeController;
 use App\Presentation\Http\Controller\Api\SimulationController;
@@ -28,6 +29,8 @@ Route::get('pieces', [PieceController::class, 'index']);
 Route::post('pieces', [PieceController::class, 'store']);
 
 Route::prefix('payments')->group(function (): void {
+    Route::get('amount', [PaymentSettingsController::class, 'showAmount']);
+    Route::put('amount', [PaymentSettingsController::class, 'updateAmount']);
     Route::post('deposit', [PaymentController::class, 'deposit']);
     Route::post('deposit/card', [PaymentController::class, 'depositCard']);
     Route::get('status/{reference}', [PaymentController::class, 'status']);

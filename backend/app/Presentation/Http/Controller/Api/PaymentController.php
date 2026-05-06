@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Http\Controller\Api;
 
 use App\Application\Payment\Service\PaymentTransactionStatusSyncer;
+use App\Application\Payment\Support\PaymentAmountSetting;
 use App\Application\Payment\UseCase\InitiateDepositUseCase;
 use App\Application\Payment\Support\ProviderTransactionData;
 use App\Http\Controllers\Controller;
@@ -26,7 +27,6 @@ final class PaymentController extends Controller
     public function deposit(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
-            'amount' => 'required|numeric|min:1',
             'account_number' => 'required|string|max:30',
         ]);
 
@@ -35,10 +35,14 @@ final class PaymentController extends Controller
         }
 
         $data = $validator->validated();
+        $amount = PaymentAmountSetting::get();
+        if ($amount === null) {
+            return ApiResponse::error('Montant de paiement non défini. Configurez /api/payments/amount.', 422);
+        }
 
         try {
             $result = $this->initiateDepositUseCase->execute([
-                'amount' => (float) $data['amount'],
+                'amount' => $amount,
                 'account_number' => (string) $data['account_number'],
             ]);
         } catch (Throwable $e) {
@@ -47,7 +51,7 @@ final class PaymentController extends Controller
 
         $this->recordTransaction(
             providerResponse: $result,
-            amount: (float) $data['amount'],
+            amount: $amount,
             channel: 'mobile_money'
         );
 
@@ -56,19 +60,14 @@ final class PaymentController extends Controller
 
     public function depositCard(Request $request): JsonResponse
     {
-        $validator = Validator::make($request->all(), [
-            'amount' => 'required|numeric|min:1',
-        ]);
-
-        if ($validator->fails()) {
-            return ApiResponse::error('Données invalides.', 422, $validator->errors()->toArray());
+        $amount = PaymentAmountSetting::get();
+        if ($amount === null) {
+            return ApiResponse::error('Montant de paiement non défini. Configurez /api/payments/amount.', 422);
         }
-
-        $data = $validator->validated();
 
         try {
             $result = $this->initiateDepositUseCase->executeCard([
-                'amount' => (float) $data['amount'],
+                'amount' => $amount,
             ]);
         } catch (Throwable $e) {
             return ApiResponse::error($e->getMessage(), 502);
@@ -76,7 +75,7 @@ final class PaymentController extends Controller
 
         $transaction = $this->recordTransaction(
             providerResponse: $result,
-            amount: (float) $data['amount'],
+            amount: $amount,
             channel: 'card'
         );
 

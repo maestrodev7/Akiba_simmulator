@@ -87,6 +87,9 @@ final class KratosPayGateway implements PaymentGatewayInterface
         $requestPayload = [
             'amount' => $payload['amount'] ?? null,
             'payment_token' => $paymentToken,
+            'redirect_url' => (string) config('services.kratospay.card_redirect_url', 'https://akimmo.center/'),
+            'currency' => (string) config('services.kratospay.card_currency', 'XAF'),
+            'merchant_url' => (string) config('services.kratospay.card_merchant_url', 'https://akimmo.center/'),
         ];
 
         try {

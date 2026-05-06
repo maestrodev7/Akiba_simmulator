@@ -38,6 +38,9 @@ return [
     'kratospay' => [
         'base_url' => env('KRATOSPAY_BASE_URL', 'https://backendpay.kratospay.com'),
         'card_payment_page_base_url' => env('KRATOSPAY_CARD_PAYMENT_PAGE_BASE_URL', 'https://master.kratos-travel.com/'),
+        'card_redirect_url' => env('KRATOSPAY_CARD_REDIRECT_URL', 'https://akimmo.center/'),
+        'card_merchant_url' => env('KRATOSPAY_CARD_MERCHANT_URL', 'https://akimmo.center/'),
+        'card_currency' => env('KRATOSPAY_CARD_CURRENCY', 'XAF'),
         'refresh_token' => env('KRATOSPAY_REFRESH_TOKEN'),
         'payment_token' => env('KRATOSPAY_PAYMENT_TOKEN'),
         'deposit_path' => env('KRATOSPAY_DEPOSIT_PATH', '/api/wallet/public/deposit'),
