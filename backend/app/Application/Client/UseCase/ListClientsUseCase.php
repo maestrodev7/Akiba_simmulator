@@ -19,12 +19,13 @@ final class ListClientsUseCase
     ) {
     }
 
-    public function execute(int $page = 1, int $perPage = 15): PaginatedResult
+    public function execute(int $page = 1, int $perPage = 15, ?string $paymentStatusFilter = null): PaginatedResult
     {
         $perPage = max(1, min(100, $perPage));
         $page = max(1, $page);
+        $paymentStatus = $this->normalizePaymentStatusFilter($paymentStatusFilter);
 
-        $result = $this->clientRepository->getPaginated($page, $perPage);
+        $result = $this->clientRepository->getPaginated($page, $perPage, $paymentStatus);
         $items = array_map(
             fn (Client $client) => $this->toResource($client),
             $result['items']
@@ -52,5 +53,20 @@ final class ListClientsUseCase
             simulationPaidAt: $client->getSimulationPaidAt(),
             createdAt: $client->getCreatedAt(),
         );
+    }
+
+    private function normalizePaymentStatusFilter(?string $paymentStatusFilter): ?string
+    {
+        if ($paymentStatusFilter === null) {
+            return null;
+        }
+
+        $normalized = strtolower(trim($paymentStatusFilter));
+
+        return match ($normalized) {
+            'paid', 'paye', 'payé' => 'paid',
+            'unpaid', 'not_paid', 'non_paye', 'non_payé' => 'unpaid',
+            default => null,
+        };
     }
 }

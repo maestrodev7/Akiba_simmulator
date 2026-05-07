@@ -31,7 +31,12 @@ final class ClientController extends Controller
     {
         $page = (int) $request->input('page', 1);
         $perPage = (int) $request->input('per_page', 15);
-        $result = $this->listClientsUseCase->execute($page, $perPage);
+        $paymentStatus = $request->input('payment_status');
+        $result = $this->listClientsUseCase->execute(
+            $page,
+            $perPage,
+            is_string($paymentStatus) ? $paymentStatus : null
+        );
         $items = array_map(fn ($dto) => $this->resourceToArray($dto), $result->getItems());
         return ApiResponse::paginated($items, $result->getTotal(), $result->getPage(), $result->getPerPage());
     }

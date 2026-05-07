@@ -21,7 +21,7 @@ interface ClientRepositoryInterface
     /**
      * @return array{items: list<Client>, total: int}
      */
-    public function getPaginated(int $page, int $perPage): array;
+    public function getPaginated(int $page, int $perPage, ?string $paymentStatus = null): array;
 
     public function delete(string $id): bool;
 }

@@ -53,9 +53,12 @@ final class ClientRepository implements ClientRepositoryInterface
     /**
      * @return array{items: list<Client>, total: int}
      */
-    public function getPaginated(int $page, int $perPage): array
+    public function getPaginated(int $page, int $perPage, ?string $paymentStatus = null): array
     {
         $query = ClientModel::query()->orderBy('created_at', 'desc');
+        if ($paymentStatus !== null) {
+            $query->where('simulation_payment_status', $paymentStatus);
+        }
         $total = $query->count();
         $models = $query->offset(($page - 1) * $perPage)->limit($perPage)->get();
 
