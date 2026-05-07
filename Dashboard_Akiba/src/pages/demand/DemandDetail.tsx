@@ -133,12 +133,12 @@ export default function DemandDetail() {
             <div className="space-y-16">
                 {data.map((item, index) => (
                     <div key={item.produit?.id || index} className="space-y-10 pb-10 border-b border-gray-200 last:border-0">
-                        <div className="flex items-center gap-4">
+                        {/* <div className="flex items-center gap-4">
                             <h2 className="text-xl font-bold text-[#BB7A44]">
                                 Draft: {item.produit?.id || "N/A"}
                             </h2>
-                        </div>
-                        
+                        </div> */}
+
                         {/* Section: Informations du Client */}
                         <div className="space-y-6">
                             <SectionTitle>Informations personnelles</SectionTitle>

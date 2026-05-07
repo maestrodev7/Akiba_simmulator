@@ -1,8 +1,9 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { YourProject } from '../../../../services/project/your-project';
+import { ProjectData } from '../../../../services/project-data/project-data';
 
 @Component({
   selector: 'app-sixth-step',
@@ -11,16 +12,31 @@ import { YourProject } from '../../../../services/project/your-project';
   templateUrl: './sixth-step.html',
   styleUrl: './sixth-step.css',
 })
-export class SixthStep {
+export class SixthStep implements OnInit {
   private router = inject(Router);
   private projectService = inject(YourProject);
+  private projectDataService = inject(ProjectData);
 
   pay_method: "CARD" | "MOBILE" = "CARD";
+  errorMsg = "";
 
   account_number: string = '';
   amount: number = 100;
   loading: boolean = false;
   transactionStatus = signal<string | null>(null);
+
+  ngOnInit() {
+    this.projectService.getAmount().subscribe({
+      next: (res) => {
+        if (res.success && res.data?.amount) {
+          this.amount = res.data.amount;
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching amount', err);
+      }
+    });
+  }
 
   prevStep() {
     this.router.navigate(['/votre-projet/fifth-step']);
@@ -58,9 +74,15 @@ export class SixthStep {
     this.transactionStatus.set(null);
     if (this.pay_method === 'MOBILE') {
       const payload = {
-        amount: this.amount,
+        client_id: this.projectDataService.getProjectData().client_id,
         account_number: this.account_number
       };
+      if (!payload.account_number) {
+        this.errorMsg = "veillez renseigner le numero de telephone payeur"
+        return
+      }
+      console.log("mobile play load", payload)
+
       this.projectService.depositMobile(payload).subscribe({
         next: (res) => {
           const statut = res.data?.transaction?.statut;
@@ -86,6 +108,7 @@ export class SixthStep {
         },
         error: (err) => {
           this.loading = false;
+          this.errorMsg = `une erreur s'est produite ${err.error.message}`
           console.error('Payment error', err);
         }
       });
@@ -102,6 +125,7 @@ export class SixthStep {
         },
         error: (err) => {
           this.loading = false;
+          this.errorMsg = `une erreur s'est produite ${err.error.message}`
           console.error('Payment error', err);
         }
       });

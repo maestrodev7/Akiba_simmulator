@@ -38,4 +38,8 @@ export class YourProject {
   checkTransactionStatus(reference: string): Observable<TransactionResponse> {
     return this.http.get<TransactionResponse>(`${environment.apiUrl}/transactions/reference/${reference}`);
   }
+
+  getAmount(): Observable<any> {
+    return this.http.get<any>(`https://akimmo.center/api/api/payments/amount`);
+  }
 }
