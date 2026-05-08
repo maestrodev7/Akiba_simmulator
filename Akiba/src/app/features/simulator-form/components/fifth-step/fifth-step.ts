@@ -54,6 +54,8 @@ export class FifthStep implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
+            console.log("response alpha alpha", response);
+            console.log("project data", this.projectDataService.getProjectData());
             this.lignes = savedLignes.map((saved: any) => {
               const piece = response.data.find((p: any) => String(p.id) === String(saved.piece_id));
               return {
@@ -61,6 +63,8 @@ export class FifthStep implements OnInit {
                 designation: piece ? piece.designation : (saved.designation || 'Pièce personnalisée')
               };
             });
+            console.log("Step 5 saved successfully", response);
+            console.log("project data", this.projectDataService.getProjectData());
           }
         }
       });
