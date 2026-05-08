@@ -46,12 +46,15 @@ final class ProviderTransactionData
     {
         $status = self::extractString($payload, [
             'status',
+            'statut',
             'transaction_status',
             'transactionStatus',
             'content.status',
+            'content.statut',
             'content.transaction_status',
             'content.transactionStatus',
             'data.status',
+            'data.statut',
             'data.transaction_status',
             'data.transactionStatus',
         ]);
@@ -60,7 +63,7 @@ final class ProviderTransactionData
             return null;
         }
 
-        return strtolower($status);
+        return self::normalizeStatus($status);
     }
 
     /**
@@ -77,6 +80,19 @@ final class ProviderTransactionData
         }
 
         return null;
+    }
+
+    private static function normalizeStatus(string $rawStatus): string
+    {
+        $normalized = strtolower(trim($rawStatus));
+
+        return match ($normalized) {
+            'reussie', 'réussie', 'success', 'successful', 'completed', 'paid' => 'paid',
+            'echec', 'échec', 'failed', 'failure' => 'failed',
+            'annulee', 'annulée', 'cancelled', 'canceled' => 'cancelled',
+            'en_attente', 'en attente', 'pending' => 'pending',
+            default => $normalized,
+        };
     }
 }
 
