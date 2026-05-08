@@ -33,5 +33,8 @@ php artisan migrate --force
 echo "Seeding piece catalogue..."
 php artisan db:seed --class=Database\\Seeders\\PieceCatalogueSeeder --force
 
+echo "Starting Laravel scheduler worker..."
+php artisan schedule:work --no-interaction &
+
 echo "Starting Apache..."
 exec apache2-foreground
