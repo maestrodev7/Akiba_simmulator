@@ -192,8 +192,8 @@ export class SecondStep implements OnInit {
     const payload: any = {
       step: 2,
       client_id: projectData?.client_id,
-      terrain_id: projectData?.terrain_id,
-      produit_id: projectData?.produit_id,
+      // terrain_id: projectData?.terrain_id,
+      // produit_id: projectData?.produit_id,
       data: {
         ...val
       }
@@ -209,6 +209,7 @@ export class SecondStep implements OnInit {
             stepTwo: payload as any
           });
           console.log("Step 2 saved successfully", response);
+          console.log("project data", this.projectDataService.getProjectData());
           this.router.navigate(['/votre-projet/third-step']);
         }
       },

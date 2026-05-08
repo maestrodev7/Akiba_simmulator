@@ -171,6 +171,8 @@ export class FourthStep implements OnInit {
             this.projectDataService.setProjectData({
               stepFour: payload
             });
+            console.log("Step 4 saved successfully", response);
+            console.log("project data", this.projectDataService.getProjectData());
             this.router.navigate(['/votre-projet/fifth-step']);
           }
         },

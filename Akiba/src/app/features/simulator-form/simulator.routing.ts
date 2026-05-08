@@ -1,11 +1,4 @@
 import { Route, RouterModule } from "@angular/router";
-
-import { FirstStep } from "./components/first-step/first-step";
-import { FourthStep } from "./components/fourth-step/fourth-step";
-import { SecondStep } from "./components/second-step/second-step";
-import { ThirdStep } from "./components/third-step/third-step";
-import { FifthStep } from "./components/fifth-step/fifth-step";
-import { SixthStep } from "./components/sixth-step/sixth-step";
 import { SimulatorForm } from "./simulator-form";
 
 const routes: Route[] = [
@@ -15,7 +8,7 @@ const routes: Route[] = [
         children: [
             {
                 path: "first-step",
-                component: FirstStep,
+                loadComponent: () => import('./components/first-step/first-step').then(m => m.FirstStep),
             },
             {
                 path: "",
@@ -24,23 +17,23 @@ const routes: Route[] = [
             },
             {
                 path: "second-step",
-                component: SecondStep
+                loadComponent: () => import('./components/second-step/second-step').then(m => m.SecondStep)
             },
             {
                 path: "third-step",
-                component: ThirdStep
+                loadComponent: () => import('./components/third-step/third-step').then(m => m.ThirdStep)
             },
             {
                 path: "fourth-step",
-                component: FourthStep
+                loadComponent: () => import('./components/fourth-step/fourth-step').then(m => m.FourthStep)
             },
             {
                 path: "fifth-step",
-                component: FifthStep,
+                loadComponent: () => import('./components/fifth-step/fifth-step').then(m => m.FifthStep),
             },
             {
                 path: "sixth-step",
-                component: SixthStep,
+                loadComponent: () => import('./components/sixth-step/sixth-step').then(m => m.SixthStep),
             },
         ]
     },

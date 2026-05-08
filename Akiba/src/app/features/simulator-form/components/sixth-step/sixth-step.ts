@@ -20,6 +20,7 @@ export class SixthStep implements OnInit {
   pay_method: "CARD" | "MOBILE" = "CARD";
   errorMsg = "";
 
+  enablePayment = true;
   account_number: string = '';
   amount: number = 100;
   loading: boolean = false;
@@ -97,6 +98,7 @@ export class SixthStep implements OnInit {
                 this.checkPaymentStatus(reference);
               }, 20000);
             } else {
+              this.enablePayment = false;
               this.loading = false;
             }
           } else {
