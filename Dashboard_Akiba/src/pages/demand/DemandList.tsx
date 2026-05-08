@@ -5,7 +5,7 @@ import { useNavigate } from "react-router";
 import { getClients } from "../../services/clientService.ts";
 import type { Client } from "../../types/client.ts";
 
-type Filter = "received" | "accepted"
+type Filter = "all" | "paid " | "unpaid"
 
 interface Column {
   header: string;
@@ -16,14 +16,15 @@ interface Column {
 export default function DemandList() {
   const navigate = useNavigate();
 
-  const [filter, setFilter] = useState<Filter>("received")
+  const [filter, setFilter] = useState<Filter>("all")
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchClients = async () => {
       try {
-        const response = await getClients();
+        const response = await getClients(filter);
+        console.log("response", response);
         if (response.success) {
           setClients(response.data);
         }
@@ -34,7 +35,7 @@ export default function DemandList() {
       }
     };
     fetchClients();
-  }, []);
+  }, [filter]);
 
   const handleFilter = (filter: Filter) => {
     setFilter(filter)
@@ -62,6 +63,29 @@ export default function DemandList() {
       minWidth: "150px"
     },
     {
+      header: "Statut du payement",
+      render: (client) => (
+        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${client.simulation_payment_status === "paid"
+          ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+          : "bg-rose-50 text-rose-700 border-rose-200"
+          }`}>
+          {/* <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${client.simulation_payment_status === "paid" ? "bg-emerald-500" : "bg-rose-500"
+            }`} /> */}
+          {client.simulation_payment_status === "paid" ? "Payé" : "Non payé"}
+        </span>
+      ),
+      minWidth: "175px"
+    },
+    {
+      header: "Date de payement",
+      render: (client) => (
+        <span className="text-base text-[#344054]">
+          {client.simulation_paid_at || "—--------"}
+        </span>
+      ),
+      minWidth: "170px"
+    },
+    {
       header: "",
       render: (client) => (
         <button
@@ -82,31 +106,38 @@ export default function DemandList() {
 
         <div className="flex flex-wrap w-full sm:w-max p-1 bg-[#F5F5FA] rounded-[1.5rem] min-[390px]:rounded-full gap-1 min-[390px]:gap-0">
           <button
-            className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "received" ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
-            onClick={() => handleFilter("received")}
+            className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "all" ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
+            onClick={() => handleFilter("all")}
           >
             <img
               src={inbox}
               width={20}
               height={20}
               alt="inbox"
-              className={`transition-all duration-300 ${filter === "received" ? "" : "brightness-0 opacity-40 hover:opacity-100"}`}
+              className={`transition-all duration-300 ${filter === "all" ? "" : "brightness-0 opacity-40 hover:opacity-100"}`}
             />
-            <span className="font-medium whitespace-nowrap">Demande reçues</span>
+            <span className="font-medium whitespace-nowrap">Tout</span>
           </button>
 
           <button
-            className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "accepted" ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
-            onClick={() => handleFilter("accepted")}
+            className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "paid " ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
+            onClick={() => handleFilter("paid ")}
           >
             <img
               src={check}
               width={20}
               height={20}
               alt="check"
-              className={`transition-all duration-300 ${filter === "accepted" ? "brightness-0 invert" : "opacity-40 hover:opacity-100"}`}
+              className={`transition-all duration-300 ${filter === "paid " ? "brightness-0 invert" : "opacity-40 hover:opacity-100"}`}
             />
-            <span className="font-medium whitespace-nowrap">Demande acceptées</span>
+            <span className="font-medium whitespace-nowrap">Demande Payé</span>
+          </button>
+
+          <button
+            className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "unpaid" ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
+            onClick={() => handleFilter("unpaid")}
+          >
+            <span className="font-medium whitespace-nowrap">Demande non Payé</span>
           </button>
         </div>
       </div>
@@ -130,7 +161,7 @@ export default function DemandList() {
             <tbody className="divide-y divide-[#F5F5FA]">
               {isLoading ? (
                 <tr>
-                   <td colSpan={columns.length} className="py-20 text-center text-[#8181A5]">
+                  <td colSpan={columns.length} className="py-20 text-center text-[#8181A5]">
                     Chargement en cours...
                   </td>
                 </tr>
