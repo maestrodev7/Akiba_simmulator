@@ -58,6 +58,61 @@
         </div> -->
 
         <div *ngIf="pay_method=='MOBILE'" class="w-full md:w-[70%] mx-auto space-y-4">
+
+            <!-- Mobile Operator Selection -->
+            <div class="flex items-center justify-center gap-4 mb-6">
+                <!-- MTN Card -->
+                <label for="mtn"
+                    class="relative flex flex-col items-center justify-center w-20 h-20 rounded-xl border-2 transition-all cursor-pointer group hover:shadow-sm"
+                    [class.border-[#56CB4E]]="mobile_operator === 'MTN'"
+                    [class.bg-[#56CB4E]/5]="mobile_operator === 'MTN'"
+                    [class.border-gray-100]="mobile_operator !== 'MTN'" [class.bg-white]="mobile_operator !== 'MTN'">
+                    <input type="radio" id="mtn" name="mobile_payment" value="MTN" [(ngModel)]="mobile_operator"
+                        class="hidden">
+                    <div class="w-full flex items-center justify-center">
+                        <img src="/assets/pay_method/ntm-icon.svg" alt="MTN"
+                            class="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform">
+                    </div>
+                    <!-- <span class="text-[10px] font-bold uppercase tracking-wider"
+                        [class.text-[#56CB4E]]="mobile_operator === 'MTN'"
+                        [class.text-gray-400]="mobile_operator !== 'MTN'">MTN</span> -->
+                    <!-- Selection Indicator -->
+                    <div *ngIf="mobile_operator === 'MTN'"
+                        class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#56CB4E] rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-300">
+                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </div>
+                </label>
+
+                <!-- Orange Card -->
+                <label for="orange"
+                    class="relative flex flex-col items-center justify-center w-20 h-20 rounded-xl border-2 transition-all cursor-pointer group hover:shadow-sm"
+                    [class.border-[#FF6600]]="mobile_operator === 'ORANGE'"
+                    [class.bg-[#FF6600]/5]="mobile_operator === 'ORANGE'"
+                    [class.border-gray-100]="mobile_operator !== 'ORANGE'"
+                    [class.bg-white]="mobile_operator !== 'ORANGE'">
+                    <input type="radio" id="orange" name="mobile_payment" value="ORANGE" [(ngModel)]="mobile_operator"
+                        class="hidden">
+                    <div class="w-full flex items-center justify-center">
+                        <img src="/assets/pay_method/orange-icon.svg" alt="Orange"
+                            class="max-w-full max-h-full object-contain group-hover:scale-110 transition-transform">
+                    </div>
+                    <!-- <span class="text-[10px] font-bold uppercase tracking-wider"
+                        [class.text-[#FF6600]]="mobile_operator === 'ORANGE'"
+                        [class.text-gray-400]="mobile_operator !== 'ORANGE'">Orange</span> -->
+                    <!-- Selection Indicator -->
+                    <div *ngIf="mobile_operator === 'ORANGE'"
+                        class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-[#FF6600] rounded-full flex items-center justify-center shadow-sm animate-in zoom-in duration-300">
+                        <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7">
+                            </path>
+                        </svg>
+                    </div>
+                </label>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3">
                 <div class="md:col-span-1">
                     <p class="text-[#000000] font-semibold">Numéro de téléphone</p>
@@ -109,22 +164,24 @@
                                 class="w-20 h-20 border-4 border-[#56CB4E]/20 border-t-[#56CB4E] rounded-full animate-spin">
                             </div>
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <img src="/assets/pay_method/mobile_money.svg" class="w-8 h-8 opacity-50" alt=""
-                                    *ngIf="pay_method === 'MOBILE'">
+                                <img [src]="mobile_operator === 'MTN' ? '/assets/pay_method/ntm-icon.svg' : '/assets/pay_method/orange-icon.svg'"
+                                    class="w-10 h-10 opacity-80 object-contain" alt="Operator Icon">
                             </div>
                         </div>
 
                         <div *ngIf="transactionStatus() === 'SUCCESS' || transactionStatus() === 'VALIDE' || transactionStatus() === 'TERMINE'"
-                            class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center animate-in zoom-in duration-500">
-                            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+                            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                     d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
 
                         <div *ngIf="transactionStatus() === 'ECHEC' || transactionStatus() === 'FAILED'"
-                            class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center animate-in zoom-in duration-500">
-                            <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center">
+                            <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
                                     d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
