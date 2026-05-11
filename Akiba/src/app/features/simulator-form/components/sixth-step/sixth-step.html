@@ -11,13 +11,13 @@
 
     <div *ngIf="pay_method=='CARD'" class="w-max flex flex-wrap gap-8 mx-auto">
         <label class="flex items-center gap-2"><img src="./assets/pay_method/visa_card.svg" alt=""></label>
-        <label class="flex items-center gap-2"><img src="./assets/pay_method/paypal.svg" alt=""></label>
+        <!-- <label class="flex items-center gap-2"><img src="./assets/pay_method/paypal.svg" alt=""></label> -->
         <label class="flex items-center gap-2"><img src="./assets/pay_method/master_card.svg" alt=""></label>
     </div>
 
     <form (ngSubmit)="onSubmit()" class="w-full space-y-4">
         <div *ngIf="pay_method=='CARD'"
-            class="w-full md:w-[70%] mx-auto space-y-4 text-lg text-center text-[#BB7A44] font-semibold">
+            class="w-full md:w-[70%] mx-auto space-y-4 text-xl text-center text-[#000000]/40 font-semibold">
             continue le payement avec Master card
         </div>
         <!-- <div *ngIf="pay_method=='CARD'" class="w-full md:w-[70%] mx-auto space-y-4">
@@ -63,8 +63,17 @@
                     <p class="text-[#000000] font-semibold">Numéro de téléphone</p>
                     <p class="text-[#000000]/40 font-semibold">Entrer le numéro de téléphone payeur</p>
                 </div>
-                <input type="tel" name="account_number" [(ngModel)]="account_number" placeholder="000 000 000 000"
-                    class="bg-[#F5F5F5] p-3 rounded-lg md:col-span-2 border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all">
+
+                <label
+                    class="w-full flex items-center bg-[#F5F5F5] px-4 py-1 rounded-lg md:col-span-2 border-2 border-gray-100 focus-within:border-[#56CB4E] transition-all group cursor-text">
+                    <div class=" min-w-[77px] flex items-center gap-2 border-r border-gray-300 pr-2 mr-3 h-8">
+                        <img src="/assets/drapeau.png" width="28px" height="20px" alt="Flag" class="rounded-sm">
+                        <span class="text-gray-500 font-medium mr-2">+237</span>
+                    </div>
+                    <input type="tel" name="account_number" [(ngModel)]="account_number"
+                        (input)="onAccountNumberChange($event)" placeholder="000 000 000"
+                        class="w-full bg-transparent py-3 outline-none text-gray-700 font-medium">
+                </label>
             </div>
 
             <!-- <div class="grid grid-cols-1 md:grid-cols-3">
@@ -77,7 +86,7 @@
             </div> -->
         </div>
 
-        <div class="w-max flex mx-auto text-lg font-semibold">
+        <div class="w-max flex mx-auto text-lg text-[#b47b4d] font-semibold">
             <p>Montant à payer :</p> <span>{{ amount }} FCFA</span>
         </div>
 
@@ -86,14 +95,85 @@
             *{{errorMsg}}
         </div>
 
+        <!-- Transaction Status Modal -->
         <div *ngIf="transactionStatus()"
-            class="w-full md:w-[70%] mx-auto mt-4 p-4 rounded-lg bg-gray-50 border border-gray-100 text-center">
-            <p class="font-semibold text-lg"
-                [class.text-orange-500]="transactionStatus() === 'EN_ATTENTE' || transactionStatus() === 'pending'"
-                [class.text-green-600]="transactionStatus() === 'SUCCESS' || transactionStatus() === 'VALIDE' || transactionStatus() === 'TERMINE'"
-                [class.text-red-500]="transactionStatus() === 'ECHEC'">
-                Statut de la transaction : {{ transactionStatus() }}
-            </p>
+            class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-300">
+            <div
+                class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform animate-in zoom-in-95 duration-300">
+                <div class="p-8 text-center space-y-6">
+                    <!-- Icon / Loader Section -->
+                    <div class="flex justify-center">
+                        <div *ngIf="transactionStatus() === 'EN_ATTENTE' || transactionStatus() === 'pending'"
+                            class="relative flex items-center justify-center">
+                            <div
+                                class="w-20 h-20 border-4 border-[#56CB4E]/20 border-t-[#56CB4E] rounded-full animate-spin">
+                            </div>
+                            <div class="absolute inset-0 flex items-center justify-center">
+                                <img src="/assets/pay_method/mobile_money.svg" class="w-8 h-8 opacity-50" alt=""
+                                    *ngIf="pay_method === 'MOBILE'">
+                            </div>
+                        </div>
+
+                        <div *ngIf="transactionStatus() === 'SUCCESS' || transactionStatus() === 'VALIDE' || transactionStatus() === 'TERMINE'"
+                            class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center animate-in zoom-in duration-500">
+                            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+
+                        <div *ngIf="transactionStatus() === 'ECHEC' || transactionStatus() === 'FAILED'"
+                            class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center animate-in zoom-in duration-500">
+                            <svg class="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3"
+                                    d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Text Content -->
+                    <div class="space-y-2">
+                        <h3 class="text-2xl font-bold text-gray-800">
+                            <ng-container [ngSwitch]="transactionStatus()">
+                                <span *ngSwitchCase="'EN_ATTENTE'">Traitement en cours</span>
+                                <span *ngSwitchCase="'pending'">Traitement en cours</span>
+                                <span *ngSwitchCase="'SUCCESS'">Paiement Réussi !</span>
+                                <span *ngSwitchCase="'VALIDE'">Paiement Réussi !</span>
+                                <span *ngSwitchCase="'TERMINE'">Paiement Réussi !</span>
+                                <span *ngSwitchCase="'ECHEC'">Échec du paiement</span>
+                                <span *ngSwitchDefault>Statut : {{ transactionStatus() }}</span>
+                            </ng-container>
+                        </h3>
+                        <p class="text-gray-500 font-medium">
+                            <ng-container [ngSwitch]="transactionStatus()">
+                                <span *ngSwitchCase="'EN_ATTENTE'">Veuillez confirmer la transaction sur votre
+                                    téléphone.</span>
+                                <span *ngSwitchCase="'pending'">Veuillez confirmer la transaction sur votre
+                                    téléphone.</span>
+                                <span *ngSwitchCase="'SUCCESS'">Votre simulation a été enregistrée avec succès.</span>
+                                <span *ngSwitchCase="'VALIDE'">Votre simulation a été enregistrée avec succès.</span>
+                                <span *ngSwitchCase="'TERMINE'">Votre simulation a été enregistrée avec succès.</span>
+                                <span *ngSwitchCase="'ECHEC'">Une erreur est survenue lors du traitement. Veuillez
+                                    réessayer.</span>
+                                <span *ngSwitchDefault>Nous traitons votre demande...</span>
+                            </ng-container>
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="pt-4">
+                        <button *ngIf="transactionStatus() !== 'EN_ATTENTE' && transactionStatus() !== 'pending'"
+                            type="button" (click)="closeStatusModal()"
+                            class="w-full py-3 px-6 bg-[#BB7A44] hover:bg-[#A26F45] text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">
+                            Fermer
+                        </button>
+                        <p *ngIf="transactionStatus() === 'EN_ATTENTE' || transactionStatus() === 'pending'"
+                            class="text-xs text-gray-400 animate-pulse">
+                            Ne fermez pas cette fenêtre...
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <article class="flex justify-between items-center w-[70%] mx-auto mt-8 pb-20">
@@ -105,7 +185,3 @@
                 class="bg-[#BB7A44] text-[#f2f2f2] font-semibold py-3 px-12 rounded-lg shadow-lg hover:bg-[#A26F45] transition-all disabled:opacity-50">
                 <span *ngIf="!loading">Payer</span>
                 <span *ngIf="loading">Patientez...</span>
-            </button>
-        </article>
-    </form>
-</section>
