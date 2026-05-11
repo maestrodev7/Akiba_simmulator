@@ -18,6 +18,7 @@ export class SixthStep implements OnInit {
   private projectDataService = inject(ProjectData);
 
   pay_method: "CARD" | "MOBILE" = "CARD";
+  mobile_operator: "MTN" | "ORANGE" = "MTN";
   errorMsg = "";
 
   enablePayment = true;
