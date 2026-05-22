@@ -37,6 +37,20 @@ export class ThirdStep implements OnInit {
 
   submitted = false;
 
+  openDatePicker(input: HTMLInputElement): void {
+    if (this.isReadOnly || input.disabled) {
+      return;
+    }
+    input.focus();
+    if (typeof input.showPicker === 'function') {
+      try {
+        input.showPicker();
+      } catch {
+        // showPicker peut échouer hors interaction utilisateur directe
+      }
+    }
+  }
+
   prevStep() {
     this.router.navigate(['/votre-projet/second-step']);
   }

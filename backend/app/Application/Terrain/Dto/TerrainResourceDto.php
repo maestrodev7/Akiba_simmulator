@@ -11,6 +11,7 @@ final class TerrainResourceDto
         public readonly string $clientId,
         public readonly ?string $adresse = null,
         public readonly ?float $superficie = null,
+        public readonly string $superficieUnite = 'm2',
         public readonly ?string $titreFoncier = null,
         public readonly ?string $site = null,
         public readonly ?string $situation = null,

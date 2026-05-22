@@ -5,13 +5,11 @@ import { FormsModule } from '@angular/forms';
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
 import { CurrencyService } from '../../../../core/currency/currency.service';
-import { CurrencySelect } from '../../../../shared/components/currency-select/currency-select';
-import { CurrencyCode } from '../../../../core/currency/currency.types';
 
 @Component({
   selector: 'app-sixth-step',
   standalone: true,
-  imports: [CommonModule, FormsModule, CurrencySelect],
+  imports: [CommonModule, FormsModule],
   templateUrl: './sixth-step.html',
   styleUrl: './sixth-step.css',
 })
@@ -50,10 +48,6 @@ export class SixthStep implements OnInit {
         console.error('Error fetching amount', err);
       }
     });
-  }
-
-  onPaymentCurrencyChange(event: { previous: CurrencyCode; next: CurrencyCode }): void {
-    void event;
   }
 
   prevStep() {

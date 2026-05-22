@@ -81,6 +81,18 @@ export class CurrencyService {
     return Math.round((amountXaf / rate) * 100) / 100;
   }
 
+  currencySymbol(currency?: CurrencyCode): string {
+    const code = currency ?? this.selectedCurrency();
+    switch (code) {
+      case 'EUR':
+        return '€';
+      case 'USD':
+        return '$';
+      default:
+        return 'FCFA';
+    }
+  }
+
   format(amount: number, currency?: CurrencyCode): string {
     const code = currency ?? this.selectedCurrency();
     const formatted = Number(amount).toLocaleString('fr-FR', {

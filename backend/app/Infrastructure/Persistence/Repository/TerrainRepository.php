@@ -24,6 +24,7 @@ final class TerrainRepository implements TerrainRepositoryInterface
         $model->client_id = $terrain->getClientId();
         $model->adresse = $terrain->getAdresse();
         $model->superficie = $terrain->getSuperficie();
+        $model->superficie_unite = $terrain->getSuperficieUnite();
         $model->titre_foncier = $terrain->getTitreFoncier();
         $model->site = $terrain->getSite();
         $model->situation = $terrain->getSituation();
@@ -66,6 +67,7 @@ final class TerrainRepository implements TerrainRepositoryInterface
             clientId: $m->client_id,
             adresse: $m->adresse,
             superficie: $m->superficie,
+            superficieUnite: (string) ($m->superficie_unite ?? 'm2'),
             titreFoncier: $m->titre_foncier,
             site: $m->site,
             situation: $m->situation,

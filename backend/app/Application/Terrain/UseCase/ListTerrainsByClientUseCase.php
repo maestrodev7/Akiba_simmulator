@@ -24,6 +24,7 @@ final class ListTerrainsByClientUseCase
             clientId: $t->getClientId(),
             adresse: $t->getAdresse(),
             superficie: $t->getSuperficie(),
+            superficieUnite: $t->getSuperficieUnite(),
             titreFoncier: $t->getTitreFoncier(),
             site: $t->getSite(),
             situation: $t->getSituation(),

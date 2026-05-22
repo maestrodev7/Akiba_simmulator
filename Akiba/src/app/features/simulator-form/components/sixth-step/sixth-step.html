@@ -141,19 +141,9 @@
             </div> -->
         </div>
 
-        <div class="w-full md:w-[70%] mx-auto grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
-            <app-currency-select
-                label="Devise d'affichage"
-                hint="Le paiement est traité en FCFA (XAF)."
-                (currencyChange)="onPaymentCurrencyChange($event)"
-            ></app-currency-select>
-            <div class="text-lg font-semibold md:text-right text-[#b47b4d]">
-                <p>Montant à payer :</p>
-                <span>{{ displayAmountLabel() }}</span>
-                <p class="text-xs text-gray-500 font-normal mt-1">
-                    ({{ amountXaf() | number:'1.0-0':'fr-FR' }} FCFA)
-                </p>
-            </div>
+        <div class="w-max flex mx-auto text-lg text-[#b47b4d] font-semibold">
+            <p class="mr-2">Montant à payer :</p>
+            <span>{{ displayAmountLabel() }}</span>
         </div>
 
         <!-- message -->

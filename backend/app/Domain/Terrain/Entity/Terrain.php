@@ -11,6 +11,7 @@ final class Terrain
         private string $clientId,
         private ?string $adresse = null,
         private ?float $superficie = null,
+        private string $superficieUnite = 'm2',
         private ?string $titreFoncier = null,
         private ?string $site = null,
         private ?string $situation = null,
@@ -22,6 +23,7 @@ final class Terrain
     public function getClientId(): string { return $this->clientId; }
     public function getAdresse(): ?string { return $this->adresse; }
     public function getSuperficie(): ?float { return $this->superficie; }
+    public function getSuperficieUnite(): string { return $this->superficieUnite; }
     public function getTitreFoncier(): ?string { return $this->titreFoncier; }
     public function getSite(): ?string { return $this->site; }
     public function getSituation(): ?string { return $this->situation; }
@@ -29,6 +31,7 @@ final class Terrain
 
     public function withAdresse(?string $v): self { $c = clone $this; $c->adresse = $v; return $c; }
     public function withSuperficie(?float $v): self { $c = clone $this; $c->superficie = $v; return $c; }
+    public function withSuperficieUnite(string $v): self { $c = clone $this; $c->superficieUnite = $v; return $c; }
     public function withTitreFoncier(?string $v): self { $c = clone $this; $c->titreFoncier = $v; return $c; }
     public function withSite(?string $v): self { $c = clone $this; $c->site = $v; return $c; }
     public function withSituation(?string $v): self { $c = clone $this; $c->situation = $v; return $c; }

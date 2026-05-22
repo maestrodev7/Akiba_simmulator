@@ -39,6 +39,7 @@ export interface stepTwoForm {
     budget_previsionnel: number;
     adresse: string;
     superficie: number;
+    superficie_unite?: 'm2' | 'ha';
 
     statut_juridique: string[];
     etat_du_site: string[];
@@ -53,7 +54,7 @@ export interface stepTwoForm {
     type_architecture: string[];
 
     materiaux: string[];
-    style_construction: string[];
+    style_construction: string | string[] | null;
     espace_annexe: string[];
 
     nombre_etages: number;

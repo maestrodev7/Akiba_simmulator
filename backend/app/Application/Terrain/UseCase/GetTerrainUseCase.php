@@ -26,6 +26,7 @@ final class GetTerrainUseCase
             clientId: $terrain->getClientId(),
             adresse: $terrain->getAdresse(),
             superficie: $terrain->getSuperficie(),
+            superficieUnite: $terrain->getSuperficieUnite(),
             titreFoncier: $terrain->getTitreFoncier(),
             site: $terrain->getSite(),
             situation: $terrain->getSituation(),

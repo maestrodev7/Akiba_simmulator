@@ -9,6 +9,7 @@ final class TerrainDto
     public function __construct(
         public readonly ?string $adresse = null,
         public readonly ?float $superficie = null,
+        public readonly ?string $superficieUnite = null,
         public readonly ?string $titreFoncier = null,
         public readonly ?string $site = null,
         public readonly ?string $situation = null,
@@ -22,6 +23,7 @@ final class TerrainDto
         return new self(
             adresse: isset($data['adresse']) ? (string) $data['adresse'] : null,
             superficie: isset($data['superficie']) ? (float) $data['superficie'] : null,
+            superficieUnite: isset($data['superficie_unite']) ? (string) $data['superficie_unite'] : null,
             titreFoncier: isset($data['titre_foncier']) ? (string) $data['titre_foncier'] : null,
             site: isset($data['site']) ? (string) $data['site'] : null,
             situation: isset($data['situation']) ? (string) $data['situation'] : null,

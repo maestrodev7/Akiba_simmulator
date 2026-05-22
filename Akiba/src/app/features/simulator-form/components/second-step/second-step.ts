@@ -1,19 +1,46 @@
-import { Component, Input, OnInit, inject } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, Input, OnInit, effect, inject } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CustomSelect } from '../../../../shared/components/custom-select/custom-select';
-import { CurrencySelect } from '../../../../shared/components/currency-select/currency-select';
 import { CurrencyService } from '../../../../core/currency/currency.service';
 import { CurrencyCode } from '../../../../core/currency/currency.types';
+import {
+  fromSquareMeters,
+  SuperficieUnite,
+  toSquareMeters,
+} from '../../../../core/area/area.util';
 import { ErrorMessage } from '../../../../shared/components/error-message/error-message';
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
 import { Router } from '@angular/router';
+import {
+  normalizeMultiChoice,
+  normalizeSingleChoice,
+  STEP_TWO_SINGLE_CHOICE_FIELDS,
+} from './step-two-single-choice';
+
+function singleChoiceValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (Array.isArray(value) && value.length > 1) {
+      return { singleChoice: true };
+    }
+    return null;
+  };
+}
 
 @Component({
   selector: 'app-second-step',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelect, CurrencySelect, ErrorMessage],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelect, ErrorMessage],
   templateUrl: './second-step.html',
   styleUrl: './second-step.css',
 })
@@ -22,39 +49,63 @@ export class SecondStep implements OnInit {
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
   private router = inject(Router);
-  private currencyService = inject(CurrencyService);
+  readonly currencyService = inject(CurrencyService);
 
   private fb = inject(FormBuilder);
   private budgetXafStored: number | null = null;
+  private superficieM2Stored: number | null = null;
+  private lastSuperficieUnite: SuperficieUnite = 'm2';
+  private lastCurrency: CurrencyCode = 'XAF';
+  readonly superficieUnites: { value: SuperficieUnite; label: string }[] = [
+    { value: 'm2', label: 'm²' },
+    { value: 'ha', label: 'Hectare' },
+  ];
+
+  constructor() {
+    effect(() => {
+      const next = this.currencyService.selectedCurrency();
+      if (this.lastCurrency === next) {
+        return;
+      }
+      const display = this.form.get('budget_previsionnel')?.value;
+      if (display != null && display !== '') {
+        const xaf = this.currencyService.toXaf(Number(display), this.lastCurrency);
+        this.budgetXafStored = xaf;
+        this.form.patchValue({
+          budget_previsionnel: this.currencyService.fromXaf(xaf, next),
+        });
+      }
+      this.lastCurrency = next;
+    });
+  }
 
   form: FormGroup = this.fb.group({
     budget_previsionnel: [null, [Validators.required]],
     adresse: ['', [Validators.required]],
     superficie: [null, [Validators.required]],
+    superficie_unite: ['m2' as SuperficieUnite, [Validators.required]],
     statut_juridique: [null, [Validators.required]],
     etat_du_site: [null, [Validators.required]],
     topographie: [null, [Validators.required]],
     situation: [null, [Validators.required]],
     voie_existante: [null, [Validators.required]],
     documents_fournis: [[]],
-    type_produit: [[]],
-    nature_travaux: [null, [Validators.required]],
-    type_construction: [[]],
+    type_produit: [null, [singleChoiceValidator()]],
+    nature_travaux: [null, [Validators.required, singleChoiceValidator()]],
+    type_construction: [null, [singleChoiceValidator()]],
     type_architecture: [[]],
-    materiaux: [[]],
-    style_construction: [[]],
+    materiaux: [null, [singleChoiceValidator()]],
+    style_construction: [null, [singleChoiceValidator()]],
     espace_annexe: [[]],
     nombre_etages: [0],
     nombre_sous_sol: [0],
-    type_toiture: [[]],
-    habillage_facade: [[]],
-    menuiserie: [[]],
-    securisation_ouvertures: [[]],
+    type_toiture: [null, [singleChoiceValidator()]],
+    habillage_facade: [null, [singleChoiceValidator()]],
+    menuiserie: [null, [singleChoiceValidator()]],
+    securisation_ouvertures: [null, [singleChoiceValidator()]],
   });
 
   ngOnInit() {
-    this.currencyService.loadRates().subscribe();
-
     const savedData = this.projectDataService.getProjectData();
     if (savedData.stepTwo?.data) {
       const raw = savedData.stepTwo.data;
@@ -64,23 +115,48 @@ export class SecondStep implements OnInit {
         this.budgetXafStored != null
           ? this.currencyService.fromXaf(this.budgetXafStored)
           : null;
-      this.form.patchValue({ ...raw, budget_previsionnel: displayBudget });
+      const unite: SuperficieUnite =
+        raw.superficie_unite === 'ha' ? 'ha' : 'm2';
+      this.superficieM2Stored =
+        raw.superficie != null ? Number(raw.superficie) : null;
+      const displaySuperficie =
+        this.superficieM2Stored != null
+          ? fromSquareMeters(this.superficieM2Stored, unite)
+          : null;
+      const architecture = this.normalizeArchitecture(raw.type_architecture);
+      const singleChoicePatch = this.patchSingleChoiceFieldsFromRaw(raw);
+      this.form.patchValue({
+        ...raw,
+        ...singleChoicePatch,
+        budget_previsionnel: displayBudget,
+        superficie: displaySuperficie,
+        superficie_unite: unite,
+        type_architecture: architecture,
+        espace_annexe: normalizeMultiChoice(raw.espace_annexe),
+      });
     }
+    this.lastCurrency = this.currencyService.selectedCurrency();
+    this.lastSuperficieUnite =
+      (this.form.get('superficie_unite')?.value as SuperficieUnite) ?? 'm2';
     if (this.isReadOnly) {
       this.form.disable();
     }
   }
 
-  onCurrencyChange(event: { previous: CurrencyCode; next: CurrencyCode }): void {
-    const display = this.form.get('budget_previsionnel')?.value;
-    if (display == null || display === '') {
+  onSuperficieUniteChange(): void {
+    const next = this.form.get('superficie_unite')?.value as SuperficieUnite;
+    if (this.lastSuperficieUnite === next) {
       return;
     }
-    const xaf = this.currencyService.toXaf(Number(display), event.previous);
-    this.budgetXafStored = xaf;
-    this.form.patchValue({
-      budget_previsionnel: this.currencyService.fromXaf(xaf, event.next),
-    });
+    const display = this.form.get('superficie')?.value;
+    if (display != null && display !== '') {
+      const m2 = toSquareMeters(Number(display), this.lastSuperficieUnite);
+      this.superficieM2Stored = m2;
+      this.form.patchValue({
+        superficie: fromSquareMeters(m2, next),
+      });
+    }
+    this.lastSuperficieUnite = next;
   }
 
   options = {
@@ -186,17 +262,52 @@ export class SecondStep implements OnInit {
   submitted = false;
 
   isArchitectureSelected(value: string): boolean {
-    const selected = this.form.get('type_architecture')?.value || [];
-    return selected.includes(value);
+    return this.getSelectedArchitecture() === value;
   }
 
-  toggleArchitecture(value: string) {
-    const control = this.form.get('type_architecture');
-    const selected = control?.value || [];
-    if (selected.includes(value)) {
-      control?.setValue(selected.filter((v: string) => v !== value));
-    } else {
-      control?.setValue([...selected, value]);
+  selectArchitecture(value: string): void {
+    if (this.isReadOnly) {
+      return;
+    }
+    this.form.get('type_architecture')?.setValue([value]);
+  }
+
+  private getSelectedArchitecture(): string | null {
+    const selected = this.form.get('type_architecture')?.value;
+    if (Array.isArray(selected)) {
+      return selected.length > 0 ? String(selected[0]) : null;
+    }
+    return selected ? String(selected) : null;
+  }
+
+  private normalizeArchitecture(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      const first = value.find((item) => item != null && String(item).trim() !== '');
+      return first != null ? [String(first)] : [];
+    }
+    if (value != null && String(value).trim() !== '') {
+      return [String(value)];
+    }
+    return [];
+  }
+
+  private patchSingleChoiceFieldsFromRaw(
+    raw: Record<string, unknown>
+  ): Partial<Record<(typeof STEP_TWO_SINGLE_CHOICE_FIELDS)[number], string | null>> {
+    const patch: Partial<
+      Record<(typeof STEP_TWO_SINGLE_CHOICE_FIELDS)[number], string | null>
+    > = {};
+    for (const field of STEP_TWO_SINGLE_CHOICE_FIELDS) {
+      patch[field] = normalizeSingleChoice(raw[field]);
+    }
+    return patch;
+  }
+
+  private applySingleChoiceFieldsToPayload(
+    payload: Record<string, unknown>
+  ): void {
+    for (const field of STEP_TWO_SINGLE_CHOICE_FIELDS) {
+      payload[field] = normalizeSingleChoice(payload[field]);
     }
   }
 
@@ -216,6 +327,15 @@ export class SecondStep implements OnInit {
     const budgetXaf = this.currencyService.toXaf(displayBudget);
     val.budget_previsionnel = budgetXaf;
     this.budgetXafStored = budgetXaf;
+
+    const unite = (val.superficie_unite as SuperficieUnite) ?? 'm2';
+    const superficieM2 = toSquareMeters(Number(val.superficie), unite);
+    val.superficie = superficieM2;
+    val.superficie_unite = unite;
+    this.superficieM2Stored = superficieM2;
+    val.type_architecture = this.normalizeArchitecture(val.type_architecture);
+    this.applySingleChoiceFieldsToPayload(val);
+    val.espace_annexe = normalizeMultiChoice(val.espace_annexe);
 
     const projectData = this.projectDataService.getProjectData();
 

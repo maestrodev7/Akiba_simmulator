@@ -165,6 +165,13 @@ export class CustomSelect implements ControlValueAccessor {
   }
 
   writeValue(value: any): void {
+    if (!this.multiple && Array.isArray(value)) {
+      const items = value
+        .map((item) => (item != null ? String(item).trim() : ''))
+        .filter((item) => item !== '');
+      this.selectedValue = items.length > 0 ? items[0] : null;
+      return;
+    }
     this.selectedValue = value;
   }
 

@@ -6,6 +6,7 @@ import { getClients } from "../../services/clientService.ts";
 import { getPaymentAmount, updatePaymentAmount } from "../../services/paymentService.ts";
 import type { Client } from "../../types/client.ts";
 import { formatDate } from "../../utils/dateUtils.ts";
+import { useCurrency } from "../../context/CurrencyContext.tsx";
 
 
 type Filter = "all" | "paid " | "unpaid"
@@ -22,7 +23,9 @@ export default function DemandList() {
   const [filter, setFilter] = useState<Filter>("all")
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [paymentAmount, setPaymentAmount] = useState<number>(0);
+  const { fromXaf, toXaf, currency } = useCurrency();
+  const [amountXaf, setAmountXaf] = useState<number>(0);
+  const [displayAmount, setDisplayAmount] = useState<number>(0);
   const [isEditing, setIsEditing] = useState(false);
   const [isUpdatingAmount, setIsUpdatingAmount] = useState(false);
 
@@ -48,7 +51,9 @@ export default function DemandList() {
       try {
         const response = await getPaymentAmount();
         if (response.success) {
-          setPaymentAmount(response.data.amount);
+          const xaf = response.data.amount;
+          setAmountXaf(xaf);
+          setDisplayAmount(fromXaf(xaf));
         }
       } catch (err) {
         console.error("Error fetching payment amount:", err);
@@ -56,6 +61,10 @@ export default function DemandList() {
     };
     fetchPaymentAmount();
   }, []);
+
+  useEffect(() => {
+    setDisplayAmount(fromXaf(amountXaf));
+  }, [currency, amountXaf, fromXaf]);
 
   const handleFilter = (filter: Filter) => {
     setFilter(filter)
@@ -69,9 +78,12 @@ export default function DemandList() {
 
     setIsUpdatingAmount(true);
     try {
-      const response = await updatePaymentAmount(paymentAmount);
+      const xafToSave = toXaf(displayAmount);
+      const response = await updatePaymentAmount(xafToSave);
       if (response.success) {
-        setPaymentAmount(response.data.amount);
+        const saved = response.data.amount;
+        setAmountXaf(saved);
+        setDisplayAmount(fromXaf(saved));
         setIsEditing(false);
       }
     } catch (err) {
@@ -187,15 +199,14 @@ export default function DemandList() {
             <div className="flex items-center gap-1.5">
               <input
                 type="number"
-                value={paymentAmount}
-                onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                value={displayAmount}
+                onChange={(e) => setDisplayAmount(Number(e.target.value))}
                 disabled={!isEditing}
-                className={`w-24 px-3 py-1.5 rounded-full border transition-all duration-300 text-sm font-bold outline-none text-center ${isEditing
+                className={`w-28 px-3 py-1.5 rounded-full border transition-all duration-300 text-sm font-bold outline-none text-center ${isEditing
                     ? "border-[#BB7A44] bg-white ring-4 ring-[#BB7A44]/10 text-[#BB7A44]"
                     : "border-transparent bg-transparent text-[#344054] cursor-not-allowed"
                   }`}
               />
-              <span className="text-xs font-bold text-[#8181A5]">FCFA</span>
             </div>
             <button
               onClick={handleUpdateAmount}

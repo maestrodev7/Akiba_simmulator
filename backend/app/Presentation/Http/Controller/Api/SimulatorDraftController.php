@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Presentation\Http\Controller\Api;
 
 use App\Application\Simulation\UseCase\CalculerSimulationUseCase;
+use App\Application\Terrain\Support\SuperficieConverter;
 use App\Http\Controllers\Controller;
 use App\Infrastructure\Persistence\Eloquent\ClientModel;
 use App\Infrastructure\Persistence\Eloquent\ProduitModel;
@@ -135,6 +136,8 @@ final class SimulatorDraftController extends Controller
 
     private function saveStepTerrainAndProduct(Request $request, array $payload): array
     {
+        $this->validateStep2Payload($payload);
+
         $clientId = (string) $request->input('client_id', '');
         if ($clientId === '') {
             abort(422, 'client_id requis pour l\'etape 2.');
@@ -150,9 +153,18 @@ final class SimulatorDraftController extends Controller
             $terrain->client_id = $clientId;
         }
 
+        $superficieUnite = SuperficieConverter::normalizeUnit(
+            $this->asSingleString($payload['superficie_unite'] ?? null) ?? (string) ($terrain->superficie_unite ?? 'm2')
+        );
+        $superficieSaisie = $this->asSingleFloat($payload['superficie'] ?? null);
+        $superficieM2 = $superficieSaisie !== null
+            ? SuperficieConverter::toSquareMeters($superficieSaisie, $superficieUnite)
+            : $terrain->superficie;
+
         $terrain->fill([
             'adresse' => $this->asSingleString($payload['adresse'] ?? null) ?? $terrain->adresse,
-            'superficie' => $this->asSingleFloat($payload['superficie'] ?? null) ?? $terrain->superficie,
+            'superficie' => $superficieM2,
+            'superficie_unite' => $superficieUnite,
             'titre_foncier' => $this->asSingleString($payload['titre_foncier'] ?? $payload['statut_juridique'] ?? null) ?? $terrain->titre_foncier,
             'site' => $this->asSingleString($payload['site'] ?? $payload['etat_du_site'] ?? null) ?? $terrain->site,
             'situation' => $this->asSingleString($payload['situation'] ?? null) ?? $terrain->situation,
@@ -173,6 +185,8 @@ final class SimulatorDraftController extends Controller
         $existingCaracteristiques = is_array($produit->caracteristiques) ? $produit->caracteristiques : [];
         $incomingCaracteristiques = is_array($payload['caracteristiques'] ?? null) ? $payload['caracteristiques'] : [];
 
+        $allowed = $this->allowedStep2SingleChoices();
+
         $step2Caracteristiques = [
             'statut_juridique' => $this->asMultiValue($payload['statut_juridique'] ?? null),
             'etat_du_site' => $this->asMultiValue($payload['etat_du_site'] ?? null),
@@ -180,18 +194,57 @@ final class SimulatorDraftController extends Controller
             'situation' => $this->asMultiValue($payload['situation'] ?? null),
             'voie_existante' => $this->asMultiValue($payload['voie_existante'] ?? null),
             'documents_fournis' => $this->asMultiValue($payload['documents_fournis'] ?? null),
-            'nature_travaux' => $this->asMultiValue($payload['nature_travaux'] ?? null),
-            'type_construction' => $this->asMultiValue($payload['type_construction'] ?? null),
-            'type_architecture' => $this->asMultiValue($payload['type_architecture'] ?? null),
-            'materiaux' => $this->asMultiValue($payload['materiaux'] ?? null),
-            'style_construction' => $this->asMultiValue($payload['style_construction'] ?? null),
-            'espace_annexe' => $this->asMultiValue($payload['espace_annexe'] ?? null),
+            'nature_travaux' => $this->asSingleMultiValue(
+                $payload['nature_travaux'] ?? null,
+                'nature des travaux',
+                $allowed['nature_travaux']
+            ),
+            'type_construction' => $this->asSingleMultiValue(
+                $payload['type_construction'] ?? null,
+                'type de construction',
+                $allowed['type_construction']
+            ),
+            'type_architecture' => $this->asSingleMultiValue(
+                $payload['type_architecture'] ?? null,
+                'type d\'architecture',
+                $allowed['type_architecture']
+            ),
+            'materiaux' => $this->asSingleMultiValue(
+                $payload['materiaux'] ?? null,
+                'materiaux',
+                $allowed['materiaux']
+            ),
+            'style_construction' => $this->asSingleMultiValue(
+                $payload['style_construction'] ?? null,
+                'style de construction',
+                $allowed['style_construction']
+            ),
+            'espace_annexe' => $this->asMultiValueAllowed(
+                $payload['espace_annexe'] ?? null,
+                ['Véranda', 'Balcon', 'Garage']
+            ),
             'nombre_etages' => $payload['nombre_etages'] ?? null,
             'nombre_sous_sol' => $payload['nombre_sous_sol'] ?? null,
-            'type_toiture' => $this->asMultiValue($payload['type_toiture'] ?? null),
-            'habillage_facade' => $this->asMultiValue($payload['habillage_facade'] ?? null),
-            'menuiserie' => $this->asMultiValue($payload['menuiserie'] ?? null),
-            'securisation_ouvertures' => $this->asMultiValue($payload['securisation_ouvertures'] ?? null),
+            'type_toiture' => $this->asSingleMultiValue(
+                $payload['type_toiture'] ?? null,
+                'type de toiture',
+                $allowed['type_toiture']
+            ),
+            'habillage_facade' => $this->asSingleMultiValue(
+                $payload['habillage_facade'] ?? null,
+                'habillage des facades',
+                $allowed['habillage_facade']
+            ),
+            'menuiserie' => $this->asSingleMultiValue(
+                $payload['menuiserie'] ?? null,
+                'menuiserie',
+                $allowed['menuiserie']
+            ),
+            'securisation_ouvertures' => $this->asSingleMultiValue(
+                $payload['securisation_ouvertures'] ?? null,
+                'securisation des ouvertures',
+                $allowed['securisation_ouvertures']
+            ),
         ];
 
         $mergedCaracteristiques = array_merge(
@@ -200,9 +253,20 @@ final class SimulatorDraftController extends Controller
             array_filter($step2Caracteristiques, static fn ($value) => $value !== null && $value !== [])
         );
 
+        $typeProduit = $this->asSingleMultiValue(
+            $payload['type_produit'] ?? null,
+            'type de produit',
+            $allowed['type_produit']
+        );
+        $materiauxProduit = $this->asSingleMultiValue(
+            $payload['materiaux'] ?? null,
+            'materiaux',
+            $allowed['materiaux']
+        );
+
         $produit->fill([
-            'type_produit' => $this->asSingleString($payload['type_produit'] ?? null) ?? $produit->type_produit,
-            'materiaux' => $this->asSingleString($payload['materiaux'] ?? null) ?? $produit->materiaux,
+            'type_produit' => ($typeProduit !== null ? $typeProduit[0] : null) ?? $produit->type_produit,
+            'materiaux' => ($materiauxProduit !== null ? $materiauxProduit[0] : null) ?? $produit->materiaux,
             'standing' => $this->asSingleString($payload['standing'] ?? null) ?? $produit->standing,
             'budget_previsionnel' => $this->asSingleFloat($payload['budget_previsionnel'] ?? null) ?? $produit->budget_previsionnel,
             'caracteristiques' => $mergedCaracteristiques,
@@ -303,6 +367,137 @@ final class SimulatorDraftController extends Controller
         return !empty($produit->date_debut_travaux) && !empty($produit->date_fin_travaux);
     }
 
+    private function validateStep2Payload(array $payload): void
+    {
+        $validator = Validator::make($payload, [
+            'budget_previsionnel' => 'nullable|numeric|min:0',
+            'adresse' => 'nullable|string|max:500',
+            'superficie' => 'nullable|numeric|min:0',
+            'superficie_unite' => 'nullable|in:m2,ha',
+            'style_construction' => 'nullable',
+            'type_architecture' => 'nullable',
+            'type_produit' => 'nullable',
+            'type_construction' => 'nullable',
+            'materiaux' => 'nullable',
+            'espace_annexe' => 'nullable',
+            'type_toiture' => 'nullable',
+            'habillage_facade' => 'nullable',
+            'menuiserie' => 'nullable',
+            'securisation_ouvertures' => 'nullable',
+            'nature_travaux' => 'nullable',
+        ]);
+
+        if ($validator->fails()) {
+            abort(422, $validator->errors()->first());
+        }
+
+        $allowed = $this->allowedStep2SingleChoices();
+        foreach ($allowed as $field => $choices) {
+            if (!array_key_exists($field, $payload)) {
+                continue;
+            }
+            $this->asSingleMultiValue($payload[$field], $this->step2SingleChoiceLabel($field), $choices);
+        }
+
+        if (array_key_exists('espace_annexe', $payload)) {
+            $this->asMultiValueAllowed(
+                $payload['espace_annexe'],
+                ['Véranda', 'Balcon', 'Garage']
+            );
+        }
+    }
+
+    /**
+     * @return array<string, list<string>>
+     */
+    private function allowedStep2SingleChoices(): array
+    {
+        return [
+            'type_produit' => ['Construction neuve', 'Travaux sur maison existante', 'Autres'],
+            'nature_travaux' => [
+                'Maison individuelle', 'Maison jumelée', 'Immeuble', 'Villa',
+                'Dépendance', 'Piscine', 'Autre équipement',
+            ],
+            'type_construction' => [
+                'Classique', 'Contemporaine', 'Duplex', 'Moderne',
+                'Traditionnelle', 'Futuriste',
+            ],
+            'type_architecture' => ['traditionnelle', 'moderne', 'contemporaine', 'futuriste'],
+            'materiaux' => [
+                'Bois', 'Béton', 'Parpaings', 'Brique de terre cuite',
+                'Brique de terre crue', 'Pisier',
+            ],
+            'style_construction' => [
+                'Villa classique', 'Villa traditionnelle', 'Villa moderne', 'Villa contemporaine',
+            ],
+            'type_toiture' => [
+                'Tuiles en terre cuite', 'Tuiles en bois', 'Tôles ondulée',
+                'Tôles bac', 'Toiture terrasse en béton',
+            ],
+            'habillage_facade' => [
+                'Carrelage', 'Béton brute', 'Enduit de ciment et chaux', 'Bardage métallique',
+            ],
+            'menuiserie' => ['Bois', 'PVC', 'Métalique', 'Aluminium'],
+            'securisation_ouvertures' => ['Grilles métalliques', 'Claustras', 'Autres'],
+        ];
+    }
+
+    private function step2SingleChoiceLabel(string $field): string
+    {
+        return match ($field) {
+            'type_produit' => 'type de produit',
+            'nature_travaux' => 'nature des travaux',
+            'type_construction' => 'type de construction',
+            'type_architecture' => 'type d\'architecture',
+            'materiaux' => 'materiaux',
+            'style_construction' => 'style de construction',
+            'type_toiture' => 'type de toiture',
+            'habillage_facade' => 'habillage des facades',
+            'menuiserie' => 'menuiserie',
+            'securisation_ouvertures' => 'securisation des ouvertures',
+            default => $field,
+        };
+    }
+
+    /**
+     * @param list<string>|null $allowed
+     */
+    private function asSingleMultiValue(mixed $value, string $fieldLabel, ?array $allowed = null): ?array
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $items = [];
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                if (is_scalar($item)) {
+                    $normalized = trim((string) $item);
+                    if ($normalized !== '') {
+                        $items[] = $normalized;
+                    }
+                }
+            }
+        } elseif (is_scalar($value)) {
+            $normalized = trim((string) $value);
+            if ($normalized !== '') {
+                $items[] = $normalized;
+            }
+        }
+
+        $items = array_values(array_unique($items));
+
+        if (count($items) > 1) {
+            abort(422, "Un seul {$fieldLabel} est autorise.");
+        }
+
+        if (count($items) === 1 && $allowed !== null && !in_array($items[0], $allowed, true)) {
+            abort(422, "{$fieldLabel} invalide.");
+        }
+
+        return $items === [] ? null : $items;
+    }
+
     private function asMultiValue(mixed $value): ?array
     {
         if ($value === null) {
@@ -323,6 +518,25 @@ final class SimulatorDraftController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * @param list<string> $allowed
+     */
+    private function asMultiValueAllowed(mixed $value, array $allowed): ?array
+    {
+        $multi = $this->asMultiValue($value);
+        if ($multi === null) {
+            return null;
+        }
+
+        foreach ($multi as $item) {
+            if (!in_array($item, $allowed, true)) {
+                abort(422, 'Espace annexe invalide.');
+            }
+        }
+
+        return $multi;
     }
 
     private function asSingleString(mixed $value): ?string

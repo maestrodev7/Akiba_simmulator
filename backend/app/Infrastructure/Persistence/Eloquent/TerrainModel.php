@@ -16,7 +16,7 @@ class TerrainModel extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
-        'id', 'client_id', 'adresse', 'superficie', 'titre_foncier', 'site', 'situation', 'topographie',
+        'id', 'client_id', 'adresse', 'superficie', 'superficie_unite', 'titre_foncier', 'site', 'situation', 'topographie',
     ];
 
     protected $casts = ['superficie' => 'float'];

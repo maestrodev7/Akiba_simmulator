@@ -3,15 +3,20 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
         <div class="flex flex-col gap-3">
             <label class="font-bold text-[#070707] text-lg">Date de démarrage des travaux</label>
-            <div class="relative group">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <p class="text-sm text-gray-500 -mt-1">Cliquez n'importe où dans le champ pour ouvrir le calendrier</p>
+            <div class="date-field relative group" role="button" tabindex="0"
+                (click)="openDatePicker(debutInput)"
+                (keydown.enter)="openDatePicker(debutInput); $event.preventDefault()"
+                (keydown.space)="openDatePicker(debutInput); $event.preventDefault()">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6B7280" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                     </svg>
                 </div>
-                <input type="date" formControlName="date_debut_travaux"
-                    class="w-full p-4 pl-12 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all text-gray-500 appearance-none uppercase text-sm tracking-widest"
-                    placeholder="12/12/2020">
+                <input #debutInput type="date" formControlName="date_debut_travaux"
+                    class="w-full p-4 pl-12 pr-4 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all text-gray-700 uppercase text-sm tracking-widest"
+                    placeholder="JJ/MM/AAAA"
+                    (click)="openDatePicker(debutInput); $event.stopPropagation()">
             </div>
             <div *ngIf="submitted && form.get('date_debut_travaux')?.invalid" class="text-red-500 text-sm mt-1">
                 La date de début est requise.
@@ -20,15 +25,20 @@
 
         <div class="flex flex-col gap-3">
             <label class="font-bold text-[#070707] text-lg">Date de fin des travaux</label>
-            <div class="relative group">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <p class="text-sm text-gray-500 -mt-1">Cliquez n'importe où dans le champ pour ouvrir le calendrier</p>
+            <div class="date-field relative group" role="button" tabindex="0"
+                (click)="openDatePicker(finInput)"
+                (keydown.enter)="openDatePicker(finInput); $event.preventDefault()"
+                (keydown.space)="openDatePicker(finInput); $event.preventDefault()">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="#6B7280" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                     </svg>
                 </div>
-                <input type="date" formControlName="date_fin_travaux"
-                    class="w-full p-4 pl-12 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all text-gray-500 appearance-none uppercase text-sm tracking-widest"
-                    placeholder="12/12/2020">
+                <input #finInput type="date" formControlName="date_fin_travaux"
+                    class="w-full p-4 pl-12 pr-4 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all text-gray-700 uppercase text-sm tracking-widest"
+                    placeholder="JJ/MM/AAAA"
+                    (click)="openDatePicker(finInput); $event.stopPropagation()">
             </div>
             <div *ngIf="submitted && form.get('date_fin_travaux')?.invalid" class="text-red-500 text-sm mt-1">
                 La date de fin est requise.

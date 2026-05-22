@@ -8,6 +8,7 @@ use App\Application\Terrain\Dto\TerrainDto;
 use App\Application\Terrain\Dto\TerrainResourceDto;
 use App\Domain\Client\Repository\ClientRepositoryInterface;
 use App\Domain\Exception\NotFoundException;
+use App\Application\Terrain\Support\SuperficieConverter;
 use App\Domain\Terrain\Entity\Terrain;
 use App\Domain\Terrain\Repository\TerrainRepositoryInterface;
 
@@ -25,11 +26,16 @@ final class CreateTerrainUseCase
             throw new NotFoundException('Client non trouvé.');
         }
         $id = $this->terrainRepository->nextIdentity();
+        $unite = SuperficieConverter::normalizeUnit($dto->superficieUnite);
+        $superficieM2 = $dto->superficie !== null
+            ? SuperficieConverter::toSquareMeters($dto->superficie, $unite)
+            : null;
         $terrain = new Terrain(
             id: $id,
             clientId: $clientId,
             adresse: $dto->adresse,
-            superficie: $dto->superficie,
+            superficie: $superficieM2,
+            superficieUnite: $unite,
             titreFoncier: $dto->titreFoncier,
             site: $dto->site,
             situation: $dto->situation,
@@ -46,6 +52,7 @@ final class CreateTerrainUseCase
             clientId: $t->getClientId(),
             adresse: $t->getAdresse(),
             superficie: $t->getSuperficie(),
+            superficieUnite: $t->getSuperficieUnite(),
             titreFoncier: $t->getTitreFoncier(),
             site: $t->getSite(),
             situation: $t->getSituation(),

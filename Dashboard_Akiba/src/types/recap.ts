@@ -20,6 +20,7 @@ export interface RecapData {
     client_id: string;
     adresse: string;
     superficie: number;
+    superficie_unite?: 'm2' | 'ha';
     titre_foncier: string;
     site: string;
     situation: string;

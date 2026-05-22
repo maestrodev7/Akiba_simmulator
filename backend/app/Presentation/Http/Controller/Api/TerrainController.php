@@ -58,6 +58,7 @@ final class TerrainController extends Controller
             'client_id' => $dto->clientId,
             'adresse' => $dto->adresse,
             'superficie' => $dto->superficie,
+            'superficie_unite' => $dto->superficieUnite ?? 'm2',
             'titre_foncier' => $dto->titreFoncier,
             'site' => $dto->site,
             'situation' => $dto->situation,
