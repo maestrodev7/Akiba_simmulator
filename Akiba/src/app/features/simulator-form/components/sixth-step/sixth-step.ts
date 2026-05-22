@@ -22,8 +22,10 @@ export class SixthStep implements OnInit {
   private currencyService = inject(CurrencyService);
 
   pay_method: "CARD" | "MOBILE" = "CARD";
+  mobile_operator: "MTN" | "ORANGE" = "MTN";
   errorMsg = "";
 
+  enablePayment = true;
   account_number: string = '';
   /** Montant de simulation en XAF (référence backend). */
   amountXaf = signal<number>(100);
@@ -65,7 +67,7 @@ export class SixthStep implements OnInit {
         const statut = res.data?.transaction?.last_status_payload.content.statut;
         this.transactionStatus.set(statut ?? null);
         console.log("voici le statut du check", statut);
-        if (statut === 'EN_ATTENTE' || statut === "pending") {
+        if ((statut === 'EN_ATTENTE' || statut === "pending") && this.transactionStatus()) {
           setTimeout(() => {
             this.checkPaymentStatus(reference);
           }, 7000);
@@ -89,14 +91,17 @@ export class SixthStep implements OnInit {
     this.loading = true;
     this.transactionStatus.set(null);
     if (this.pay_method === 'MOBILE') {
+      const rawNumber = this.account_number.replace(/\s/g, '');
+      if (!rawNumber || rawNumber.length < 9) {
+        this.errorMsg = "Veuillez renseigner un numéro de téléphone valide (9 chiffres)";
+        this.loading = false;
+        return;
+      }
+      
       const payload = {
         client_id: this.projectDataService.getProjectData().client_id,
-        account_number: this.account_number
+        account_number: rawNumber // Send without spaces
       };
-      if (!payload.account_number) {
-        this.errorMsg = "veillez renseigner le numero de telephone payeur"
-        return
-      }
       console.log("mobile play load", payload)
 
       this.projectService.depositMobile(payload).subscribe({
@@ -113,6 +118,7 @@ export class SixthStep implements OnInit {
                 this.checkPaymentStatus(reference);
               }, 20000);
             } else {
+              this.enablePayment = false;
               this.loading = false;
             }
           } else {
@@ -146,5 +152,22 @@ export class SixthStep implements OnInit {
         }
       });
     }
+  }
+
+  closeStatusModal() {
+    this.transactionStatus.set(null);
+    this.loading = false;
+  }
+
+  onAccountNumberChange(event: any) {
+    let value = event.target.value.replace(/\D/g, ''); // Remove non-numeric characters
+    if (value.length > 9) value = value.slice(0, 9); // Limit to 9 digits (standard for many regions)
+    
+    // Format: 000 000 000
+    const parts = [];
+    for (let i = 0; i < value.length; i += 3) {
+      parts.push(value.substring(i, i + 3));
+    }
+    this.account_number = parts.join(' ');
   }
 }

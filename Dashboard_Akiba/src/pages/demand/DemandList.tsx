@@ -3,7 +3,10 @@ import check from "../../assets/black_accept_demand.svg"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router";
 import { getClients } from "../../services/clientService.ts";
+import { getPaymentAmount, updatePaymentAmount } from "../../services/paymentService.ts";
 import type { Client } from "../../types/client.ts";
+import { formatDate } from "../../utils/dateUtils.ts";
+
 
 type Filter = "all" | "paid " | "unpaid"
 
@@ -19,6 +22,9 @@ export default function DemandList() {
   const [filter, setFilter] = useState<Filter>("all")
   const [clients, setClients] = useState<Client[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [paymentAmount, setPaymentAmount] = useState<number>(0);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isUpdatingAmount, setIsUpdatingAmount] = useState(false);
 
   useEffect(() => {
     const fetchClients = async () => {
@@ -37,9 +43,43 @@ export default function DemandList() {
     fetchClients();
   }, [filter]);
 
+  useEffect(() => {
+    const fetchPaymentAmount = async () => {
+      try {
+        const response = await getPaymentAmount();
+        if (response.success) {
+          setPaymentAmount(response.data.amount);
+        }
+      } catch (err) {
+        console.error("Error fetching payment amount:", err);
+      }
+    };
+    fetchPaymentAmount();
+  }, []);
+
   const handleFilter = (filter: Filter) => {
     setFilter(filter)
   }
+
+  const handleUpdateAmount = async () => {
+    if (!isEditing) {
+      setIsEditing(true);
+      return;
+    }
+
+    setIsUpdatingAmount(true);
+    try {
+      const response = await updatePaymentAmount(paymentAmount);
+      if (response.success) {
+        setPaymentAmount(response.data.amount);
+        setIsEditing(false);
+      }
+    } catch (err) {
+      console.error("Error updating payment amount:", err);
+    } finally {
+      setIsUpdatingAmount(false);
+    }
+  };
 
   const columns: Column[] = [
     {
@@ -80,7 +120,7 @@ export default function DemandList() {
       header: "Date de payement",
       render: (client) => (
         <span className="text-base text-[#344054]">
-          {client.simulation_paid_at || "—--------"}
+          {formatDate(client.simulation_paid_at)}
         </span>
       ),
       minWidth: "170px"
@@ -104,41 +144,79 @@ export default function DemandList() {
       <div className="flex flex-col justify-between gap-4">
         <h1 className="text-3xl font-semibold text-[#000000]">Liste des Clients</h1>
 
-        <div className="flex flex-wrap w-full sm:w-max p-1 bg-[#F5F5FA] rounded-[1.5rem] min-[390px]:rounded-full gap-1 min-[390px]:gap-0">
-          <button
-            className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "all" ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
-            onClick={() => handleFilter("all")}
-          >
-            <img
-              src={inbox}
-              width={20}
-              height={20}
-              alt="inbox"
-              className={`transition-all duration-300 ${filter === "all" ? "" : "brightness-0 opacity-40 hover:opacity-100"}`}
-            />
-            <span className="font-medium whitespace-nowrap">Tout</span>
-          </button>
+        <div className="flex flex-wrap gap-3 justify-between items-center">
+          <div className="flex flex-wrap w-full sm:w-max p-1 bg-[#F5F5FA] rounded-[1.5rem] min-[390px]:rounded-full gap-1 min-[390px]:gap-0">
+            <button
+              className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "all" ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
+              onClick={() => handleFilter("all")}
+            >
+              <img
+                src={inbox}
+                width={20}
+                height={20}
+                alt="inbox"
+                className={`transition-all duration-300 ${filter === "all" ? "" : "brightness-0 opacity-40 hover:opacity-100"}`}
+              />
+              <span className="font-medium whitespace-nowrap">Tout</span>
+            </button>
 
-          <button
-            className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "paid " ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
-            onClick={() => handleFilter("paid ")}
-          >
-            <img
-              src={check}
-              width={20}
-              height={20}
-              alt="check"
-              className={`transition-all duration-300 ${filter === "paid " ? "brightness-0 invert" : "opacity-40 hover:opacity-100"}`}
-            />
-            <span className="font-medium whitespace-nowrap">Demande Payé</span>
-          </button>
+            <button
+              className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "paid " ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
+              onClick={() => handleFilter("paid ")}
+            >
+              <img
+                src={check}
+                width={20}
+                height={20}
+                alt="check"
+                className={`transition-all duration-300 ${filter === "paid " ? "brightness-0 invert" : "opacity-40 hover:opacity-100"}`}
+              />
+              <span className="font-medium whitespace-nowrap">Demande Payé</span>
+            </button>
 
-          <button
-            className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "unpaid" ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
-            onClick={() => handleFilter("unpaid")}
-          >
-            <span className="font-medium whitespace-nowrap">Demande non Payé</span>
-          </button>
+            <button
+              className={`w-full min-[390px]:w-auto flex-1 sm:flex-none flex items-center justify-center gap-2 transition-all duration-300 cursor-pointer py-3 px-4 sm:px-6 rounded-[1.2rem] min-[390px]:rounded-full ${filter === "unpaid" ? "bg-[#BB7A44] text-white shadow-sm" : "text-[#8181A5] hover:text-[#BB7A44]"}`}
+              onClick={() => handleFilter("unpaid")}
+            >
+              <span className="font-medium whitespace-nowrap">Demande non Payé</span>
+            </button>
+          </div>
+
+          <div className="flex items-center gap-3 bg-white p-1.5 px-4 rounded-full border border-[#F5F5FA] shadow-sm">
+            <span className="text-sm font-medium text-[#667085]">Cout de la simulation:</span>
+            <div className="flex items-center gap-1.5">
+              <input
+                type="number"
+                value={paymentAmount}
+                onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                disabled={!isEditing}
+                className={`w-24 px-3 py-1.5 rounded-full border transition-all duration-300 text-sm font-bold outline-none text-center ${isEditing
+                    ? "border-[#BB7A44] bg-white ring-4 ring-[#BB7A44]/10 text-[#BB7A44]"
+                    : "border-transparent bg-transparent text-[#344054] cursor-not-allowed"
+                  }`}
+              />
+              <span className="text-xs font-bold text-[#8181A5]">FCFA</span>
+            </div>
+            <button
+              onClick={handleUpdateAmount}
+              disabled={isUpdatingAmount}
+              className={`px-6 py-1.5 rounded-full text-sm font-bold transition-all duration-300 shadow-sm active:scale-95 flex items-center gap-2 ${isEditing
+                  ? "bg-[#BB7A44] text-white hover:bg-[#A3693A] hover:shadow-md"
+                  : "bg-[#F2F2F7] text-[#344054] hover:bg-[#BB7A44] hover:text-white"
+                } disabled:opacity-50 disabled:cursor-not-allowed`}
+            >
+              {isUpdatingAmount ? (
+                <>
+                  <span className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin" />
+                  ...
+                </>
+              ) : isEditing ? (
+                "Enregistrer"
+              ) : (
+                "Modifier"
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -1,5 +1,6 @@
 import api from "./config/axios.config";
 import { setCurrencyRates } from "../lib/currency";
+import type { PaymentAmountResponse } from "../types/payment";
 
 export async function fetchCurrencies(): Promise<void> {
   const res = await api.get("/currencies");
@@ -8,14 +9,13 @@ export async function fetchCurrencies(): Promise<void> {
   }
 }
 
-export async function getPaymentAmount(): Promise<number | null> {
-  const res = await api.get("/payments/amount");
-  const amount = res.data?.data?.amount;
-  return amount != null ? Number(amount) : null;
-}
+export const getPaymentAmount = async (): Promise<PaymentAmountResponse> => {
+  const response = await api.get<PaymentAmountResponse>("/payments/amount");
+  return response.data;
+};
 
 /** Montant toujours envoyé en XAF. */
-export async function updatePaymentAmount(amountXaf: number): Promise<number> {
-  const res = await api.put("/payments/amount", { amount: amountXaf });
-  return Number(res.data?.data?.amount ?? amountXaf);
-}
+export const updatePaymentAmount = async (amount: number): Promise<PaymentAmountResponse> => {
+  const response = await api.put<PaymentAmountResponse>("/payments/amount", { amount });
+  return response.data;
+};

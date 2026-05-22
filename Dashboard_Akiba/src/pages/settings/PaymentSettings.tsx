@@ -27,8 +27,9 @@ export default function PaymentSettings() {
       setLoading(true);
       try {
         await fetchCurrencies();
-        const xaf = await getPaymentAmount();
-        if (xaf != null) {
+        const response = await getPaymentAmount();
+        if (response.success && response.data?.amount != null) {
+          const xaf = response.data.amount;
           setAmountXaf(xaf);
           setDisplayAmount(String(fromXaf(xaf, currency)));
         }
@@ -73,12 +74,15 @@ export default function PaymentSettings() {
     setError(null);
     setMessage(null);
     try {
-      const saved = await updatePaymentAmount(amountXaf);
-      setAmountXaf(saved);
-      setDisplayAmount(String(fromXaf(saved, currency)));
-      setMessage(
-        `Montant enregistré : ${formatMoney(fromXaf(saved, currency), currency)} (${saved.toLocaleString("fr-FR")} FCFA).`
-      );
+      const response = await updatePaymentAmount(amountXaf);
+      if (response.success) {
+        const saved = response.data.amount;
+        setAmountXaf(saved);
+        setDisplayAmount(String(fromXaf(saved, currency)));
+        setMessage(
+          `Montant enregistré : ${formatMoney(fromXaf(saved, currency), currency)} (${saved.toLocaleString("fr-FR")} FCFA).`
+        );
+      }
     } catch {
       setError("Échec de l'enregistrement.");
     } finally {

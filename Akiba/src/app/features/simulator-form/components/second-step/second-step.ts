@@ -237,6 +237,7 @@ export class SecondStep implements OnInit {
             stepTwo: payload as any
           });
           console.log("Step 2 saved successfully", response);
+          console.log("project data", this.projectDataService.getProjectData());
           this.router.navigate(['/votre-projet/third-step']);
         }
       },

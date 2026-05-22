@@ -75,6 +75,7 @@ export class FirstStep implements OnInit {
     this.projectService.saveStepDraft(payload).subscribe({
       next: (response) => {
         if (response.success && response.data?.client_id) {
+          console.log("response test alpha", response, "client id", response.data.client_id);
           this.projectDataService.setProjectData({
             client_id: response.data.client_id,
             stepOne: payload as any
