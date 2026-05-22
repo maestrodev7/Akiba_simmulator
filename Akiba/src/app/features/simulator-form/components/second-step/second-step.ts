@@ -1,8 +1,10 @@
-import { Component, EventEmitter, Input, OnInit, Output, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CustomSelect } from '../../../../shared/components/custom-select/custom-select';
-
+import { CurrencySelect } from '../../../../shared/components/currency-select/currency-select';
+import { CurrencyService } from '../../../../core/currency/currency.service';
+import { CurrencyCode } from '../../../../core/currency/currency.types';
 import { ErrorMessage } from '../../../../shared/components/error-message/error-message';
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
@@ -11,7 +13,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-second-step',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, CustomSelect, ErrorMessage],
+  imports: [CommonModule, ReactiveFormsModule, CustomSelect, CurrencySelect, ErrorMessage],
   templateUrl: './second-step.html',
   styleUrl: './second-step.css',
 })
@@ -20,8 +22,10 @@ export class SecondStep implements OnInit {
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
   private router = inject(Router);
+  private currencyService = inject(CurrencyService);
 
   private fb = inject(FormBuilder);
+  private budgetXafStored: number | null = null;
 
   form: FormGroup = this.fb.group({
     budget_previsionnel: [null, [Validators.required]],
@@ -49,13 +53,34 @@ export class SecondStep implements OnInit {
   });
 
   ngOnInit() {
+    this.currencyService.loadRates().subscribe();
+
     const savedData = this.projectDataService.getProjectData();
     if (savedData.stepTwo?.data) {
-      this.form.patchValue(savedData.stepTwo.data);
+      const raw = savedData.stepTwo.data;
+      this.budgetXafStored =
+        raw.budget_previsionnel != null ? Number(raw.budget_previsionnel) : null;
+      const displayBudget =
+        this.budgetXafStored != null
+          ? this.currencyService.fromXaf(this.budgetXafStored)
+          : null;
+      this.form.patchValue({ ...raw, budget_previsionnel: displayBudget });
     }
     if (this.isReadOnly) {
       this.form.disable();
     }
+  }
+
+  onCurrencyChange(event: { previous: CurrencyCode; next: CurrencyCode }): void {
+    const display = this.form.get('budget_previsionnel')?.value;
+    if (display == null || display === '') {
+      return;
+    }
+    const xaf = this.currencyService.toXaf(Number(display), event.previous);
+    this.budgetXafStored = xaf;
+    this.form.patchValue({
+      budget_previsionnel: this.currencyService.fromXaf(xaf, event.next),
+    });
   }
 
   options = {
@@ -186,7 +211,12 @@ export class SecondStep implements OnInit {
       return;
     }
 
-    const val = this.form.value;
+    const val = { ...this.form.value };
+    const displayBudget = Number(val.budget_previsionnel);
+    const budgetXaf = this.currencyService.toXaf(displayBudget);
+    val.budget_previsionnel = budgetXaf;
+    this.budgetXafStored = budgetXaf;
+
     const projectData = this.projectDataService.getProjectData();
 
     const payload: any = {
@@ -194,9 +224,7 @@ export class SecondStep implements OnInit {
       client_id: projectData?.client_id,
       terrain_id: projectData?.terrain_id,
       produit_id: projectData?.produit_id,
-      data: {
-        ...val
-      }
+      data: val,
     };
 
     this.projectService.saveStepTwoDraft(payload).subscribe({

@@ -17,6 +17,7 @@ final class PaymentSettingsController extends Controller
     {
         return ApiResponse::success([
             'amount' => PaymentAmountSetting::get(),
+            'currency' => 'XAF',
         ]);
     }
 
@@ -37,7 +38,8 @@ final class PaymentSettingsController extends Controller
 
         return ApiResponse::success([
             'amount' => $amount,
-        ], 'Montant de paiement mis à jour.');
+            'currency' => 'XAF',
+        ], 'Montant de paiement mis à jour (stocké en XAF).');
     }
 }
 

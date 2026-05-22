@@ -2,7 +2,14 @@ import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getProduits, getRecap, getTerrain } from "../../services/recapService.ts";
+import { fetchCurrencies } from "../../services/paymentService.ts";
 import type { RecapData } from "../../types/recap.ts";
+import {
+    type CurrencyCode,
+    formatMoney,
+    fromXaf,
+    getCurrencyOptions,
+} from "../../lib/currency.ts";
 
 const DetailField = ({ label, value }: { label: string; value: string | number | undefined | null }) => (
     <div className="space-y-1.5 w-full">
@@ -24,6 +31,13 @@ export default function DemandDetail() {
     const [data, setData] = useState<RecapData[] | null>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [currency, setCurrency] = useState<CurrencyCode>("XAF");
+
+    const formatBudget = (xaf: number | undefined | null) => {
+        if (xaf == null) return "";
+        const display = fromXaf(xaf, currency);
+        return `${formatMoney(display, currency)} (${Number(xaf).toLocaleString("fr-FR")} FCFA)`;
+    };
 
     async function getTerrainByIdClient(id: string) {
         try {
@@ -52,6 +66,7 @@ export default function DemandDetail() {
         const fetchData = async () => {
             setIsLoading(true);
             try {
+                await fetchCurrencies();
                 const Terrain = await getTerrainByIdClient(id)
                 console.log("Terrain voici", Terrain);
 
@@ -118,16 +133,32 @@ export default function DemandDetail() {
     return (
         <section className="p-6 max-w-6xl mx-auto animate-in fade-in duration-500">
             {/* Header */}
-            <div className="flex items-center gap-4 mb-8">
-                <button
-                    onClick={() => navigate("/demand")}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                    <ArrowLeft size={24} className="text-[#344648]" />
-                </button>
-                <h1 className="text-2xl font-bold text-[#000000]">
-                    Détails du Client
-                </h1>
+            <div className="flex flex-col gap-4 mb-8 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => navigate("/demand")}
+                        className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    >
+                        <ArrowLeft size={24} className="text-[#344648]" />
+                    </button>
+                    <h1 className="text-2xl font-bold text-[#000000]">
+                        Détails du Client
+                    </h1>
+                </div>
+                <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-[#8181A5]">Devise</label>
+                    <select
+                        value={currency}
+                        onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                        className="bg-[#F5F5FA] px-3 py-2 rounded-md border border-gray-200 text-sm"
+                    >
+                        {getCurrencyOptions().map((opt) => (
+                            <option key={opt.code} value={opt.code}>
+                                {opt.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
             <div className="space-y-16">
@@ -179,7 +210,7 @@ export default function DemandDetail() {
                             <div className="space-y-6">
                                 <DetailField
                                     label="Budget prévisionnel"
-                                    value={item.produit?.budget_previsionnel ? `${item.produit.budget_previsionnel.toLocaleString()} FCFA` : ""}
+                                    value={formatBudget(item.produit?.budget_previsionnel)}
                                 />
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                                     <DetailField label="Type de produit" value={item.produit?.type_produit} />

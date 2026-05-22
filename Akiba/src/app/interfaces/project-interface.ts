@@ -1,7 +1,11 @@
+import type { CurrencyCode } from '../core/currency/currency.types';
+
 export interface projectData {
   client_id?: string;
   terrain_id?: string;
   produit_id?: string;
+  /** Devise d'affichage (budget, paiement). Stockage API toujours en XAF. */
+  display_currency?: CurrencyCode;
   stepOne?: stepOneForm;
   stepTwo?: stepTwoForm;
   stepThree?: stepThreeForm;

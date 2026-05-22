@@ -40,6 +40,14 @@ export class YourProject {
   }
 
   getAmount(): Observable<any> {
-    return this.http.get<any>(`https://akimmo.center/api/api/payments/amount`);
+    return this.http.get<any>(`${environment.apiUrl}/payments/amount`);
+  }
+
+  updateAmount(amountXaf: number): Observable<any> {
+    return this.http.put<any>(`${environment.apiUrl}/payments/amount`, { amount: amountXaf });
+  }
+
+  getCurrencies(): Observable<any> {
+    return this.http.get<any>(`${environment.apiUrl}/currencies`);
   }
 }

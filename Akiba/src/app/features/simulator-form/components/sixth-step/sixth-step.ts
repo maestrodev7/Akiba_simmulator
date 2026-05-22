@@ -1,14 +1,17 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
+import { CurrencyService } from '../../../../core/currency/currency.service';
+import { CurrencySelect } from '../../../../shared/components/currency-select/currency-select';
+import { CurrencyCode } from '../../../../core/currency/currency.types';
 
 @Component({
   selector: 'app-sixth-step',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, CurrencySelect],
   templateUrl: './sixth-step.html',
   styleUrl: './sixth-step.css',
 })
@@ -16,26 +19,39 @@ export class SixthStep implements OnInit {
   private router = inject(Router);
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
+  private currencyService = inject(CurrencyService);
 
   pay_method: "CARD" | "MOBILE" = "CARD";
   errorMsg = "";
 
   account_number: string = '';
-  amount: number = 100;
+  /** Montant de simulation en XAF (référence backend). */
+  amountXaf = signal<number>(100);
+  displayAmount = computed(() =>
+    this.currencyService.fromXaf(this.amountXaf())
+  );
+  displayAmountLabel = computed(() =>
+    this.currencyService.format(this.displayAmount())
+  );
   loading: boolean = false;
   transactionStatus = signal<string | null>(null);
 
   ngOnInit() {
+    this.currencyService.loadRates().subscribe();
     this.projectService.getAmount().subscribe({
       next: (res) => {
         if (res.success && res.data?.amount) {
-          this.amount = res.data.amount;
+          this.amountXaf.set(Number(res.data.amount));
         }
       },
       error: (err) => {
         console.error('Error fetching amount', err);
       }
     });
+  }
+
+  onPaymentCurrencyChange(event: { previous: CurrencyCode; next: CurrencyCode }): void {
+    void event;
   }
 
   prevStep() {
@@ -114,7 +130,7 @@ export class SixthStep implements OnInit {
       });
     } else {
       const payload = {
-        amount: this.amount
+        client_id: this.projectDataService.getProjectData().client_id,
       };
       this.projectService.depositCard(payload).subscribe({
         next: (res) => {

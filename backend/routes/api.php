@@ -1,6 +1,7 @@
 <?php
 
 use App\Presentation\Http\Controller\Api\ClientController;
+use App\Presentation\Http\Controller\Api\CurrencyController;
 use App\Presentation\Http\Controller\Api\AdminAuthController;
 use App\Presentation\Http\Controller\Api\PieceController;
 use App\Presentation\Http\Controller\Api\PaymentController;
@@ -27,6 +28,8 @@ Route::prefix('simulator')->group(function (): void {
 
 Route::get('pieces', [PieceController::class, 'index']);
 Route::post('pieces', [PieceController::class, 'store']);
+
+Route::get('currencies', [CurrencyController::class, 'index']);
 
 Route::prefix('payments')->group(function (): void {
     Route::get('amount', [PaymentSettingsController::class, 'showAmount']);
