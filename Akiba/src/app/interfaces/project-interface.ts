@@ -40,6 +40,7 @@ export interface stepTwoForm {
     adresse: string;
     superficie: number;
     superficie_unite?: 'm2' | 'ha';
+    standing?: 'standard' | 'moyen' | 'haut' | null;
 
     statut_juridique: string[];
     etat_du_site: string[];
@@ -98,7 +99,12 @@ export interface stepFiveForm {
 }
 
 export interface stepSixForm {
-
+  step: 6;
+  data: {
+    selected_standing: 'standard' | 'moyen' | 'haut' | null;
+    approved: boolean;
+    approved_at?: string | null;
+  };
 }
 
 export interface stepSevenForm {

@@ -1,21 +1,4 @@
-<section class="flex flex-col gap-12 max-w-5xl mx-auto animate-fadeIn mb-20">
-    <div class="text-center mb-2">
-        <h2 class="text-4xl font-extrabold text-[#070707]">Récapitulatif et estimation</h2>
-        <p class="text-gray-600 mt-3 text-lg">
-            Toutes les options choisies sont rappelées ci-dessous. La surface et l'estimation sont calculées
-            automatiquement au backend puis affichées ici pour validation.
-        </p>
-    </div>
-
-    <div class="bg-[#F8F4EF] rounded-3xl p-6 border border-[#E8D7C6]">
-        <p class="text-[#8D5E32] font-bold text-lg">Constat du projet</p>
-        <p class="text-gray-700 mt-2">
-            À cette étape, vous validez ou non le récapitulatif et l'estimation. En cas d'approbation, l'étape suivante
-            devient la commande d'étude de faisabilité moyennant paiement. Sinon, vous revenez sur vos choix pour une
-            nouvelle estimation.
-        </p>
-    </div>
-
+<section class="flex flex-col gap-10 max-w-5xl mx-auto animate-fadeIn mb-20">
     <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
         <div class="flex items-center gap-4 mb-8 border-b border-gray-50 pb-5">
             <div class="p-3 bg-[#EFE3D8] rounded-2xl">
@@ -100,93 +83,13 @@
         </div>
     </div>
 
-    <div class="bg-white rounded-3xl p-8 shadow-sm border border-gray-100">
-        <div class="flex flex-col gap-6">
-            <div class="flex items-center justify-between gap-4 flex-wrap border-b border-gray-50 pb-5">
-                <div>
-                    <h3 class="text-2xl font-bold text-[#070707]">Estimation calculée automatiquement</h3>
-                    <p class="text-gray-500 mt-2">Le résultat est généré côté backend à partir de votre programme et des
-                        options sélectionnées.</p>
-                </div>
-                <button type="button" (click)="loadRecap()"
-                    class="px-4 py-2 rounded-lg border border-gray-200 bg-white text-gray-700 font-semibold hover:bg-gray-50 transition-all">
-                    Actualiser
-                </button>
-            </div>
-
-            <div *ngIf="recap() as recapData" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="rounded-2xl bg-[#F8FAFC] border border-gray-100 p-5">
-                    <p class="text-sm uppercase tracking-wide text-gray-500">Surface du projet</p>
-                    <p class="text-2xl font-extrabold text-[#070707] mt-2">{{ formatArea(recapData.superficie_totale_m2)
-                        }}</p>
-                </div>
-                <div class="rounded-2xl bg-[#FFF8F2] border border-[#F2DEC7] p-5">
-                    <p class="text-sm uppercase tracking-wide text-gray-500">Estimation</p>
-                    <p class="text-2xl font-extrabold text-[#8D5E32] mt-2">{{ formatMoney(recapData.cout_total_estime) }}
-                    </p>
-                </div>
-                <div class="rounded-2xl bg-[#F4FAF3] border border-[#D7EDD5] p-5">
-                    <p class="text-sm uppercase tracking-wide text-gray-500">Budget prévisionnel</p>
-                    <p class="text-2xl font-extrabold text-[#2F6B2C] mt-2">{{
-                        formatMoney(recapData.budget_previsionnel) }}</p>
-                </div>
-            </div>
-
-            <div *ngIf="recap() as recapData"
-                class="rounded-2xl px-5 py-4 border"
-                [class.bg-[#F4FAF3]]="recapData.budget_suffisant"
-                [class.border-[#D7EDD5]]="recapData.budget_suffisant"
-                [class.text-[#2F6B2C]]="recapData.budget_suffisant"
-                [class.bg-[#FFF4F2]]="recapData.budget_insuffisant"
-                [class.border-[#F4D3CB]]="recapData.budget_insuffisant"
-                [class.text-[#A0472B]]="recapData.budget_insuffisant">
-                <p class="font-bold">{{ recapData.message_budget }}</p>
-                <p class="mt-1" *ngIf="recapData.budget_insuffisant">
-                    Écart constaté : {{ formatMoney(recapData.ecart_budget) }}
-                </p>
-            </div>
-
-            <div *ngIf="recap() as recapData" class="rounded-2xl border border-gray-100 overflow-hidden">
-                <div class="px-5 py-4 bg-[#FAFAFA] border-b border-gray-100">
-                    <h4 class="font-bold text-[#070707]">Détail du calcul de surface</h4>
-                </div>
-
-                <div class="hidden md:grid md:grid-cols-4 gap-4 px-5 py-4 text-sm font-semibold text-gray-500 border-b border-gray-100">
-                    <span>Pièce</span>
-                    <span>Quantité</span>
-                    <span>Surface unitaire</span>
-                    <span>Surface totale</span>
-                </div>
-
-                <div *ngFor="let ligne of recapData.lignes"
-                    class="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 px-5 py-4 border-b border-gray-50 last:border-b-0">
-                    <div>
-                        <p class="text-xs uppercase tracking-wide text-gray-400 md:hidden">Pièce</p>
-                        <p class="font-semibold text-[#070707]">{{ ligne.piece_designation }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs uppercase tracking-wide text-gray-400 md:hidden">Quantité</p>
-                        <p class="text-gray-700">{{ ligne.nombre }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs uppercase tracking-wide text-gray-400 md:hidden">Surface unitaire</p>
-                        <p class="text-gray-700">{{ formatArea(ligne.surface_unitaire) }}</p>
-                    </div>
-                    <div>
-                        <p class="text-xs uppercase tracking-wide text-gray-400 md:hidden">Surface totale</p>
-                        <p class="font-semibold text-[#8D5E32]">{{ formatArea(ligne.surface_totale) }}</p>
-                    </div>
-                </div>
-            </div>
-
-            <div *ngIf="!isLoading() && !recap() && !errorMsg()"
-                class="rounded-2xl border border-dashed border-gray-200 px-5 py-8 text-center text-gray-500">
-                Le calcul automatique n'est pas encore disponible.
-            </div>
-        </div>
+    <div class="text-center" *ngIf="recap()">
+        <p class="text-xl font-bold text-[#2B2D33]">
+            Votre projet fait une superficie de {{ projectAreaLabel }}
+        </p>
     </div>
 
-    <article class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 w-full mt-4 p-2 rounded-3xl">
+    <article class="flex flex-col md:flex-row justify-between items-stretch md:items-center gap-4 w-full mt-2 p-2 rounded-3xl">
         <button type="button" (click)="prevStep()"
             class="px-5 py-3 rounded-lg bg-white text-gray-700 font-bold border-2 border-gray-100 hover:bg-gray-50 hover:border-gray-200 transition-all flex items-center justify-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -196,16 +99,9 @@
             Précédent
         </button>
 
-        <div class="flex flex-col sm:flex-row gap-3">
-            <button type="button" (click)="requestRevision()"
-                class="px-5 py-3 rounded-lg bg-white text-[#8D5E32] font-bold border-2 border-[#E4C9AE] hover:bg-[#FFF8F2] transition-all">
-                Réviser mes choix et préférences
-            </button>
-
-            <button type="button" (click)="approveRecap()" [disabled]="!canContinue()"
-                class="px-5 py-3 rounded-lg bg-[#B27D4B] text-white font-bold shadow-xl hover:shadow-2xl hover:bg-[#96693F] transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
-                Valider le récapitulatif et l'estimation
-            </button>
-        </div>
+        <button type="button" (click)="nextStep()" [disabled]="!canContinue()"
+            class="px-5 py-3 rounded-lg bg-[#B27D4B] text-white font-bold shadow-xl hover:shadow-2xl hover:bg-[#96693F] transition-all transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed">
+            Suivant
+        </button>
     </article>
 </section>

@@ -8,7 +8,7 @@
             choisissez votre style architectural et configurez vos espaces de vie.</p>
     </div>
 
-    <article class="w-full max-w-7xl mx-auto py-12 px-6">
+    <article *ngIf="showStepper()" class="w-full max-w-7xl mx-auto py-12 px-6">
         <!-- Mobile Carousel View -->
         <div class="sm:hidden flex flex-col items-center w-full max-w-sm mx-auto">
             <div class="flex items-center justify-between w-full mb-6 relative">

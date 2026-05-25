@@ -6,11 +6,7 @@ import { FirstStep } from '../first-step/first-step';
 import { SecondStep } from '../second-step/second-step';
 import { ThirdStep } from '../third-step/third-step';
 import { YourProject } from '../../../../services/project/your-project';
-import { CurrencyService } from '../../../../core/currency/currency.service';
-import {
-  ProjectRecapData,
-  stepFiveForm,
-} from '../../../../interfaces/project-interface';
+import { ProjectRecapData } from '../../../../interfaces/project-interface';
 import { formatSuperficie } from '../../../../core/area/area.util';
 import { finalize, timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
@@ -26,7 +22,6 @@ export class FifthStep implements OnInit {
   private router = inject(Router);
   private projectDataService = inject(ProjectData);
   private projectService = inject(YourProject);
-  private currencyService = inject(CurrencyService);
 
   projectData: any;
   recap = signal<ProjectRecapData | null>(null);
@@ -35,7 +30,6 @@ export class FifthStep implements OnInit {
 
   ngOnInit() {
     this.projectData = this.projectDataService.getProjectData();
-    this.currencyService.loadRates().subscribe();
     this.loadRecap();
   }
 
@@ -85,14 +79,6 @@ export class FifthStep implements OnInit {
   get stepFour() { return this.projectData?.stepFour?.data; }
   get lignes() { return this.recap()?.lignes ?? []; }
 
-  formatMoney(amountXaf?: number | null): string {
-    if (amountXaf == null) {
-      return '--';
-    }
-    const displayAmount = this.currencyService.fromXaf(Number(amountXaf));
-    return this.currencyService.format(displayAmount);
-  }
-
   formatArea(valueM2?: number | null): string {
     if (valueM2 == null) {
       return '--';
@@ -100,36 +86,12 @@ export class FifthStep implements OnInit {
     return formatSuperficie(Number(valueM2), 'm2');
   }
 
-  approveRecap() {
-    const payload: stepFiveForm = {
-      step: 5,
-      data: {
-        approved: true,
-        decision: 'approved',
-        approved_at: new Date().toISOString(),
-      },
-    };
-    this.projectDataService.setProjectData({
-      ...this.projectDataService.getProjectData(),
-      stepFive: payload,
-    });
-    this.router.navigate(['/votre-projet/sixth-step']);
+  get projectAreaLabel(): string {
+    return this.formatArea(this.recap()?.superficie_totale_m2);
   }
 
-  requestRevision() {
-    const payload: stepFiveForm = {
-      step: 5,
-      data: {
-        approved: false,
-        decision: 'revision',
-        approved_at: null,
-      },
-    };
-    this.projectDataService.setProjectData({
-      ...this.projectDataService.getProjectData(),
-      stepFive: payload,
-    });
-    this.router.navigate(['/votre-projet/second-step']);
+  nextStep() {
+    this.router.navigate(['/votre-projet/sixth-step']);
   }
 
   canContinue(): boolean {

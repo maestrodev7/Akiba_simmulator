@@ -92,6 +92,14 @@ export class ThirdStep implements OnInit {
                 approved_at: null,
               },
             },
+            stepSix: {
+              step: 6,
+              data: {
+                selected_standing: null,
+                approved: false,
+                approved_at: null,
+              },
+            },
           });
           console.log("Step 3 saved successfully", response);
           console.log("project data", this.projectDataService.getProjectData());

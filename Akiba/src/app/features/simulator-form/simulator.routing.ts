@@ -35,6 +35,10 @@ const routes: Route[] = [
                 path: "sixth-step",
                 loadComponent: () => import('./components/sixth-step/sixth-step').then(m => m.SixthStep),
             },
+            {
+                path: "payment-step",
+                loadComponent: () => import('./components/payment-step/payment-step').then(m => m.PaymentStep),
+            },
         ]
     },
 ]

@@ -1,10 +1,20 @@
-import { Component, inject, signal, OnInit, computed } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
 import { CurrencyService } from '../../../../core/currency/currency.service';
+import {
+  ProjectRecapData,
+  stepSixForm,
+  stepTwoForm,
+} from '../../../../interfaces/project-interface';
+import { formatSuperficie } from '../../../../core/area/area.util';
+import { catchError, finalize, timeout } from 'rxjs/operators';
+import { of } from 'rxjs';
+
+type StandingOption = 'standard' | 'moyen' | 'haut';
 
 @Component({
   selector: 'app-sixth-step',
@@ -19,155 +29,185 @@ export class SixthStep implements OnInit {
   private projectDataService = inject(ProjectData);
   private currencyService = inject(CurrencyService);
 
-  pay_method: "CARD" | "MOBILE" = "CARD";
-  mobile_operator: "MTN" | "ORANGE" = "MTN";
-  errorMsg = "";
+  readonly standingOptions: { value: StandingOption; label: string; pricePerM2: number }[] = [
+    { value: 'standard', label: 'Finition standing standard', pricePerM2: 305 },
+    { value: 'moyen', label: 'Finition standing moyenne gamme', pricePerM2: 475 },
+    { value: 'haut', label: 'Finition standing haut de gamme', pricePerM2: 610 },
+  ];
 
-  enablePayment = true;
-  account_number: string = '';
-  /** Montant de la commande en XAF (référence backend). */
-  amountXaf = signal<number>(100);
-  displayAmount = computed(() =>
-    this.currencyService.fromXaf(this.amountXaf())
+  selectedStanding = signal<StandingOption>('standard');
+  recap = signal<ProjectRecapData | null>(null);
+  isLoading = signal<boolean>(false);
+  errorMsg = signal<string | null>(null);
+
+  selectedOption = computed(
+    () =>
+      this.standingOptions.find((option) => option.value === this.selectedStanding()) ??
+      this.standingOptions[0]
   );
-  displayAmountLabel = computed(() =>
-    this.currencyService.format(this.displayAmount())
+  estimatedCostXaf = computed(() => {
+    const estimateEur = this.recap()?.cout_total_estime;
+    return estimateEur != null ? this.currencyService.toXaf(Number(estimateEur), 'EUR') : 0;
+  });
+  estimatedCostLabel = computed(() => this.currencyService.format(this.estimatedCostXaf(), 'XAF'));
+  budgetLabel = computed(() =>
+    this.currencyService.format(Number(this.recap()?.budget_previsionnel ?? 0), 'XAF')
   );
-  loading: boolean = false;
-  transactionStatus = signal<string | null>(null);
+  isBudgetSufficient = computed(
+    () => this.estimatedCostXaf() <= Number(this.recap()?.budget_previsionnel ?? 0)
+  );
+  budgetDeltaLabel = computed(() => {
+    const delta = Math.abs(Number(this.recap()?.budget_previsionnel ?? 0) - this.estimatedCostXaf());
+    return this.currencyService.format(delta, 'XAF');
+  });
 
   ngOnInit() {
-    const recapApproved = this.projectDataService.getProjectData().stepFive?.data?.approved;
-    if (!recapApproved) {
-      this.router.navigate(['/votre-projet/fifth-step']);
-      return;
-    }
-
     this.currencyService.loadRates().subscribe();
-    this.projectService.getAmount().subscribe({
-      next: (res) => {
-        if (res.success && res.data?.amount) {
-          this.amountXaf.set(Number(res.data.amount));
-        }
-      },
-      error: (err) => {
-        console.error('Error fetching amount', err);
-      }
-    });
+    this.selectedStanding.set(this.readStoredStanding());
+    this.loadEstimate();
   }
 
   prevStep() {
     this.router.navigate(['/votre-projet/fifth-step']);
   }
 
-  checkPaymentStatus(reference: string) {
-    this.projectService.checkTransactionStatus(reference).subscribe({
-      next: (res) => {
-        console.log("response du check statut", res)
-        const statut = res.data?.transaction?.last_status_payload.content.statut;
-        this.transactionStatus.set(statut ?? null);
-        console.log("voici le statut du check", statut);
-        if ((statut === 'EN_ATTENTE' || statut === "pending") && this.transactionStatus()) {
-          setTimeout(() => {
-            this.checkPaymentStatus(reference);
-          }, 7000);
-        } else {
-          this.loading = false;
-          if (statut === 'SUCCESS' || statut === 'VALIDE' || statut === 'TERMINE') {
-            console.log('Feasibility study order paid successfully');
-          } else {
-            console.error('Payment failed', statut, res);
+  loadEstimate() {
+    const produitId = this.projectDataService.getProjectData()?.produit_id;
+    if (!produitId) {
+      this.recap.set(null);
+      this.errorMsg.set("Impossible de calculer l'estimation.");
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMsg.set(null);
+    this.projectService
+      .getProjectRecap(produitId)
+      .pipe(
+        timeout(10000),
+        catchError((error) => {
+          console.error('Error loading estimate', error);
+          this.recap.set(null);
+          this.errorMsg.set("Impossible de charger l'estimation.");
+          return of(null);
+        }),
+        finalize(() => this.isLoading.set(false))
+      )
+      .subscribe({
+        next: (response) => {
+          if (response?.success && response.data) {
+            this.recap.set(response.data);
+            return;
           }
-        }
+          if (!this.errorMsg()) {
+            this.errorMsg.set("Impossible de charger l'estimation.");
+          }
+        },
+      });
+  }
+
+  onStandingChange(nextStanding: StandingOption) {
+    if (this.selectedStanding() === nextStanding) {
+      return;
+    }
+    this.selectedStanding.set(nextStanding);
+    this.persistStandingAndRefresh();
+  }
+
+  private persistStandingAndRefresh() {
+    const projectData = this.projectDataService.getProjectData();
+    const stepTwo = projectData.stepTwo;
+    if (!stepTwo) {
+      this.errorMsg.set("Impossible de mettre à jour l'estimation.");
+      return;
+    }
+
+    const payload: stepTwoForm = {
+      ...stepTwo,
+      data: {
+        ...stepTwo.data,
+        standing: this.selectedStanding(),
       },
-      error: (err) => {
-        this.loading = false;
-        console.error('Error checking payment status', err);
-      }
+    };
+
+    this.isLoading.set(true);
+    this.projectService
+      .saveStepTwoDraft(payload)
+      .pipe(
+        timeout(10000),
+        catchError((error) => {
+          console.error('Error updating standing', error);
+          this.errorMsg.set("Impossible de recalculer l'estimation.");
+          return of(null);
+        }),
+        finalize(() => this.isLoading.set(false))
+      )
+      .subscribe({
+        next: (response) => {
+          if (response?.success) {
+            this.projectDataService.setProjectData({
+              ...projectData,
+              terrain_id: response.data.terrain_id,
+              produit_id: response.data.produit_id,
+              stepTwo: payload,
+              stepSix: {
+                step: 6,
+                data: {
+                  selected_standing: this.selectedStanding(),
+                  approved: false,
+                  approved_at: null,
+                },
+              },
+            });
+            this.loadEstimate();
+            return;
+          }
+          if (!this.errorMsg()) {
+            this.errorMsg.set("Impossible de recalculer l'estimation.");
+          }
+        }
+      });
+  }
+
+  nextStep() {
+    const payload: stepSixForm = {
+      step: 6,
+      data: {
+        selected_standing: this.selectedStanding(),
+        approved: true,
+        approved_at: new Date().toISOString(),
+      },
+    };
+    this.projectDataService.setProjectData({
+      ...this.projectDataService.getProjectData(),
+      stepSix: payload,
     });
+    this.router.navigate(['/votre-projet/payment-step']);
   }
 
-  onSubmit() {
-    this.loading = true;
-    this.transactionStatus.set(null);
-    if (this.pay_method === 'MOBILE') {
-      const rawNumber = this.account_number.replace(/\s/g, '');
-      if (!rawNumber || rawNumber.length < 9) {
-        this.errorMsg = "Veuillez renseigner un numéro de téléphone valide (9 chiffres)";
-        this.loading = false;
-        return;
-      }
-      
-      const payload = {
-        client_id: this.projectDataService.getProjectData().client_id,
-        account_number: rawNumber // Send without spaces
-      };
-      console.log("mobile play load", payload)
-
-      this.projectService.depositMobile(payload).subscribe({
-        next: (res) => {
-          const statut = res.data?.transaction?.statut;
-          console.log("voici la res", res, "avec le statut", statut)
-          if (statut) {
-            this.transactionStatus.set(statut);
-          }
-          if (statut === 'EN_ATTENTE' || statut === "pending") {
-            const reference = res.data.transaction?.reference || res.data.reference;
-            if (reference) {
-              setTimeout(() => {
-                this.checkPaymentStatus(reference);
-              }, 20000);
-            } else {
-              this.enablePayment = false;
-              this.loading = false;
-            }
-          } else {
-            this.loading = false;
-            if (res.success && res.data?.payment_url) {
-              window.location.href = res.data.payment_url;
-            }
-          }
-        },
-        error: (err) => {
-          this.loading = false;
-          this.errorMsg = `une erreur s'est produite ${err.error.message}`
-          console.error('Payment error', err);
-        }
-      });
-    } else {
-      const payload = {
-        client_id: this.projectDataService.getProjectData().client_id,
-      };
-      this.projectService.depositCard(payload).subscribe({
-        next: (res) => {
-          this.loading = false;
-          if (res.success && res.data?.payment_url) {
-            window.location.href = res.data.payment_url;
-          }
-        },
-        error: (err) => {
-          this.loading = false;
-          this.errorMsg = `une erreur s'est produite ${err.error.message}`
-          console.error('Payment error', err);
-        }
-      });
+  private readStoredStanding(): StandingOption {
+    const standing = this.projectDataService.getProjectData().stepTwo?.data?.standing;
+    if (standing === 'moyen' || standing === 'haut') {
+      return standing;
     }
+    return 'standard';
   }
 
-  closeStatusModal() {
-    this.transactionStatus.set(null);
-    this.loading = false;
-  }
-
-  onAccountNumberChange(event: any) {
-    let value = event.target.value.replace(/\D/g, ''); // Remove non-numeric characters
-    if (value.length > 9) value = value.slice(0, 9); // Limit to 9 digits (standard for many regions)
-    
-    // Format: 000 000 000
-    const parts = [];
-    for (let i = 0; i < value.length; i += 3) {
-      parts.push(value.substring(i, i + 3));
+  formatArea(valueM2?: number | null): string {
+    if (valueM2 == null) {
+      return '--';
     }
-    this.account_number = parts.join(' ');
+    return formatSuperficie(Number(valueM2), 'm2');
+  }
+
+  budgetMessage(): string {
+    const budget = Number(this.recap()?.budget_previsionnel ?? 0);
+    if (!budget) {
+      return '';
+    }
+    if (this.isBudgetSufficient()) {
+      return `${this.estimatedCostLabel()} inferieur a votre budget de ${this.budgetLabel()}`;
+    }
+    return `${this.estimatedCostLabel()} superieur a votre budget de ${this.budgetLabel()}`;
   }
 }

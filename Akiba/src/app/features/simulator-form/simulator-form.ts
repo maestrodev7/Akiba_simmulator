@@ -14,6 +14,7 @@ export class SimulatorForm {
   private activatedRoute = inject(ActivatedRoute);
 
   step = signal<number>(1);
+  showStepper = signal<boolean>(true);
 
   constructor() {
     this.router.events.pipe(
@@ -26,11 +27,13 @@ export class SimulatorForm {
 
   private updateStepFromUrl() {
     const url = this.router.url;
+    this.showStepper.set(!url.includes('payment-step'));
     if (url.includes('second-step')) this.step.set(2);
     else if (url.includes('third-step')) this.step.set(3);
     else if (url.includes('fourth-step')) this.step.set(4);
     else if (url.includes('fifth-step')) this.step.set(5);
     else if (url.includes('sixth-step')) this.step.set(6);
+    else if (url.includes('payment-step')) this.step.set(6);
     else if (url.includes('first-step')) this.step.set(1);
     else this.step.set(1);
   }
@@ -41,7 +44,7 @@ export class SimulatorForm {
     { id: 3, label: 'Calendrier prévisionnel des travaux' },
     { id: 4, label: 'Détermination du programme' },
     { id: 5, label: 'Récapitulatif' },
-    { id: 6, label: "COMMANDE D'ÉTUDE DE FAISABILITÉ" },
+    { id: 6, label: "Estimation financière de votre projet" },
   ];
 
 

@@ -87,6 +87,14 @@ export class FirstStep implements OnInit {
                 approved_at: null,
               },
             },
+            stepSix: {
+              step: 6,
+              data: {
+                selected_standing: null,
+                approved: false,
+                approved_at: null,
+              },
+            },
           });
           console.log("project data", this.projectDataService.getProjectData());
           this.router.navigate(['/votre-projet/second-step']);
