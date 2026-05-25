@@ -78,7 +78,15 @@ export class FirstStep implements OnInit {
           console.log("response test alpha", response, "client id", response.data.client_id);
           this.projectDataService.setProjectData({
             client_id: response.data.client_id,
-            stepOne: payload as any
+            stepOne: payload as any,
+            stepFive: {
+              step: 5,
+              data: {
+                approved: false,
+                decision: null,
+                approved_at: null,
+              },
+            },
           });
           console.log("project data", this.projectDataService.getProjectData());
           this.router.navigate(['/votre-projet/second-step']);

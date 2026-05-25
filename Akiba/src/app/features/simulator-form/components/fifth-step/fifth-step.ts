@@ -6,6 +6,12 @@ import { FirstStep } from '../first-step/first-step';
 import { SecondStep } from '../second-step/second-step';
 import { ThirdStep } from '../third-step/third-step';
 import { YourProject } from '../../../../services/project/your-project';
+import { CurrencyService } from '../../../../core/currency/currency.service';
+import {
+  ProjectRecapData,
+  stepFiveForm,
+} from '../../../../interfaces/project-interface';
+import { formatSuperficie } from '../../../../core/area/area.util';
 import { finalize, timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -20,53 +26,56 @@ export class FifthStep implements OnInit {
   private router = inject(Router);
   private projectDataService = inject(ProjectData);
   private projectService = inject(YourProject);
+  private currencyService = inject(CurrencyService);
 
   projectData: any;
-  lignes: any[] = [];
+  recap = signal<ProjectRecapData | null>(null);
   isLoading = signal<boolean>(false);
+  errorMsg = signal<string | null>(null);
 
   ngOnInit() {
     this.projectData = this.projectDataService.getProjectData();
-    this.fetchPiecesAndMap();
+    this.currencyService.loadRates().subscribe();
+    this.loadRecap();
   }
 
-  fetchPiecesAndMap() {
-    const savedLignes = this.projectDataService.getProjectData()?.stepFour?.data?.lignes || [];
+  loadRecap() {
+    const produitId = this.projectDataService.getProjectData()?.produit_id;
+    if (!produitId) {
+      this.recap.set(null);
+      this.errorMsg.set(
+        "Impossible de calculer l'estimation tant que les informations du projet ne sont pas complètes."
+      );
+      return;
+    }
 
-    // Initialize with saved data using fallback designation
-    this.lignes = savedLignes.map((l: any) => ({
-      ...l,
-      designation: l.designation || 'Pièce'
-    }));
-
-    if (savedLignes.length === 0) return;
-
+    this.recap.set(null);
+    this.errorMsg.set(null);
     this.isLoading.set(true);
-    this.projectService.getPieces()
+    this.projectService
+      .getProjectRecap(produitId)
       .pipe(
         timeout(10000),
-        catchError(error => {
-          console.error('Error fetching pieces in recap:', error);
-          return of({ success: false, data: [] });
+        catchError((error) => {
+          console.error('Error fetching recap in step 5:', error);
+          this.recap.set(null);
+          this.errorMsg.set(
+            "Une erreur est survenue lors du calcul de la surface et de l'estimation."
+          );
+          return of(null);
         }),
         finalize(() => this.isLoading.set(false))
       )
       .subscribe({
         next: (response) => {
-          if (response.success && response.data) {
-            console.log("response alpha alpha", response);
-            console.log("project data", this.projectDataService.getProjectData());
-            this.lignes = savedLignes.map((saved: any) => {
-              const piece = response.data.find((p: any) => String(p.id) === String(saved.piece_id));
-              return {
-                ...saved,
-                designation: piece ? piece.designation : (saved.designation || 'Pièce personnalisée')
-              };
-            });
-            console.log("Step 5 saved successfully", response);
-            console.log("project data", this.projectDataService.getProjectData());
+          if (response?.success && response.data) {
+            this.recap.set(response.data);
+            return;
           }
-        }
+          if (!this.errorMsg()) {
+            this.errorMsg.set("Le récapitulatif détaillé n'a pas pu être chargé.");
+          }
+        },
       });
   }
 
@@ -74,9 +83,57 @@ export class FifthStep implements OnInit {
   get stepTwo() { return this.projectData?.stepTwo?.data; }
   get stepThree() { return this.projectData?.stepThree?.data; }
   get stepFour() { return this.projectData?.stepFour?.data; }
+  get lignes() { return this.recap()?.lignes ?? []; }
 
-  nextStep() {
+  formatMoney(amountXaf?: number | null): string {
+    if (amountXaf == null) {
+      return '--';
+    }
+    const displayAmount = this.currencyService.fromXaf(Number(amountXaf));
+    return this.currencyService.format(displayAmount);
+  }
+
+  formatArea(valueM2?: number | null): string {
+    if (valueM2 == null) {
+      return '--';
+    }
+    return formatSuperficie(Number(valueM2), 'm2');
+  }
+
+  approveRecap() {
+    const payload: stepFiveForm = {
+      step: 5,
+      data: {
+        approved: true,
+        decision: 'approved',
+        approved_at: new Date().toISOString(),
+      },
+    };
+    this.projectDataService.setProjectData({
+      ...this.projectDataService.getProjectData(),
+      stepFive: payload,
+    });
     this.router.navigate(['/votre-projet/sixth-step']);
+  }
+
+  requestRevision() {
+    const payload: stepFiveForm = {
+      step: 5,
+      data: {
+        approved: false,
+        decision: 'revision',
+        approved_at: null,
+      },
+    };
+    this.projectDataService.setProjectData({
+      ...this.projectDataService.getProjectData(),
+      stepFive: payload,
+    });
+    this.router.navigate(['/votre-projet/second-step']);
+  }
+
+  canContinue(): boolean {
+    return !!this.recap() && !this.isLoading();
   }
 
   prevStep() {

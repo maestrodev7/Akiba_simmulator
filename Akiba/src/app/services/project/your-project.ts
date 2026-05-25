@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { DepositResponse, TransactionResponse } from '../../interfaces/project-interface';
+import {
+  DepositResponse,
+  ProjectRecapResponse,
+  TransactionResponse,
+} from '../../interfaces/project-interface';
 
 
 @Injectable({
@@ -41,6 +45,12 @@ export class YourProject {
 
   getAmount(): Observable<any> {
     return this.http.get<any>(`${environment.apiUrl}/payments/amount`);
+  }
+
+  getProjectRecap(produitId: string): Observable<ProjectRecapResponse> {
+    return this.http.get<ProjectRecapResponse>(
+      `${environment.apiUrl}/simulator/draft/${produitId}/recap`
+    );
   }
 
   updateAmount(amountXaf: number): Observable<any> {

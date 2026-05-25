@@ -41,7 +41,7 @@ export class SimulatorForm {
     { id: 3, label: 'Calendrier prévisionnel des travaux' },
     { id: 4, label: 'Détermination du programme' },
     { id: 5, label: 'Récapitulatif' },
-    { id: 6, label: 'ESTIMATION DE VOTRE PROJET' },
+    { id: 6, label: "COMMANDE D'ÉTUDE DE FAISABILITÉ" },
   ];
 
 

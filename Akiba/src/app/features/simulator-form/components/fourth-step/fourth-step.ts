@@ -169,7 +169,15 @@ export class FourthStep implements OnInit {
           if (response.success) {
             // Save to local storage for recap
             this.projectDataService.setProjectData({
-              stepFour: payload
+              stepFour: payload,
+              stepFive: {
+                step: 5,
+                data: {
+                  approved: false,
+                  decision: null,
+                  approved_at: null,
+                },
+              },
             });
             console.log("Step 4 saved successfully", response);
             console.log("project data", this.projectDataService.getProjectData());

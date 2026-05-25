@@ -25,7 +25,7 @@ export class SixthStep implements OnInit {
 
   enablePayment = true;
   account_number: string = '';
-  /** Montant de simulation en XAF (référence backend). */
+  /** Montant de la commande en XAF (référence backend). */
   amountXaf = signal<number>(100);
   displayAmount = computed(() =>
     this.currencyService.fromXaf(this.amountXaf())
@@ -37,6 +37,12 @@ export class SixthStep implements OnInit {
   transactionStatus = signal<string | null>(null);
 
   ngOnInit() {
+    const recapApproved = this.projectDataService.getProjectData().stepFive?.data?.approved;
+    if (!recapApproved) {
+      this.router.navigate(['/votre-projet/fifth-step']);
+      return;
+    }
+
     this.currencyService.loadRates().subscribe();
     this.projectService.getAmount().subscribe({
       next: (res) => {
@@ -68,7 +74,7 @@ export class SixthStep implements OnInit {
         } else {
           this.loading = false;
           if (statut === 'SUCCESS' || statut === 'VALIDE' || statut === 'TERMINE') {
-            console.log('Payment successful');
+            console.log('Feasibility study order paid successfully');
           } else {
             console.error('Payment failed', statut, res);
           }

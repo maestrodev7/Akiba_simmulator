@@ -1,5 +1,11 @@
 <section class="space-y-6">
-    <h2 class="text-center text-2xl font-semibold text-[#2B2D33]">Page de paiement</h2>
+    <div class="text-center space-y-2">
+        <h2 class="text-2xl font-semibold text-[#2B2D33]">Commande d'étude de faisabilité</h2>
+        <p class="text-gray-500 max-w-3xl mx-auto">
+            Le paiement ci-dessous confirme votre commande d'étude de faisabilité à partir du récapitulatif et de
+            l'estimation validés à l'étape précédente.
+        </p>
+    </div>
     <ul class="flex flex-col gap-2 sm:flex-row sm:gap-0 w-max mx-auto items-center bg-[#EEF3F5] rounded-lg">
         <li [class]=" pay_method=== 'CARD' ? 'bg-[#b47b4d] text-white shadow-md' : 'text-gray-500'"
             class="m-0 p-2 flex-1 w-[170px] text-center rounded-lg cursor-pointer" (click)="pay_method='CARD'">Paiement
@@ -18,7 +24,7 @@
     <form (ngSubmit)="onSubmit()" class="w-full space-y-4">
         <div *ngIf="pay_method=='CARD'"
             class="w-full md:w-[70%] mx-auto space-y-4 text-xl text-center text-[#000000]/40 font-semibold">
-            continue le payement avec Master card
+            Continuez le paiement de votre commande avec une carte bancaire.
         </div>
         <!-- <div *ngIf="pay_method=='CARD'" class="w-full md:w-[70%] mx-auto space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-3">
@@ -195,9 +201,9 @@
                             <ng-container [ngSwitch]="transactionStatus()">
                                 <span *ngSwitchCase="'EN_ATTENTE'">Traitement en cours</span>
                                 <span *ngSwitchCase="'pending'">Traitement en cours</span>
-                                <span *ngSwitchCase="'SUCCESS'">Paiement Réussi !</span>
-                                <span *ngSwitchCase="'VALIDE'">Paiement Réussi !</span>
-                                <span *ngSwitchCase="'TERMINE'">Paiement Réussi !</span>
+                                <span *ngSwitchCase="'SUCCESS'">Commande confirmée !</span>
+                                <span *ngSwitchCase="'VALIDE'">Commande confirmée !</span>
+                                <span *ngSwitchCase="'TERMINE'">Commande confirmée !</span>
                                 <span *ngSwitchCase="'ECHEC'">Échec du paiement</span>
                                 <span *ngSwitchDefault>Statut : {{ transactionStatus() }}</span>
                             </ng-container>
@@ -208,9 +214,12 @@
                                     téléphone.</span>
                                 <span *ngSwitchCase="'pending'">Veuillez confirmer la transaction sur votre
                                     téléphone.</span>
-                                <span *ngSwitchCase="'SUCCESS'">Votre simulation a été enregistrée avec succès.</span>
-                                <span *ngSwitchCase="'VALIDE'">Votre simulation a été enregistrée avec succès.</span>
-                                <span *ngSwitchCase="'TERMINE'">Votre simulation a été enregistrée avec succès.</span>
+                                <span *ngSwitchCase="'SUCCESS'">Votre commande d'étude de faisabilité a été
+                                    enregistrée avec succès.</span>
+                                <span *ngSwitchCase="'VALIDE'">Votre commande d'étude de faisabilité a été enregistrée
+                                    avec succès.</span>
+                                <span *ngSwitchCase="'TERMINE'">Votre commande d'étude de faisabilité a été enregistrée
+                                    avec succès.</span>
                                 <span *ngSwitchCase="'ECHEC'">Une erreur est survenue lors du traitement. Veuillez
                                     réessayer.</span>
                                 <span *ngSwitchDefault>Nous traitons votre demande...</span>
@@ -241,5 +250,5 @@
             </button>
             <button type="submit" [disabled]="loading || !enablePayment"
                 class="bg-[#BB7A44] text-[#f2f2f2] font-semibold py-3 px-12 rounded-lg shadow-lg hover:bg-[#A26F45] transition-all disabled:opacity-50">
-                <span *ngIf="!loading">Payer</span>
+                <span *ngIf="!loading">Payer et confirmer la commande</span>
                 <span *ngIf="loading">Patientez...</span>

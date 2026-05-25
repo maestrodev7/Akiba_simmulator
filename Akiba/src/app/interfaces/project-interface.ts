@@ -89,7 +89,12 @@ export interface stepFourForm {
 }
 
 export interface stepFiveForm {
-
+  step: 5;
+  data: {
+    approved: boolean;
+    decision: 'approved' | 'revision' | null;
+    approved_at?: string | null;
+  };
 }
 
 export interface stepSixForm {
@@ -174,4 +179,30 @@ export interface DepositResponse {
   success: boolean;
   data: DepositData;
   message: string;
+}
+
+export interface ProjectRecapLine {
+  piece_id: string;
+  piece_designation: string;
+  nombre: number;
+  surface_unitaire: number;
+  surface_totale: number;
+}
+
+export interface ProjectRecapData {
+  produit_id: string;
+  superficie_totale_m2: number;
+  cout_total_estime: number;
+  budget_previsionnel: number;
+  budget_suffisant: boolean;
+  budget_insuffisant: boolean;
+  ecart_budget: number;
+  message_budget: string;
+  lignes: ProjectRecapLine[];
+}
+
+export interface ProjectRecapResponse {
+  success: boolean;
+  data: ProjectRecapData;
+  message?: string;
 }

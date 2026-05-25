@@ -83,7 +83,15 @@ export class ThirdStep implements OnInit {
             // client_id: response.data.client_id,
             terrain_id: response.data.terrain_id,
             produit_id: response.data.produit_id,
-            stepThree: payload as any
+            stepThree: payload as any,
+            stepFive: {
+              step: 5,
+              data: {
+                approved: false,
+                decision: null,
+                approved_at: null,
+              },
+            },
           });
           console.log("Step 3 saved successfully", response);
           console.log("project data", this.projectDataService.getProjectData());

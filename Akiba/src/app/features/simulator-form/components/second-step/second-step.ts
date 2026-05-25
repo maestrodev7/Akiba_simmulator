@@ -354,7 +354,15 @@ export class SecondStep implements OnInit {
             ...projectData,
             terrain_id: response.data.terrain_id,
             produit_id: response.data.produit_id,
-            stepTwo: payload as any
+            stepTwo: payload as any,
+            stepFive: {
+              step: 5,
+              data: {
+                approved: false,
+                decision: null,
+                approved_at: null,
+              },
+            },
           });
           console.log("Step 2 saved successfully", response);
           console.log("project data", this.projectDataService.getProjectData());
