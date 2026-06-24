@@ -100,6 +100,6 @@ export class FifthStep implements OnInit {
   }
 
   prevStep() {
-    this.router.navigate(['/votre-projet/fourth-step']);
+    this.router.navigate(['/votre-projet/third-step']);
   }
 }

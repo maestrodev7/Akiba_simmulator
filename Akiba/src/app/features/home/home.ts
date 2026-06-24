@@ -37,8 +37,8 @@ export class Home {
     this.showStepper.set(!url.includes('payment-step'));
     if (url.includes('second-step-part-two') || fragment === 'step-3') this.step.set(3);
     else if (url.includes('second-step') || fragment === 'step-2') this.step.set(2);
-    else if (url.includes('third-step') || fragment === 'step-4') this.step.set(4);
-    else if (url.includes('fourth-step') || fragment === 'step-5') this.step.set(5);
+    else if (url.includes('fourth-step') || fragment === 'step-4') this.step.set(4);
+    else if (url.includes('third-step') || fragment === 'step-5') this.step.set(5);
     else if (url.includes('fifth-step') || fragment === 'step-6') this.step.set(6);
     else if (url.includes('sixth-step') || fragment === 'step-7') this.step.set(7);
     else if (url.includes('payment-step')) this.step.set(7);
@@ -50,8 +50,8 @@ export class Home {
     { id: 1, label: 'fiche de renseignements' },
     { id: 2, label: 'Fiche de renseignement du terrain' },
     { id: 3, label: 'Fiche définition projet' },
-    { id: 4, label: 'Calendrier prévisionnel des travaux' },
-    { id: 5, label: 'Détermination du programme' },
+    { id: 4, label: 'Détermination du programme' },
+    { id: 5, label: 'Calendrier prévisionnel des travaux' },
     { id: 6, label: 'Récapitulatif' },
     { id: 7, label: "Estimation financière de votre projet" },
   ];
@@ -74,8 +74,8 @@ export class Home {
       1: 'first-step',
       2: 'second-step',
       3: 'second-step-part-two',
-      4: 'third-step',
-      5: 'fourth-step',
+      4: 'fourth-step',
+      5: 'third-step',
       6: 'fifth-step',
       7: 'sixth-step'
     };
