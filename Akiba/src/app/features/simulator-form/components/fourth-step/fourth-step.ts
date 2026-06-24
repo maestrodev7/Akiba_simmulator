@@ -95,6 +95,11 @@ export class FourthStep implements OnInit {
     }
   }
 
+  clampPieceValue(index: number) {
+    const val = Number(this.questions[index].value);
+    this.questions[index].value = isNaN(val) || val < 0 ? 0 : Math.floor(val);
+  }
+
   removePiece(index: number) {
     this.questions.splice(index, 1);
   }
