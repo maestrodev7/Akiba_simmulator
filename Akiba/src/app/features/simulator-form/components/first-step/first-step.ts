@@ -97,7 +97,7 @@ export class FirstStep implements OnInit {
             },
           });
           console.log("project data", this.projectDataService.getProjectData());
-          this.router.navigate(['/votre-projet/second-step']);
+          this.router.navigate(['/'], { fragment: 'step-2' });
         }
       },
       error: (err) => {

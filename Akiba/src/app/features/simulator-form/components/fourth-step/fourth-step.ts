@@ -7,10 +7,12 @@ import { FormsModule } from '@angular/forms';
 import { finalize, timeout, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
-interface Question {
-  label: string;
+interface Piece {
+  designation: string;
   value: number;
   key: string;
+  surface_standard: number;
+  isCustom?: boolean;
 }
 
 @Component({
@@ -26,18 +28,25 @@ export class FourthStep implements OnInit {
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
 
-  questions: Question[] = [];
-  currentQuestionIndex = 0;
+  questions: Piece[] = [];
   isLoading = signal<boolean>(false);
 
   // For custom piece creation
-  isAddingPiece = false;
+  showAddPieceForm = false;
   newPieceName = '';
   newPieceSurface: number | null = null;
   isCreatingPiece = signal<boolean>(false);
 
   ngOnInit() {
     this.fetchPieces();
+  }
+
+  get totalPieces(): number {
+    return this.questions.reduce((sum, q) => sum + q.value, 0);
+  }
+
+  get totalSurface(): number {
+    return this.questions.reduce((sum, q) => sum + (q.value * q.surface_standard), 0);
   }
 
   fetchPieces() {
@@ -61,9 +70,11 @@ export class FourthStep implements OnInit {
               const piece_id = piece.id || piece.key;
               const savedPiece = savedLignes.find((l: any) => String(l.piece_id) === String(piece_id));
               return {
-                label: `Combien de ${piece.designation} voulez-vous ?`,
+                designation: piece.designation,
                 value: savedPiece ? savedPiece.nombre : 1,
-                key: piece_id
+                key: piece_id,
+                surface_standard: piece.surface_standard || 0,
+                isCustom: false,
               };
             });
           } else {
@@ -77,37 +88,20 @@ export class FourthStep implements OnInit {
       });
   }
 
-  get currentQuestion() {
-    return (this.isAddingPiece || this.questions.length === 0) ? null : this.questions[this.currentQuestionIndex];
-  }
-
-  get allQuestionsAnswered() {
-    return this.questions.length > 0 && this.currentQuestionIndex === this.questions.length - 1;
-  }
-
-  nextQuestion() {
-    if (this.currentQuestionIndex < this.questions.length - 1) {
-      this.currentQuestionIndex++;
-    } else {
-      this.isAddingPiece = true;
+  updatePieceValue(index: number, delta: number) {
+    const newValue = this.questions[index].value + delta;
+    if (newValue >= 0) {
+      this.questions[index].value = newValue;
     }
   }
 
-  prevQuestion() {
-    if (this.isAddingPiece) {
-      this.isAddingPiece = false;
-    } else if (this.currentQuestionIndex > 0) {
-      this.currentQuestionIndex--;
-    }
+  clampPieceValue(index: number) {
+    const val = Number(this.questions[index].value);
+    this.questions[index].value = isNaN(val) || val < 0 ? 0 : Math.floor(val);
   }
 
-  updateValue(amount: number) {
-    if (this.currentQuestion) {
-      const newValue = this.currentQuestion.value + amount;
-      if (newValue >= 0) {
-        this.currentQuestion.value = newValue;
-      }
-    }
+  removePiece(index: number) {
+    this.questions.splice(index, 1);
   }
 
   createCustomPiece() {
@@ -124,15 +118,15 @@ export class FourthStep implements OnInit {
           if (response.success && response.data) {
             const newPiece = response.data;
             this.questions.push({
-              label: `Combien de ${newPiece.designation} voulez-vous ?`,
+              designation: newPiece.designation,
               value: 1,
-              key: newPiece.id
+              key: newPiece.id,
+              surface_standard: newPiece.surface_standard || this.newPieceSurface || 0,
+              isCustom: true,
             });
-            // Reset custom piece form and go to that new question
             this.newPieceName = '';
             this.newPieceSurface = null;
-            this.isAddingPiece = false;
-            this.currentQuestionIndex = this.questions.length - 1;
+            this.showAddPieceForm = false;
           }
         },
         error: (error) => {
@@ -167,7 +161,6 @@ export class FourthStep implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success) {
-            // Save to local storage for recap
             this.projectDataService.setProjectData({
               stepFour: payload,
               stepFive: {
@@ -188,8 +181,7 @@ export class FourthStep implements OnInit {
               },
             });
             console.log("Step 4 saved successfully", response);
-            console.log("project data", this.projectDataService.getProjectData());
-            this.router.navigate(['/votre-projet/fifth-step']);
+            this.router.navigate(['/'], { fragment: 'step-5' });
           }
         },
         error: (error) => {
@@ -200,6 +192,6 @@ export class FourthStep implements OnInit {
   }
 
   prevStep() {
-    this.router.navigate(['/votre-projet/third-step']);
+    this.router.navigate(['/votre-projet/second-step-part-two']);
   }
 }
