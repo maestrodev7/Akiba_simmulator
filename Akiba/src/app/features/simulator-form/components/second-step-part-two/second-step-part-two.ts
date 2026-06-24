@@ -21,16 +21,30 @@ import { ErrorMessage } from '../../../../shared/components/error-message/error-
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
 import { Router } from '@angular/router';
+import {
+  normalizeMultiChoice,
+  normalizeSingleChoice,
+  STEP_TWO_SINGLE_CHOICE_FIELDS,
+} from '../second-step/step-two-single-choice';
 
+function singleChoiceValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const value = control.value;
+    if (Array.isArray(value) && value.length > 1) {
+      return { singleChoice: true };
+    }
+    return null;
+  };
+}
 
 @Component({
-  selector: 'app-second-step',
+  selector: 'app-second-step-part-two',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, CustomSelect, ErrorMessage],
-  templateUrl: './second-step.html',
-  styleUrl: './second-step.css',
+  templateUrl: './second-step-part-two.html',
+  styleUrl: './second-step-part-two.css',
 })
-export class SecondStep implements OnInit {
+export class SecondStepPartTwo implements OnInit {
   @Input() isReadOnly = false;
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
@@ -66,100 +80,40 @@ export class SecondStep implements OnInit {
   }
 
   form: FormGroup = this.fb.group({
-    budget_previsionnel: [null, [Validators.required]],
-    adresse: ['', [Validators.required]],
-    superficie: [null, [Validators.required]],
-    superficie_unite: ['m2' as SuperficieUnite, [Validators.required]],
-    statut_juridique: [null, [Validators.required]],
-    etat_du_site: [null, [Validators.required]],
-    topographie: [null, [Validators.required]],
-    situation: [null, [Validators.required]],
-    voie_existante: [null, [Validators.required]],
-    documents_fournis: [[]],
+    type_produit: [null, [singleChoiceValidator()]],
+    nature_travaux: [null, [Validators.required, singleChoiceValidator()]],
+    type_construction: [null, [singleChoiceValidator()]],
+    type_architecture: [[]],
+    materiaux: [null, [singleChoiceValidator()]],
+    style_construction: [null, [singleChoiceValidator()]],
+    espace_annexe: [[]],
+    nombre_etages: [0],
+    nombre_sous_sol: [0],
+    type_toiture: [null, [singleChoiceValidator()]],
+    habillage_facade: [null, [singleChoiceValidator()]],
+    menuiserie: [null, [singleChoiceValidator()]],
+    securisation_ouvertures: [null, [singleChoiceValidator()]],
   });
 
   ngOnInit() {
     const savedData = this.projectDataService.getProjectData();
     if (savedData.stepTwo?.data) {
       const raw = savedData.stepTwo.data;
-      this.budgetXafStored =
-        raw.budget_previsionnel != null ? Number(raw.budget_previsionnel) : null;
-      const displayBudget =
-        this.budgetXafStored != null
-          ? this.currencyService.fromXaf(this.budgetXafStored)
-          : null;
-      const unite: SuperficieUnite =
-        raw.superficie_unite === 'ha' ? 'ha' : 'm2';
-      this.superficieM2Stored =
-        raw.superficie != null ? Number(raw.superficie) : null;
-      const displaySuperficie =
-        this.superficieM2Stored != null
-          ? fromSquareMeters(this.superficieM2Stored, unite)
-          : null;
+      const architecture = this.normalizeArchitecture(raw.type_architecture);
+      const singleChoicePatch = this.patchSingleChoiceFieldsFromRaw(raw);
       this.form.patchValue({
         ...raw,
-        budget_previsionnel: displayBudget,
-        superficie: displaySuperficie,
-        superficie_unite: unite,
+        ...singleChoicePatch,
+        type_architecture: architecture,
+        espace_annexe: normalizeMultiChoice(raw.espace_annexe),
       });
     }
-    this.lastCurrency = this.currencyService.selectedCurrency();
-    this.lastSuperficieUnite =
-      (this.form.get('superficie_unite')?.value as SuperficieUnite) ?? 'm2';
     if (this.isReadOnly) {
       this.form.disable();
     }
   }
 
-  onSuperficieUniteChange(): void {
-    const next = this.form.get('superficie_unite')?.value as SuperficieUnite;
-    if (this.lastSuperficieUnite === next) {
-      return;
-    }
-    const display = this.form.get('superficie')?.value;
-    if (display != null && display !== '') {
-      const m2 = toSquareMeters(Number(display), this.lastSuperficieUnite);
-      this.superficieM2Stored = m2;
-      this.form.patchValue({
-        superficie: fromSquareMeters(m2, next),
-      });
-    }
-    this.lastSuperficieUnite = next;
-  }
-
   options = {
-    statutJuridique: [
-      { label: 'Titre foncier', value: 'Titre foncier' },
-      { label: 'Bail', value: 'Bail' },
-      { label: 'Bail emphytéotique', value: 'Bail emphytéotique' },
-      { label: 'Sans titre foncier', value: 'Sans titre foncier' }
-    ],
-    etatSite: [
-      { label: 'Nu viabilisé', value: 'Nu viabilisé' },
-      { label: 'Nu non viabilisé', value: 'Nu non viabilisé' },
-      { label: 'Avec bâti à réhabiliter', value: 'Avec bâti à réhabiliter' },
-      { label: 'Avec bâti à démolir', value: 'Avec bâti à démolir' }
-    ],
-    topographie: [
-      { label: 'Plat', value: 'Plat' },
-      { label: 'Pente douce', value: 'Pente douce' },
-      { label: 'Forte pente / Escarpé', value: 'Forte pente / Escarpé' }
-    ],
-    situation: [
-      { label: 'Lotissement', value: 'Lotissement' },
-      { label: 'Terrain isolé', value: 'Terrain isolé' },
-      { label: 'Milieu urbain', value: 'Milieu urbain' },
-      { label: 'Milieu rural', value: 'Milieu rural' }
-    ],
-    voieExistante: [
-      { label: 'Oui', value: 'oui' },
-      { label: 'Non', value: 'non' }
-    ],
-    documentsFournis: [
-      { label: 'Relevé de géomètre', value: 'Relevé de géomètre' },
-      { label: 'Étude de sol', value: 'Étude de sol' },
-      { label: 'Plan de situation', value: 'Plan de situation' }
-    ],
     typeProduit: [
       { label: 'Construction neuve', value: 'Construction neuve' },
       { label: 'Travaux sur maison existante', value: 'Travaux sur maison existante' },
@@ -229,6 +183,56 @@ export class SecondStep implements OnInit {
 
   submitted = false;
 
+  isArchitectureSelected(value: string): boolean {
+    return this.getSelectedArchitecture() === value;
+  }
+
+  selectArchitecture(value: string): void {
+    if (this.isReadOnly) {
+      return;
+    }
+    this.form.get('type_architecture')?.setValue([value]);
+  }
+
+  private getSelectedArchitecture(): string | null {
+    const selected = this.form.get('type_architecture')?.value;
+    if (Array.isArray(selected)) {
+      return selected.length > 0 ? String(selected[0]) : null;
+    }
+    return selected ? String(selected) : null;
+  }
+
+  private normalizeArchitecture(value: unknown): string[] {
+    if (Array.isArray(value)) {
+      const first = value.find((item) => item != null && String(item).trim() !== '');
+      return first != null ? [String(first)] : [];
+    }
+    if (value != null && String(value).trim() !== '') {
+      return [String(value)];
+    }
+    return [];
+  }
+
+  private patchSingleChoiceFieldsFromRaw(
+    raw: Record<string, unknown>
+  ): Partial<Record<(typeof STEP_TWO_SINGLE_CHOICE_FIELDS)[number], string | null>> {
+    const patch: Partial<
+      Record<(typeof STEP_TWO_SINGLE_CHOICE_FIELDS)[number], string | null>
+    > = {};
+    for (const field of STEP_TWO_SINGLE_CHOICE_FIELDS) {
+      patch[field] = normalizeSingleChoice(raw[field]);
+    }
+    return patch;
+  }
+
+  private applySingleChoiceFieldsToPayload(
+    payload: Record<string, unknown>
+  ): void {
+    for (const field of STEP_TWO_SINGLE_CHOICE_FIELDS) {
+      payload[field] = normalizeSingleChoice(payload[field]);
+    }
+  }
+
   prevStep() {
     this.router.navigate(['/votre-projet']);
   }
@@ -241,16 +245,9 @@ export class SecondStep implements OnInit {
     }
 
     const val = { ...this.form.value };
-    const displayBudget = Number(val.budget_previsionnel);
-    const budgetXaf = this.currencyService.toXaf(displayBudget);
-    val.budget_previsionnel = budgetXaf;
-    this.budgetXafStored = budgetXaf;
-
-    const unite = (val.superficie_unite as SuperficieUnite) ?? 'm2';
-    const superficieM2 = toSquareMeters(Number(val.superficie), unite);
-    val.superficie = superficieM2;
-    val.superficie_unite = unite;
-    this.superficieM2Stored = superficieM2;
+    val.type_architecture = this.normalizeArchitecture(val.type_architecture);
+    this.applySingleChoiceFieldsToPayload(val);
+    val.espace_annexe = normalizeMultiChoice(val.espace_annexe);
 
     const projectData = this.projectDataService.getProjectData();
     const existingData = projectData.stepTwo?.data || {};
@@ -263,12 +260,39 @@ export class SecondStep implements OnInit {
       data: { ...existingData, ...val },
     };
 
-    this.projectDataService.setProjectData({
-      ...projectData,
-      stepTwo: payload as any,
+    this.projectService.saveStepTwoDraft(payload).subscribe({
+      next: (response) => {
+        if (response.success) {
+          this.projectDataService.setProjectData({
+            ...projectData,
+            terrain_id: response.data.terrain_id,
+            produit_id: response.data.produit_id,
+            stepTwo: payload as any,
+            stepFive: {
+              step: 5,
+              data: {
+                approved: false,
+                decision: null,
+                approved_at: null,
+              },
+            },
+            stepSix: {
+              step: 6,
+              data: {
+                selected_standing: null,
+                approved: false,
+                approved_at: null,
+              },
+            },
+          });
+          console.log("Step 3 (Project) saved successfully", response);
+          console.log("project data", this.projectDataService.getProjectData());
+          this.router.navigate(['/'], { fragment: 'step-4' });
+        }
+      },
+      error: (err) => {
+        console.error('Error saving step 2', err);
+      }
     });
-    
-    console.log("Step 2 (Part 1) saved locally", val);
-    this.router.navigate(['/votre-projet/second-step-part-two']);
   }
 }

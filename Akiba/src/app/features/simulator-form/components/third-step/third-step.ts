@@ -52,7 +52,7 @@ export class ThirdStep implements OnInit {
   }
 
   prevStep() {
-    this.router.navigate(['/votre-projet/second-step']);
+    this.router.navigate(['/votre-projet/second-step-part-two']);
   }
 
   onSubmit() {
@@ -103,7 +103,7 @@ export class ThirdStep implements OnInit {
           });
           console.log("Step 3 saved successfully", response);
           console.log("project data", this.projectDataService.getProjectData());
-          this.router.navigate(['/votre-projet/fourth-step']);
+          this.router.navigate(['/'], { fragment: 'step-5' });
         }
       },
       error: (err) => {

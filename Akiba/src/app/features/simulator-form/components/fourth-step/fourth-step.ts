@@ -189,7 +189,7 @@ export class FourthStep implements OnInit {
             });
             console.log("Step 4 saved successfully", response);
             console.log("project data", this.projectDataService.getProjectData());
-            this.router.navigate(['/votre-projet/fifth-step']);
+            this.router.navigate(['/'], { fragment: 'step-6' });
           }
         },
         error: (error) => {

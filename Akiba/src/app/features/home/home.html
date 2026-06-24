@@ -1,22 +1,108 @@
 <section class="flex flex-col gap-12">
     <app-banner></app-banner>
 
-    <div class="flex flex-col gap-2 mx-auto sm:w-[50%]">
-        <h2 class="text-center text-[#070707] font-semibold text-3xl lg:text-4xl">Votre projet au Cameroun en 5 étapes simples</h2>
-        <p class="w-[86%] mx-auto text-[#555555] text-center">De la définition de vos besoins à la concrétisation finale, nous vous accompagnons à chaque étape de votre projet.</p>
+    <div class="flex flex-col gap-2 mx-auto sm:w-[60%]">
+        <h2 class="text-center text-[#070707] font-semibold text-4xl lg:text-5xl">Votre projet au Cameroun en 6 étapes
+            simples</h2>
+        <p class="w-full mx-auto text-[#555555] text-center">Transformez votre vision en un dossier technique concret
+            en quelques minutes. Définissez votre terrain, choisissez votre style architectural et configurez votre
+            future maison en toute simplicité. De la première idée à la concrétisation finale, nous vous accompagnons à
+            chaque étape. </p>
     </div>
 
-    <article class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6">
+    <article *ngIf="showStepper()" class="w-full max-w-7xl mx-auto py-12 px-6">
+        <!-- Mobile Carousel View -->
+        <div class="sm:hidden flex flex-col items-center w-full max-w-sm mx-auto">
+            <div class="flex items-center justify-between w-full mb-6 relative">
+                <!-- Prev Button -->
+                <button [disabled]="step() === 1"
+                    (click)="goToStep(step() - 1)"
+                    [class]="'p-2 rounded-full transition-all duration-200 ' + 
+                                  (step() === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-[#56CB4E] hover:bg-blue-50 active:scale-95')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+                    </svg>
+                </button>
+
+                <!-- Current Step Circle -->
+                <div class="relative">
+                    <div
+                        class="w-14 h-14 rounded-full bg-white border-2 border-[#56CB4E] text-[#56CB4E] shadow-xl flex items-center justify-center ring-4 ring-blue-50">
+                        <span class="font-bold text-xl">{{ step() }}</span>
+                    </div>
+                </div>
+
+                <!-- Next Button -->
+                <button [disabled]="step() === steps.length"
+                    (click)="goToStep(step() + 1)"
+                    [class]="'p-2 rounded-full transition-all duration-200 ' + 
+                                  (step() === steps.length ? 'text-gray-300 cursor-not-allowed' : 'text-[#56CB4E] hover:bg-blue-50 active:scale-95')">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
+                        stroke="currentColor" class="w-8 h-8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Label -->
+            <div class="text-center px-4 min-h-[3rem] flex items-center justify-center">
+                <p class="text-[#56CB4E] font-bold text-lg leading-tight transition-all duration-300">
+                    {{ steps[step() - 1].label }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Desktop Stepper View -->
+        <div class="hidden sm:flex flex-row items-start justify-center gap-0">
+            <div *ngFor="let s of steps; let i = index; let last = last"
+                class="flex flex-1 w-auto group cursor-pointer"
+                (click)="goToStep(s.id)">
+
+                <div class="flex flex-col items-center text-center w-full relative">
+
+                    <!-- Icon & Lines -->
+                    <div class="flex items-center w-full relative justify-center">
+                        <!-- Circle -->
+                        <div [class]="'w-10 h-10 min-w-[40px] rounded-full bg-white border-2 flex items-center justify-center z-10 transition-all duration-300 ' + 
+                                     (step() >= s.id ? 'border-[#56CB4E] text-[#56CB4E] shadow-lg' : 'border-gray-300 text-gray-400') +
+                                     (step() === s.id ? ' ring-8 ring-blue-50/50 scale-110' : '')">
+                            <span class="font-bold text-lg">{{ s.id }}</span>
+                        </div>
+
+                        <!-- Connecting Line -->
+                        <div *ngIf="!last"
+                            class="absolute left-1/2 w-full top-5 h-[1px] border-t border-dashed border-gray-200 -z-0">
+                        </div>
+                    </div>
+
+                    <!-- Label -->
+                    <div class="mt-8 w-full px-3">
+                        <p
+                            [class]="'text-sm leading-tight transition-all duration-300 ' + 
+                                   (step() === s.id ? 'text-[#56CB4E] font-bold' : 'text-gray-500 font-medium group-hover:text-[#56CB4E]')">
+                            {{ s.label }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </article>
+
+    <article id="step-1" class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6">
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
-                <h2 class="text-[#222222] font-semibold text-3xl">Créez votre profil client</h2>
-                <p class="text-[#555555]">Remplissez une fiche de renseignements rapide pour nous permettre de suivre votre dossier.</p>
+                <h2 class="text-[#222222] font-semibold text-3xl">Fiche de renseignement client</h2>
+                <p class="text-2xl font-medium text-[#555555]">Identification du maître d’ouvrage.</p>
             </div>
 
             <div class="flex flex-col gap-2">
                 @for(item of createProfil; track item.headLine; let i = $index){
-                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
                 }
+            </div>
+            <div *ngIf="step() === 1" class="w-max">
+                <app-run-button label="Commencer ici" (clickEvent)="goToStep(1)"></app-run-button>
             </div>
         </div>
 
@@ -26,7 +112,7 @@
     </article>
 
 
-    <article class="w-[90%] mx-auto flex flex-wrap-reverse items-center justify-between gap-6">
+    <article id="step-2" class="w-[90%] mx-auto flex flex-wrap-reverse items-center justify-between gap-6">
         <div data-aos="fade-right" class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300 overflow-hidden">
             <img src="/assets/homeService/service 2.svg" class="w-full h-full object-cover" alt="">
         </div>
@@ -34,18 +120,23 @@
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
                 <h2 class="text-[#222222] font-semibold text-3xl">Décrivez votre terrain</h2>
-                <p class="text-[#555555]">Aidez-nous à comprendre l’environnement technique de votre future construction.</p>
+                <p class="text-[#555555]">Aidez-nous à comprendre l’environnement technique de votre future
+                    construction.</p>
             </div>
 
             <div class="flex flex-col gap-2">
                 @for(item of descriveTerrain; track item.headLine; let i = $index){
-                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
                 }
+            </div>
+
+            <div *ngIf="step() === 2" class="w-max">
+                <app-run-button label="Continuer ici" (clickEvent)="goToStep(2)"></app-run-button>
             </div>
         </div>
     </article>
 
-    <article class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6">
+    <article id="step-3" class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6">
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
                 <h2 class="text-[#222222] font-semibold text-3xl">Choisissez votre style d’architecture</h2>
@@ -54,8 +145,12 @@
 
             <div class="flex flex-col gap-2">
                 @for(item of chooseArchitecture; track item.headLine; let i = $index){
-                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
                 }
+            </div>
+
+            <div *ngIf="step() === 3" class="w-max">
+                <app-run-button label="Continuer ici" (clickEvent)="goToStep(3)"></app-run-button>
             </div>
         </div>
 
@@ -64,7 +159,7 @@
         </div>
     </article>
 
-    <article class="w-[90%] mx-auto flex flex-wrap-reverse items-center justify-between gap-6">
+    <article id="step-4" class="w-[90%] mx-auto flex flex-wrap-reverse items-center justify-between gap-6">
         <div data-aos="fade-right" class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300 overflow-hidden">
             <img src="/assets/homeService/service 4.svg" class="w-full h-full object-cover" alt="">
         </div>
@@ -72,19 +167,24 @@
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
                 <h2 class="text-[#222222] font-semibold text-3xl">Configurez vos pièces</h2>
-                <p class="text-[#555555]">Définissez le programme intérieur de votre maison pour calculer la surface nécessaire.</p>
+                <p class="text-[#555555]">Définissez le programme intérieur de votre maison pour calculer la surface
+                    nécessaire.</p>
             </div>
 
             <div class="flex flex-col gap-2">
                 @for(item of configurePiece; track item.headLine; let i = $index){
-                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
                 }
+            </div>
+
+            <div *ngIf="step() === 4" class="w-max">
+                <app-run-button label="Continuer ici" (clickEvent)="goToStep(4)"></app-run-button>
             </div>
         </div>
     </article>
 
 
-    <article class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6 mb-20">
+    <article id="step-5" class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6 mb-20">
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
                 <h2 class="text-[#222222] font-semibold text-3xl">Obtenez votre estimation financière</h2>
@@ -93,8 +193,12 @@
 
             <div class="flex flex-col gap-2">
                 @for(item of obtainEstimation; track item.headLine; let i = $index){
-                    <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
                 }
+            </div>
+
+            <div *ngIf="step() >= 5" class="w-max">
+                <app-run-button label="Continuer ici" (clickEvent)="goToStep(step())"></app-run-button>
             </div>
         </div>
 

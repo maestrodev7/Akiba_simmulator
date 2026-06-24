@@ -2,16 +2,14 @@
     <div class="flex flex-col gap-6">
         <h2 class="text-2xl font-bold text-[#070707] border-l-4 border-[#56CB4E] pl-4">Identification du Terrain</h2>
 
-        <div class="flex flex-col gap-2 max-w-md">
+        <div class="flex flex-col gap-2 w-full">
             <label class="font-medium text-gray-700">Budget <span class="text-red-500">*</span></label>
             <div class="flex gap-2 items-stretch">
                 <input type="number" formControlName="budget_previsionnel"
                     class="flex-1 min-w-0 p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all"
                     [class.border-red-400]="submitted && form.get('budget_previsionnel')?.invalid"
                     [class.border-gray-100]="!(submitted && form.get('budget_previsionnel')?.invalid)"
-                    placeholder="Montant du budget"
-                    min="0"
-                    step="any">
+                    placeholder="Montant du budget" min="0" step="any">
                 <span
                     class="flex items-center justify-center min-w-[88px] px-4 rounded-lg bg-[#56CB4E]/10 border-2 border-[#56CB4E]/30 text-[#2d5c28] font-bold text-sm">
                     {{ currencyService.currencySymbol() }}
@@ -39,11 +37,8 @@
                         class="flex-1 p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all min-w-0"
                         [class.border-red-400]="submitted && form.get('superficie')?.invalid"
                         [class.border-gray-100]="!(submitted && form.get('superficie')?.invalid)"
-                        placeholder="Superficie du terrain"
-                        min="0"
-                        step="any">
-                    <select formControlName="superficie_unite"
-                        (change)="onSuperficieUniteChange()"
+                        placeholder="Superficie du terrain" min="0" step="any">
+                    <select formControlName="superficie_unite" (change)="onSuperficieUniteChange()"
                         [disabled]="isReadOnly"
                         class="w-[120px] shrink-0 p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none font-medium text-gray-700 disabled:opacity-60">
                         <option *ngFor="let u of superficieUnites" [value]="u.value">{{ u.label }}</option>
@@ -107,215 +102,7 @@
         </div>
     </div>
 
-    <hr class="border-gray-100 my-4">
 
-    <div class="flex flex-col gap-6">
-        <h2 class="text-2xl font-bold text-[#070707] border-l-4 border-[#56CB4E] pl-4">Définition des Produits Terrain
-        </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Choix du type de produit</label>
-                <app-custom-select formControlName="type_produit" [options]="options.typeProduit"
-                    placeholder="Quelle est le choix du type de produit ?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('type_produit')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Nature des travaux <span class="text-red-500">*</span></label>
-                <app-custom-select formControlName="nature_travaux" [options]="options.natureTravaux"
-                    placeholder="Quelle est la nature des travaux ?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('nature_travaux')?.errors?.['required']"
-                    message="Ce champ est requis"></app-error-message>
-                <app-error-message *ngIf="submitted && form.get('nature_travaux')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-
-            <div class="flex flex-col gap-2  md:col-span-2">
-                <label class="font-medium text-gray-700">Type de construction souhaité</label>
-                <app-custom-select formControlName="type_construction" [options]="options.typeConstruction"
-                    placeholder="Quel type de construction souhaitez-vous avoir?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('type_construction')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-
-            <div class="flex flex-col gap-2  md:col-span-2">
-                <label class="font-medium text-gray-700">Type d'architecture</label>
-                <div class="flex flex-wrap justify-around items-center gap-4 md:gap-8 bg-white" role="radiogroup" aria-label="Type d'architecture">
-                    <!-- Traditionnelle -->
-                    <label class="flex flex-col items-center gap-3 cursor-pointer group">
-                        <span class="flex gap-2 items-center font-semibold text-gray-800">
-                            <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
-                                [class.border-[#56CB4E]]="isArchitectureSelected('traditionnelle')"
-                                [class.bg-[#56CB4E]]="isArchitectureSelected('traditionnelle')"
-                                [class.border-gray-300]="!isArchitectureSelected('traditionnelle')">
-                                <span *ngIf="isArchitectureSelected('traditionnelle')" class="w-2 h-2 rounded-full bg-white"></span>
-                            </span>
-                            Traditionnelle
-                        </span>
-                        <input type="radio" name="type_architecture" class="hidden" [checked]="isArchitectureSelected('traditionnelle')"
-                            (change)="selectArchitecture('traditionnelle')" [disabled]="isReadOnly">
-                        <div class="relative w-40 h-40 rounded-2xl overflow-hidden border-4 transition-all"
-                            [class.border-[#5EC50A]]="isArchitectureSelected('traditionnelle')"
-                            [class.border-transparent]="!isArchitectureSelected('traditionnelle')">
-                            <img src="./assets/house_architecture/traditional_architecture.svg"
-                                class="w-full h-full object-cover transition-transform group-hover:scale-110"
-                                alt="traditionnelle">
-                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all"></div>
-                        </div>
-                    </label>
-
-                    <!-- Moderne -->
-                    <label class="flex flex-col items-center gap-3 cursor-pointer group">
-                        <span class="flex gap-2 items-center font-semibold text-gray-800">
-                            <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
-                                [class.border-[#56CB4E]]="isArchitectureSelected('moderne')"
-                                [class.bg-[#56CB4E]]="isArchitectureSelected('moderne')"
-                                [class.border-gray-300]="!isArchitectureSelected('moderne')">
-                                <span *ngIf="isArchitectureSelected('moderne')" class="w-2 h-2 rounded-full bg-white"></span>
-                            </span>
-                            Moderne
-                        </span>
-                        <input type="radio" name="type_architecture" class="hidden" [checked]="isArchitectureSelected('moderne')"
-                            (change)="selectArchitecture('moderne')" [disabled]="isReadOnly">
-                        <div class="relative w-40 h-40 rounded-2xl overflow-hidden border-4 transition-all"
-                            [class.border-[#5EC50A]]="isArchitectureSelected('moderne')"
-                            [class.border-transparent]="!isArchitectureSelected('moderne')">
-                            <img src="./assets/house_architecture/modern_architecture.svg"
-                                class="w-full h-full object-cover transition-transform group-hover:scale-110"
-                                alt="moderne">
-                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all"></div>
-                        </div>
-                    </label>
-
-                    <!-- Contemporaine -->
-                    <label class="flex flex-col items-center gap-3 cursor-pointer group">
-                        <span class="flex gap-2 items-center font-semibold text-gray-800">
-                            <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
-                                [class.border-[#56CB4E]]="isArchitectureSelected('contemporaine')"
-                                [class.bg-[#56CB4E]]="isArchitectureSelected('contemporaine')"
-                                [class.border-gray-300]="!isArchitectureSelected('contemporaine')">
-                                <span *ngIf="isArchitectureSelected('contemporaine')" class="w-2 h-2 rounded-full bg-white"></span>
-                            </span>
-                            Contemporaine
-                        </span>
-                        <input type="radio" name="type_architecture" class="hidden" [checked]="isArchitectureSelected('contemporaine')"
-                            (change)="selectArchitecture('contemporaine')" [disabled]="isReadOnly">
-                        <div class="relative w-40 h-40 rounded-2xl overflow-hidden border-4 transition-all"
-                            [class.border-[#5EC50A]]="isArchitectureSelected('contemporaine')"
-                            [class.border-transparent]="!isArchitectureSelected('contemporaine')">
-                            <img src="./assets/house_architecture/luxial_architecture.svg"
-                                class="w-full h-full object-cover transition-transform group-hover:scale-110"
-                                alt="contemporaine">
-                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all"></div>
-                        </div>
-                    </label>
-
-                    <!-- Futuriste -->
-                    <label class="flex flex-col items-center gap-3 cursor-pointer group">
-                        <span class="flex gap-2 items-center font-semibold text-gray-800">
-                            <span class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all"
-                                [class.border-[#56CB4E]]="isArchitectureSelected('futuriste')"
-                                [class.bg-[#56CB4E]]="isArchitectureSelected('futuriste')"
-                                [class.border-gray-300]="!isArchitectureSelected('futuriste')">
-                                <span *ngIf="isArchitectureSelected('futuriste')" class="w-2 h-2 rounded-full bg-white"></span>
-                            </span>
-                            Futuriste
-                        </span>
-                        <input type="radio" name="type_architecture" class="hidden" [checked]="isArchitectureSelected('futuriste')"
-                            (change)="selectArchitecture('futuriste')" [disabled]="isReadOnly">
-                        <div class="relative w-40 h-40 rounded-2xl overflow-hidden border-4 transition-all"
-                            [class.border-[#5EC50A]]="isArchitectureSelected('futuriste')"
-                            [class.border-transparent]="!isArchitectureSelected('futuriste')">
-                            <img src="./assets/house_architecture/futurist_architecture.svg"
-                                class="w-full h-full object-cover transition-transform group-hover:scale-110"
-                                alt="futuriste">
-                            <div class="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-all"></div>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            <div class="flex flex-col gap-2  md:col-span-2">
-                <label class="font-medium text-gray-700">Matériaux de construction</label>
-                <app-custom-select formControlName="materiaux" [options]="options.materiaux"
-                    placeholder="Quel matériaux de construction souhaitez-vous avoir?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('materiaux')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Style de construction</label>
-                <app-custom-select formControlName="style_construction" [options]="options.styleConstruction"
-                    placeholder="Quel style de construction souhaitez-vous avoir?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('style_construction')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Espace et annexe</label>
-                <app-custom-select formControlName="espace_annexe" [options]="options.espaceAnnexe"
-                    placeholder="Quel space annexe souhaitez vous ajouter?" [multiple]="true">
-                </app-custom-select>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Configuration du nombre d’étage</label>
-                <input type="number" formControlName="nombre_etages"
-                    class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all"
-                    placeholder="nombre d’étage souhaité">
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Configuration du nombre de sous sol</label>
-                <input type="number" formControlName="nombre_sous_sol"
-                    class="w-full p-3 bg-[#F5F5F5] border-2 border-gray-100 rounded-lg focus:border-[#56CB4E] outline-none transition-all"
-                    placeholder="nombre de sous sol souhaité">
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Type de toiture</label>
-                <app-custom-select formControlName="type_toiture" [options]="options.typeToiture"
-                    placeholder="Quel type de toiture souhaitez-vous avoir?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('type_toiture')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Habillage des façades</label>
-                <app-custom-select formControlName="habillage_facade" [options]="options.habillageFacade"
-                    placeholder="Quel Habillage des façades souhaitez-vous avoir?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('habillage_facade')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Menuiserie</label>
-                <app-custom-select formControlName="menuiserie" [options]="options.menuiserie"
-                    placeholder="Quel style de menuiserie souhaitez-vous avoir?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('menuiserie')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-
-            <div class="flex flex-col gap-2">
-                <label class="font-medium text-gray-700">Sécurisation des ouvertures</label>
-                <app-custom-select formControlName="securisation_ouvertures" [options]="options.securisationOuvertures"
-                    placeholder="Quelle sécurisation des ouvertures souhaitez-vous avoir?" [multiple]="false">
-                </app-custom-select>
-                <app-error-message *ngIf="submitted && form.get('securisation_ouvertures')?.errors?.['singleChoice']"
-                    message="Un seul choix est autorisé"></app-error-message>
-            </div>
-        </div>
-    </div>
     <article *ngIf="!isReadOnly" class="flex justify-between mt-12 pb-20">
         <button type="button" (click)="prevStep()"
             class="px-8 py-3 rounded-lg border-2 border-gray-200 text-gray-500 font-semibold hover:bg-gray-50 transition-all">

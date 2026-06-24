@@ -20,6 +20,10 @@ const routes: Route[] = [
                 loadComponent: () => import('./components/second-step/second-step').then(m => m.SecondStep)
             },
             {
+                path: "second-step-part-two",
+                loadComponent: () => import('./components/second-step-part-two/second-step-part-two').then(m => m.SecondStepPartTwo)
+            },
+            {
                 path: "third-step",
                 loadComponent: () => import('./components/third-step/third-step').then(m => m.ThirdStep)
             },
