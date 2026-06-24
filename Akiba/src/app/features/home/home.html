@@ -15,8 +15,7 @@
         <div class="sm:hidden flex flex-col items-center w-full max-w-sm mx-auto">
             <div class="flex items-center justify-between w-full mb-6 relative">
                 <!-- Prev Button -->
-                <button [disabled]="step() === 1"
-                    (click)="goToStep(step() - 1)"
+                <button [disabled]="step() === 1" (click)="goToStep(step() - 1)"
                     [class]="'p-2 rounded-full transition-all duration-200 ' + 
                                   (step() === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-[#56CB4E] hover:bg-blue-50 active:scale-95')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -34,8 +33,7 @@
                 </div>
 
                 <!-- Next Button -->
-                <button [disabled]="step() === steps.length"
-                    (click)="goToStep(step() + 1)"
+                <button [disabled]="step() === steps.length" (click)="goToStep(step() + 1)"
                     [class]="'p-2 rounded-full transition-all duration-200 ' + 
                                   (step() === steps.length ? 'text-gray-300 cursor-not-allowed' : 'text-[#56CB4E] hover:bg-blue-50 active:scale-95')">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5"
@@ -55,8 +53,7 @@
 
         <!-- Desktop Stepper View -->
         <div class="hidden sm:flex flex-row items-start justify-center gap-0">
-            <div *ngFor="let s of steps; let i = index; let last = last"
-                class="flex flex-1 w-auto group cursor-pointer"
+            <div *ngFor="let s of steps; let i = index; let last = last" class="flex flex-1 w-auto group cursor-pointer"
                 (click)="goToStep(s.id)">
 
                 <div class="flex flex-col items-center text-center w-full relative">
@@ -101,8 +98,9 @@
                 <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
                 }
             </div>
-            <div *ngIf="step() === 1" class="w-max">
+            <div *ngIf="step() === 1" class="w-full flex justify-center">
                 <app-run-button label="Commencer ici" (clickEvent)="goToStep(1)"></app-run-button>
+                <!-- make it match with step 1: fiche de renseignements  -->
             </div>
         </div>
 
@@ -119,9 +117,8 @@
 
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
-                <h2 class="text-[#222222] font-semibold text-3xl">Décrivez votre terrain</h2>
-                <p class="text-[#555555]">Aidez-nous à comprendre l’environnement technique de votre future
-                    construction.</p>
+                <h2 class="text-[#222222] font-semibold text-3xl">Fiche de renseignement terrain</h2>
+                <p class="text-[#555555]">Aidez-nous à comprendre l’environnement technique de votre parcelle.</p>
             </div>
 
             <div class="flex flex-col gap-2">
@@ -130,8 +127,9 @@
                 }
             </div>
 
-            <div *ngIf="step() === 2" class="w-max">
+            <div *ngIf="step() === 2" class="w-full flex justify-center">
                 <app-run-button label="Continuer ici" (clickEvent)="goToStep(2)"></app-run-button>
+                <!-- make it match with step 2: Fiche de renseignement du terrain   -->
             </div>
         </div>
     </article>
@@ -139,8 +137,9 @@
     <article id="step-3" class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6">
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
-                <h2 class="text-[#222222] font-semibold text-3xl">Choisissez votre style d’architecture</h2>
-                <p class="text-[#555555]">Personnalisez l’aspect visuel et technique de votre habitat.</p>
+                <h2 class="text-[#222222] font-semibold text-3xl">Fiche définition projet</h2>
+                <p class="text-[#555555]">Personnalisez l’aspect visuel et technique de votre habitat. Surface et budget
+                    souhaité</p>
             </div>
 
             <div class="flex flex-col gap-2">
@@ -149,8 +148,9 @@
                 }
             </div>
 
-            <div *ngIf="step() === 3" class="w-max">
+            <div *ngIf="step() === 3" class="w-full flex justify-center">
                 <app-run-button label="Continuer ici" (clickEvent)="goToStep(3)"></app-run-button>
+                <!-- make it match with step 3: Fiche définition projet -->
             </div>
         </div>
 
@@ -166,7 +166,7 @@
 
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
-                <h2 class="text-[#222222] font-semibold text-3xl">Configurez vos pièces</h2>
+                <h2 class="text-[#222222] font-semibold text-3xl">Détermination du programme </h2>
                 <p class="text-[#555555]">Définissez le programme intérieur de votre maison pour calculer la surface
                     nécessaire.</p>
             </div>
@@ -177,17 +177,18 @@
                 }
             </div>
 
-            <div *ngIf="step() === 4" class="w-max">
+            <div *ngIf="step() === 4" class="w-full flex justify-center">
                 <app-run-button label="Continuer ici" (clickEvent)="goToStep(4)"></app-run-button>
+                <!-- make it match with step 4: Détermination du programme -->
             </div>
         </div>
     </article>
 
 
-    <article id="step-5" class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6 mb-20">
+    <article id="step-5" class="w-[90%] mx-auto flex flex-wrap items-center justify-between gap-6 ">
         <div class="flex flex-col gap-6 w-full sm:w-[55%]">
             <div>
-                <h2 class="text-[#222222] font-semibold text-3xl">Obtenez votre estimation financière</h2>
+                <h2 class="text-[#222222] font-semibold text-3xl">Calendrier prévisionnel des travaux</h2>
                 <p class="text-[#555555]">Visualisez immédiatement le coût prévisionnel de vos travaux.</p>
             </div>
 
@@ -197,13 +198,37 @@
                 }
             </div>
 
-            <div *ngIf="step() >= 5" class="w-max">
+            <div *ngIf="step() === 5 || step() === 6" class="w-full flex justify-center">
                 <app-run-button label="Continuer ici" (clickEvent)="goToStep(step())"></app-run-button>
             </div>
         </div>
 
         <div class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300 overflow-hidden" data-aos="fade-left">
-            <img src="/assets/homeService/service 5.svg" class="w-full h-full object-cover" alt="">
+            <img src="/assets/homeService/service 6.svg" class="w-full h-full object-cover" alt="">
+        </div>
+    </article>
+
+    <article id="step-7" class="w-[90%] mx-auto flex flex-wrap-reverse items-center justify-between gap-6 mb-20">
+        <div data-aos="fade-right" class="w-full sm:w-[40%] h-[400px] rounded-xl bg-gray-300 overflow-hidden">
+            <img src="/assets/homeService/service 7.svg" class="w-full h-full object-cover" alt="">
+        </div>
+
+        <div class="flex flex-col gap-6 w-full sm:w-[55%]">
+            <div>
+                <h2 class="text-[#222222] font-semibold text-3xl">Paiement et estimation de votre projet</h2>
+                <p class="text-[#555555]">Visualisez votre estimation, puis téléchargez ou imprimez votre fiche synthèse
+                    pour la conserver ou la partager.</p>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                @for(item of billPayement; track item.headLine; let i = $index){
+                <app-order-list [index]="i + 1" [orderItem]="item"></app-order-list>
+                }
+            </div>
+
+            <div *ngIf="step() === 7" class="w-full flex justify-center">
+                <app-run-button label="Continuer ici" (clickEvent)="goToStep(7)"></app-run-button>
+            </div>
         </div>
     </article>
 
