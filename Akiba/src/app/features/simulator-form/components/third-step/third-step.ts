@@ -103,7 +103,7 @@ export class ThirdStep implements OnInit {
           });
           console.log("Step 3 saved successfully", response);
           console.log("project data", this.projectDataService.getProjectData());
-          this.router.navigate(['/'], { fragment: 'step-6' });
+          this.router.navigate(['/'], { fragment: 'step-7' });
         }
       },
       error: (err) => {
