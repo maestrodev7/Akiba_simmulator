@@ -5,11 +5,12 @@ import { Router } from '@angular/router';
 import { CurrencyService } from '../../../../core/currency/currency.service';
 import { ProjectData } from '../../../../services/project-data/project-data';
 import { YourProject } from '../../../../services/project/your-project';
+import { RecapModal } from './recap-modal/recap-modal';
 
 @Component({
   selector: 'app-payment-step',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RecapModal],
   templateUrl: './payment-step.html',
   styleUrl: './payment-step.css',
 })
@@ -30,6 +31,9 @@ export class PaymentStep implements OnInit {
   displayAmountLabel = computed(() => this.currencyService.format(this.displayAmount()));
   loading = false;
   transactionStatus = signal<string | null>(null);
+  showRecapModal = signal<boolean>(false);
+
+  private readonly SUCCESS_STATUSES = ['SUCCESS', 'VALIDE', 'TERMINE'];
 
   ngOnInit() {
     const estimateApproved = this.projectDataService.getProjectData().stepSix?.data?.approved;
@@ -66,6 +70,9 @@ export class PaymentStep implements OnInit {
           }, 7000);
         } else {
           this.loading = false;
+          if (statut && this.SUCCESS_STATUSES.includes(statut)) {
+            this.showRecapModal.set(true);
+          }
         }
       },
       error: (err) => {
@@ -144,6 +151,10 @@ export class PaymentStep implements OnInit {
   closeStatusModal() {
     this.transactionStatus.set(null);
     this.loading = false;
+  }
+
+  closeRecapModal() {
+    this.showRecapModal.set(false);
   }
 
   onAccountNumberChange(event: Event) {

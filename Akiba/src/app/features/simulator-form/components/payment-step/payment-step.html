@@ -157,8 +157,17 @@
                         </p>
                     </div>
 
-                    <div class="pt-4">
-                        <button *ngIf="transactionStatus() !== 'EN_ATTENTE' && transactionStatus() !== 'pending'"
+                    <div class="pt-4 flex flex-col gap-3">
+                        <!-- Success: open recap modal -->
+                        <button
+                            *ngIf="transactionStatus() === 'SUCCESS' || transactionStatus() === 'VALIDE' || transactionStatus() === 'TERMINE'"
+                            type="button" (click)="showRecapModal.set(true); closeStatusModal()"
+                            class="w-full py-3 px-6 bg-[#BB7A44] hover:bg-[#A26F45] text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">
+                            Voir ma fiche synthèse
+                        </button>
+                        <!-- Other non-pending states -->
+                        <button
+                            *ngIf="transactionStatus() !== 'EN_ATTENTE' && transactionStatus() !== 'pending' && transactionStatus() !== 'SUCCESS' && transactionStatus() !== 'VALIDE' && transactionStatus() !== 'TERMINE'"
                             type="button" (click)="closeStatusModal()"
                             class="w-full py-3 px-6 bg-[#BB7A44] hover:bg-[#A26F45] text-white font-bold rounded-xl shadow-lg transition-all transform hover:scale-[1.02] active:scale-95">
                             Fermer
@@ -185,3 +194,9 @@
         </article>
     </form>
 </section>
+
+<!-- ── Recap Modal (shown after successful payment) ── -->
+<app-recap-modal
+    *ngIf="showRecapModal()"
+    (close)="closeRecapModal()">
+</app-recap-modal>
