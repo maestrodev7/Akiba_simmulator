@@ -198,8 +198,8 @@
                 }
             </div>
 
-            <div *ngIf="step() === 5 || step() === 6" class="w-full flex justify-center">
-                <app-run-button label="Continuer ici" (clickEvent)="goToStep(step())"></app-run-button>
+            <div *ngIf="step() === 5" class="w-full flex justify-center">
+                <app-run-button label="Continuer ici" (clickEvent)="goToStep(5)"></app-run-button>
             </div>
         </div>
 
@@ -226,8 +226,8 @@
                 }
             </div>
 
-            <div *ngIf="step() === 7" class="w-full flex justify-center">
-                <app-run-button label="Continuer ici" (clickEvent)="goToStep(7)"></app-run-button>
+            <div *ngIf="step() === 6" class="w-full flex justify-center">
+                <app-run-button label="Continuer ici" (clickEvent)="goToStep(6)"></app-run-button>
             </div>
         </div>
     </article>
