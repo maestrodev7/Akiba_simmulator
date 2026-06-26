@@ -62,9 +62,7 @@ export class SixthStep implements OnInit {
   });
 
   ngOnInit() {
-    this.currencyService.loadRates().subscribe();
-    this.selectedStanding.set(this.readStoredStanding());
-    this.loadEstimate();
+    this.router.navigate(['/votre-projet/payment-step']);
   }
 
   prevStep() {

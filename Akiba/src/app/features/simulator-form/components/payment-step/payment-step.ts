@@ -32,10 +32,24 @@ export class PaymentStep implements OnInit {
   transactionStatus = signal<string | null>(null);
 
   ngOnInit() {
-    const estimateApproved = this.projectDataService.getProjectData().stepSix?.data?.approved;
+    const projectData = this.projectDataService.getProjectData();
+    const estimateApproved = projectData.stepSix?.data?.approved;
     if (!estimateApproved) {
-      this.router.navigate(['/votre-projet/sixth-step']);
-      return;
+      if (!projectData.produit_id) {
+        this.router.navigate(['/votre-projet/fifth-step']);
+        return;
+      }
+      this.projectDataService.setProjectData({
+        ...projectData,
+        stepSix: {
+          step: 6,
+          data: {
+            selected_standing: projectData.stepTwo?.data?.standing ?? 'standard',
+            approved: true,
+            approved_at: new Date().toISOString(),
+          },
+        },
+      });
     }
 
     this.currencyService.loadRates().subscribe();
@@ -52,7 +66,7 @@ export class PaymentStep implements OnInit {
   }
 
   prevStep() {
-    this.router.navigate(['/votre-projet/sixth-step']);
+    this.router.navigate(['/votre-projet/fifth-step']);
   }
 
   checkPaymentStatus(reference: string) {

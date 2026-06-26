@@ -4,8 +4,10 @@ import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { finalize, timeout, catchError } from 'rxjs/operators';
+import { catchError, finalize, switchMap, timeout } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { stepTwoForm } from '../../../../interfaces/project-interface';
+import { formatSuperficie } from '../../../../core/area/area.util';
 
 interface Piece {
   designation: string;
@@ -14,6 +16,8 @@ interface Piece {
   surface_standard: number;
   isCustom?: boolean;
 }
+
+type StandingOption = 'standard' | 'moyen' | 'haut';
 
 @Component({
   selector: 'app-fourth-step',
@@ -28,16 +32,23 @@ export class FourthStep implements OnInit {
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
 
+  readonly standingOptions: { value: StandingOption; label: string }[] = [
+    { value: 'standard', label: 'Finition standard' },
+    { value: 'moyen', label: 'Finition moyen standing' },
+    { value: 'haut', label: 'Finition haut standing' },
+  ];
+
   questions: Piece[] = [];
   isLoading = signal<boolean>(false);
+  errorMsg = signal<string | null>(null);
+  selectedStanding = signal<StandingOption>('standard');
 
-  // For custom piece creation
-  showAddPieceForm = false;
   newPieceName = '';
   newPieceSurface: number | null = null;
   isCreatingPiece = signal<boolean>(false);
 
   ngOnInit() {
+    this.selectedStanding.set(this.readStoredStanding());
     this.fetchPieces();
   }
 
@@ -46,7 +57,11 @@ export class FourthStep implements OnInit {
   }
 
   get totalSurface(): number {
-    return this.questions.reduce((sum, q) => sum + (q.value * q.surface_standard), 0);
+    return this.questions.reduce((sum, q) => sum + q.value * q.surface_standard, 0);
+  }
+
+  get formattedTotalSurface(): string {
+    return formatSuperficie(this.totalSurface, 'm2');
   }
 
   fetchPieces() {
@@ -54,10 +69,11 @@ export class FourthStep implements OnInit {
     const savedData = this.projectDataService.getProjectData();
     const savedLignes = savedData.stepFour?.data?.lignes || [];
 
-    this.projectService.getPieces()
+    this.projectService
+      .getPieces()
       .pipe(
         timeout(10000),
-        catchError(error => {
+        catchError((error) => {
           console.error('Request timed out or failed in fetchPieces:', error);
           return of({ success: false, data: [] });
         }),
@@ -71,7 +87,7 @@ export class FourthStep implements OnInit {
               const savedPiece = savedLignes.find((l: any) => String(l.piece_id) === String(piece_id));
               return {
                 designation: piece.designation,
-                value: savedPiece ? savedPiece.nombre : 1,
+                value: savedPiece ? savedPiece.nombre : 0,
                 key: piece_id,
                 surface_standard: piece.surface_standard || 0,
                 isCustom: false,
@@ -84,7 +100,7 @@ export class FourthStep implements OnInit {
         error: (error) => {
           console.error('Error fetching pieces:', error);
           this.isLoading.set(false);
-        }
+        },
       });
   }
 
@@ -100,18 +116,19 @@ export class FourthStep implements OnInit {
     this.questions[index].value = isNaN(val) || val < 0 ? 0 : Math.floor(val);
   }
 
-  removePiece(index: number) {
-    this.questions.splice(index, 1);
+  onStandingChange(nextStanding: StandingOption) {
+    this.selectedStanding.set(nextStanding);
   }
 
   createCustomPiece() {
     if (!this.newPieceName || !this.newPieceSurface) return;
 
     this.isCreatingPiece.set(true);
-    this.projectService.createPiece({
-      designation: this.newPieceName,
-      surface_standard: this.newPieceSurface
-    })
+    this.projectService
+      .createPiece({
+        designation: this.newPieceName,
+        surface_standard: this.newPieceSurface,
+      })
       .pipe(finalize(() => this.isCreatingPiece.set(false)))
       .subscribe({
         next: (response) => {
@@ -126,43 +143,51 @@ export class FourthStep implements OnInit {
             });
             this.newPieceName = '';
             this.newPieceSurface = null;
-            this.showAddPieceForm = false;
           }
         },
         error: (error) => {
           console.error('Error creating piece:', error);
-        }
+        },
       });
   }
 
-  nextStep() {
+  validate() {
     const projectData = this.projectDataService.getProjectData();
-    const payload: any = {
+    const stepFourPayload: any = {
       step: 4,
       produit_id: projectData.produit_id,
       data: {
-        lignes: this.questions.map(q => ({
-          piece_id: q.key,
-          nombre: q.value
-        }))
-      }
+        lignes: this.questions
+          .filter((q) => q.value > 0)
+          .map((q) => ({
+            piece_id: q.key,
+            nombre: q.value,
+          })),
+      },
     };
 
     this.isLoading.set(true);
-    this.projectService.saveStepDraft(payload)
+    this.errorMsg.set(null);
+
+    this.persistStanding()
       .pipe(
-        timeout(10000),
-        catchError(error => {
-          console.error('Request timed out or failed in nextStep:', error);
-          return of({ success: false });
-        }),
+        switchMap(() =>
+          this.projectService.saveStepDraft(stepFourPayload).pipe(
+            timeout(10000),
+            catchError((error) => {
+              console.error('Request timed out or failed in validate:', error);
+              return of({ success: false });
+            })
+          )
+        ),
         finalize(() => this.isLoading.set(false))
       )
       .subscribe({
         next: (response) => {
-          if (response.success) {
+          if (response?.success) {
             this.projectDataService.setProjectData({
-              stepFour: payload,
+              ...this.projectDataService.getProjectData(),
+              stepFour: stepFourPayload,
               stepFive: {
                 step: 5,
                 data: {
@@ -174,24 +199,64 @@ export class FourthStep implements OnInit {
               stepSix: {
                 step: 6,
                 data: {
-                  selected_standing: null,
+                  selected_standing: this.selectedStanding(),
                   approved: false,
                   approved_at: null,
                 },
               },
             });
-            console.log("Step 4 saved successfully", response);
             this.router.navigate(['/'], { fragment: 'step-5' });
+            return;
           }
+          this.errorMsg.set('Impossible de sauvegarder la configuration des pièces.');
         },
         error: (error) => {
           console.error('Error saving step draft:', error);
-          this.isLoading.set(false);
-        }
+          this.errorMsg.set('Impossible de sauvegarder la configuration des pièces.');
+        },
       });
   }
 
-  prevStep() {
-    this.router.navigate(['/votre-projet/second-step-part-two']);
+  private persistStanding() {
+    const projectData = this.projectDataService.getProjectData();
+    const stepTwo = projectData.stepTwo;
+    if (!stepTwo) {
+      return of(null);
+    }
+
+    const payload: stepTwoForm = {
+      ...stepTwo,
+      data: {
+        ...stepTwo.data,
+        standing: this.selectedStanding(),
+      },
+    };
+
+    return this.projectService.saveStepTwoDraft(payload).pipe(
+      timeout(10000),
+      catchError((error) => {
+        console.error('Error updating standing', error);
+        return of(null);
+      }),
+      switchMap((response) => {
+        if (response?.success) {
+          this.projectDataService.setProjectData({
+            ...projectData,
+            terrain_id: response.data.terrain_id,
+            produit_id: response.data.produit_id,
+            stepTwo: payload,
+          });
+        }
+        return of(response);
+      })
+    );
+  }
+
+  private readStoredStanding(): StandingOption {
+    const standing = this.projectDataService.getProjectData().stepTwo?.data?.standing;
+    if (standing === 'moyen' || standing === 'haut') {
+      return standing;
+    }
+    return 'standard';
   }
 }

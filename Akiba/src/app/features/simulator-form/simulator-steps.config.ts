@@ -14,7 +14,7 @@ export const SIMULATOR_STEPS: SimulatorStep[] = [
   { id: 4, label: 'Détermination du programme', route: 'fourth-step', homeFragment: 'step-4' },
   { id: 5, label: 'Calendrier prévisionnel des travaux', route: 'third-step', homeFragment: 'step-5' },
   { id: 6, label: 'Récapitulatif', route: 'fifth-step', homeFragment: 'step-6' },
-  { id: 7, label: 'Estimation financière de votre projet', route: 'sixth-step', homeFragment: 'step-7' },
+  { id: 7, label: 'Paiement et estimation de votre projet', route: PAYMENT_STEP_ROUTE, homeFragment: 'step-7' },
 ];
 
 const STEPS_BY_ROUTE_LENGTH = [...SIMULATOR_STEPS].sort(

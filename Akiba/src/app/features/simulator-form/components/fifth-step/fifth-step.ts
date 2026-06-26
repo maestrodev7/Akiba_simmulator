@@ -92,7 +92,19 @@ export class FifthStep implements OnInit {
   }
 
   nextStep() {
-    this.router.navigate(['/'], { fragment: 'step-7' });
+    const projectData = this.projectDataService.getProjectData();
+    this.projectDataService.setProjectData({
+      ...projectData,
+      stepSix: {
+        step: 6,
+        data: {
+          selected_standing: projectData.stepTwo?.data?.standing ?? 'standard',
+          approved: true,
+          approved_at: new Date().toISOString(),
+        },
+      },
+    });
+    this.router.navigate(['/votre-projet/payment-step']);
   }
 
   canContinue(): boolean {
