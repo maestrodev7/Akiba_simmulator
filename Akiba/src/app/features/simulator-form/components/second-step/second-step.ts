@@ -269,6 +269,6 @@ export class SecondStep implements OnInit {
     });
     
     console.log("Step 2 (Part 1) saved locally", val);
-    this.router.navigate(['/votre-projet/second-step-part-two']);
+    this.router.navigate(['/'], { fragment: 'step-3' });
   }
 }

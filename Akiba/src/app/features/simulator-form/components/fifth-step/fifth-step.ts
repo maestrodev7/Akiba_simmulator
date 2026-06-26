@@ -5,7 +5,6 @@ import { ProjectData } from '../../../../services/project-data/project-data';
 import { FirstStep } from '../first-step/first-step';
 import { SecondStep } from '../second-step/second-step';
 import { ThirdStep } from '../third-step/third-step';
-import { FourthStep } from '../fourth-step/fourth-step';
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectRecapData } from '../../../../interfaces/project-interface';
 import { formatSuperficie } from '../../../../core/area/area.util';
@@ -15,7 +14,7 @@ import { of } from 'rxjs';
 @Component({
   selector: 'app-fifth-step',
   standalone: true,
-  imports: [CommonModule, FirstStep, SecondStep, ThirdStep, FourthStep],
+  imports: [CommonModule, FirstStep, SecondStep, ThirdStep],
   templateUrl: './fifth-step.html',
   styleUrl: './fifth-step.css',
 })
