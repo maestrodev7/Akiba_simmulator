@@ -17,6 +17,8 @@ final class ClientDto
         public readonly ?string $telephone = null,
         public readonly ?string $adresse = null,
         public readonly ?string $numeroRegistre = null,
+        public readonly ?int $nombreEnfants = null,
+        public readonly ?float $budgetPrevisionnel = null,
     ) {
     }
 
@@ -32,6 +34,8 @@ final class ClientDto
             telephone: isset($data['telephone']) ? (string) $data['telephone'] : null,
             adresse: isset($data['adresse']) ? (string) $data['adresse'] : null,
             numeroRegistre: isset($data['numero_registre']) ? (string) $data['numero_registre'] : null,
+            nombreEnfants: isset($data['nombre_enfants']) ? (int) $data['nombre_enfants'] : null,
+            budgetPrevisionnel: isset($data['budget_previsionnel']) ? (float) $data['budget_previsionnel'] : null,
         );
     }
 }

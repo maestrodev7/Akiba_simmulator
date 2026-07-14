@@ -32,6 +32,8 @@ final class ClientRepository implements ClientRepositoryInterface
         $model->telephone = $client->getTelephone();
         $model->adresse = $client->getAdresse();
         $model->numero_registre = $client->getNumeroRegistre();
+        $model->nombre_enfants = $client->getNombreEnfants();
+        $model->budget_previsionnel = $client->getBudgetPrevisionnel();
         if ($client->getSimulationPaymentStatus() !== null) {
             $model->simulation_payment_status = $client->getSimulationPaymentStatus();
         }
@@ -81,6 +83,8 @@ final class ClientRepository implements ClientRepositoryInterface
             telephone: $model->telephone,
             adresse: $model->adresse,
             numeroRegistre: $model->numero_registre,
+            nombreEnfants: $model->nombre_enfants,
+            budgetPrevisionnel: $model->budget_previsionnel !== null ? (float) $model->budget_previsionnel : null,
             simulationPaymentStatus: $model->simulation_payment_status,
             simulationPaidAt: $model->simulation_paid_at?->toIso8601String(),
             createdAt: $model->created_at?->toIso8601String(),

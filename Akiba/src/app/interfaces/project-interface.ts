@@ -27,6 +27,8 @@ export interface stepOneForm {
     telephone: string;
     adresse: string;
     numero_registre: string;
+    nombre_enfants?: number | null;
+    budget_previsionnel?: number | null;
   }
 }
 
@@ -36,7 +38,6 @@ export interface stepTwoForm {
   terrain_id?: string,
   produit_id?: string,
   data: {
-    budget_previsionnel: number;
     adresse: string;
     superficie: number;
     superficie_unite?: 'm2' | 'ha';

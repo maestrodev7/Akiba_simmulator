@@ -2,22 +2,6 @@
     <div class="flex flex-col gap-6">
         <h2 class="text-2xl font-bold text-[#070707] border-l-4 border-[#56CB4E] pl-4">Identification du Terrain</h2>
 
-        <div class="flex flex-col gap-2 w-full">
-            <label class="font-medium text-gray-700">Budget <span class="text-red-500">*</span></label>
-            <div class="flex gap-2 items-stretch">
-                <input type="number" formControlName="budget_previsionnel"
-                    class="flex-1 min-w-0 p-3 bg-[#F5F5F5] border-2 rounded-lg focus:border-[#56CB4E] outline-none transition-all"
-                    [class.border-red-400]="submitted && form.get('budget_previsionnel')?.invalid"
-                    [class.border-gray-100]="!(submitted && form.get('budget_previsionnel')?.invalid)"
-                    placeholder="Montant du budget" min="0" step="any">
-                <span
-                    class="flex items-center justify-center min-w-[88px] px-4 rounded-lg bg-[#56CB4E]/10 border-2 border-[#56CB4E]/30 text-[#2d5c28] font-bold text-sm">
-                    {{ currencyService.currencySymbol() }}
-                </span>
-            </div>
-            <app-error-message *ngIf="submitted && form.get('budget_previsionnel')?.errors?.['required']"
-                message="Ce champ est requis"></app-error-message>
-        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="flex flex-col gap-2">
                 <label class="font-medium text-gray-700">Localisation <span class="text-red-500">*</span></label>

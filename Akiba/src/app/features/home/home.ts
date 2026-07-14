@@ -78,6 +78,10 @@ export class Home {
       headLine: "Numéro unique",
       label: "Un identifiant client vous est automatiquement attribué pour centraliser vos futurs terrains et projets."
     },
+    {
+      headLine: "Budget",
+      label: "Indiquez le budget prévisionnel de votre projet pour orienter la simulation."
+    },
   ]
 
   descriveTerrain: orderListItem[] = [
@@ -131,6 +135,10 @@ export class Home {
       headLine: "Calcul automatique",
       label: "Le système génère instantanément la surface de plancher (SP) totale de votre projet."
     },
+    {
+      headLine: "Ajustement en temps réel",
+      label: "Si le coût ne correspond pas à votre budget, vous pouvez modifier vos choix de matériaux ou de pièces pour recalculer une simulation satisfaisante."
+    },
   ]
 
   obtainEstimation: orderListItem[] = [
@@ -138,21 +146,12 @@ export class Home {
       headLine: "Règle de calcul",
       label: "L'estimation est basée sur la surface totale, le standing de finition choisi (standard, moyen ou haut de gamme) et l'indice des matériaux."
     },
-    {
-      headLine: "Ajustement en temps réel",
-      label: "Si le coût ne correspond pas à votre budget, vous pouvez modifier vos choix de matériaux ou de pièces pour recalculer une simulation satisfaisante."
-    },
-
   ]
 
   billPayement: orderListItem[] = [
     {
       headLine: "Validation du paiement",
       label: "Effectuez le paiement sécurisé des frais de simulation pour lancer le traitement de votre projet."
-    },
-    {
-      headLine: "Ajustement en temps réel",
-      label: "L'estimation est basée sur la surface totale, le standing de finition choisi (standard, moyen ou haut de gamme) et l'indice des matériaux."
     },
     {
       headLine: "Fiche synthèse du projet",

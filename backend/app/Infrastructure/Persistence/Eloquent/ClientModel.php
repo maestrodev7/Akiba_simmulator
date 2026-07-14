@@ -29,12 +29,16 @@ class ClientModel extends Model
         'telephone',
         'adresse',
         'numero_registre',
+        'nombre_enfants',
+        'budget_previsionnel',
         'simulation_payment_status',
         'simulation_paid_at',
     ];
 
     protected $casts = [
         'simulation_paid_at' => 'datetime',
+        'nombre_enfants' => 'integer',
+        'budget_previsionnel' => 'float',
     ];
 
     public static function boot(): void

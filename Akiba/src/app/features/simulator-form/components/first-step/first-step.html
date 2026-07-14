@@ -29,6 +29,24 @@
         placeholder="Entrez votre adresse">
     <app-error-message [message]="getErrorMessage('adresse')"></app-error-message>
 
+    <p class="font-semibold text-[#070707] mt-4">Composition de la famille</p>
+
+    <label for="nombre_enfants">Nombre d'enfant</label>
+    <input type="number" id="nombre_enfants" formControlName="nombre_enfants" min="0" step="1"
+        class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg focus:outline-2 focus:outline-[#56CB4E]"
+        placeholder="Nombre d'enfant(s)">
+
+    <label for="budget_previsionnel">Budget prévisionnel</label>
+    <div class="flex gap-2 items-stretch">
+        <input type="number" id="budget_previsionnel" formControlName="budget_previsionnel" min="0" step="any"
+            class="flex-1 min-w-0 p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg focus:outline-2 focus:outline-[#56CB4E]"
+            placeholder="Montant du budget">
+        <span
+            class="flex items-center justify-center min-w-[88px] px-4 rounded-lg bg-[#56CB4E]/10 border-2 border-[#56CB4E]/30 text-[#2d5c28] font-bold text-sm">
+            {{ currencyService.currencySymbol() }}
+        </span>
+    </div>
+
     <!-- <label for="numero_registre">Numéro de registre</label>
     <input type="text" id="numero_registre" formControlName="numero_registre" class="w-full p-2 bg-[#F5F5F5] border-2 border-gray-200 rounded-lg" placeholder="Entrez votre numéro de registre">
     <app-error-message [message]="getErrorMessage('numero_registre')"></app-error-message> -->

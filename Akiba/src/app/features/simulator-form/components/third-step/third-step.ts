@@ -71,7 +71,7 @@ export class ThirdStep implements OnInit {
       data: {
         date_debut_travaux: val.date_debut_travaux,
         date_fin_travaux: val.date_fin_travaux,
-        budget_previsionnel: projectData?.stepTwo?.data?.budget_previsionnel || 0
+        budget_previsionnel: projectData?.stepOne?.data?.budget_previsionnel || 0
       }
     };
 

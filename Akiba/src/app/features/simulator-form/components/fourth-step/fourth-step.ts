@@ -8,6 +8,7 @@ import { catchError, finalize, switchMap, timeout } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { stepTwoForm } from '../../../../interfaces/project-interface';
 import { formatSuperficie } from '../../../../core/area/area.util';
+import { CurrencyService } from '../../../../core/currency/currency.service';
 
 interface Piece {
   designation: string;
@@ -31,11 +32,12 @@ export class FourthStep implements OnInit {
   private router = inject(Router);
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
+  readonly currencyService = inject(CurrencyService);
 
-  readonly standingOptions: { value: StandingOption; label: string }[] = [
-    { value: 'standard', label: 'Finition standard' },
-    { value: 'moyen', label: 'Finition moyen standing' },
-    { value: 'haut', label: 'Finition haut standing' },
+  readonly standingOptions: { value: StandingOption; label: string; pricePerM2: number }[] = [
+    { value: 'standard', label: 'Finition standard', pricePerM2: 305 },
+    { value: 'moyen', label: 'Finition moyen standing', pricePerM2: 475 },
+    { value: 'haut', label: 'Finition haut standing', pricePerM2: 610 },
   ];
 
   questions: Piece[] = [];
@@ -62,6 +64,21 @@ export class FourthStep implements OnInit {
 
   get formattedTotalSurface(): string {
     return formatSuperficie(this.totalSurface, 'm2');
+  }
+
+  get selectedStandingPricePerM2(): number {
+    return (
+      this.standingOptions.find((option) => option.value === this.selectedStanding())
+        ?.pricePerM2 ?? 0
+    );
+  }
+
+  get estimatedCostXaf(): number {
+    return this.currencyService.toXaf(this.totalSurface * this.selectedStandingPricePerM2, 'EUR');
+  }
+
+  get estimatedCostLabel(): string {
+    return this.currencyService.format(this.estimatedCostXaf, 'XAF');
   }
 
   fetchPieces() {

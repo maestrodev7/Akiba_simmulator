@@ -57,6 +57,12 @@ final class UpdateClientUseCase
         if ($dto->numeroRegistre !== null) {
             $client = $client->withNumeroRegistre($dto->numeroRegistre);
         }
+        if ($dto->nombreEnfants !== null) {
+            $client = $client->withNombreEnfants($dto->nombreEnfants);
+        }
+        if ($dto->budgetPrevisionnel !== null) {
+            $client = $client->withBudgetPrevisionnel($dto->budgetPrevisionnel);
+        }
         return $client;
     }
 
@@ -70,6 +76,8 @@ final class UpdateClientUseCase
             telephone: $client->getTelephone(),
             adresse: $client->getAdresse(),
             numeroRegistre: $client->getNumeroRegistre(),
+            nombreEnfants: $client->getNombreEnfants(),
+            budgetPrevisionnel: $client->getBudgetPrevisionnel(),
             simulationPaymentStatus: $client->getSimulationPaymentStatus(),
             simulationPaidAt: $client->getSimulationPaidAt(),
             createdAt: $client->getCreatedAt(),

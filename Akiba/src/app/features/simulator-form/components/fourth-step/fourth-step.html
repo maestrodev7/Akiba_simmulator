@@ -63,19 +63,23 @@
 
         <!-- Gamme de finition -->
         <div *ngIf="!isReadOnly" class="mb-10">
-            <p class="font-semibold text-[#333333] mb-4">Gamme de finition</p>
-            <div class="flex flex-col gap-4">
-                <label *ngFor="let option of standingOptions"
-                    class="flex items-center justify-between cursor-pointer group">
-                    <div class="flex items-center gap-3">
-                        <input type="radio" name="standing" [value]="option.value"
-                            [checked]="selectedStanding() === option.value"
-                            (change)="onStandingChange(option.value)"
-                            class="w-4 h-4 accent-[#2563EB] cursor-pointer">
-                        <span class="text-[#333333]">{{ option.label }}</span>
-                    </div>
-                    <span class="text-[#888888] text-sm">(Prix/m2)</span>
-                </label>
+            <label for="standing" class="font-semibold text-[#333333] mb-4 block">Gamme de finition</label>
+            <select id="standing" [ngModel]="selectedStanding()"
+                (ngModelChange)="onStandingChange($event)"
+                class="w-full px-4 py-3 rounded-lg bg-[#E8E8E8] border border-transparent outline-none text-[#333333] focus:border-[#B27D4B]/40 transition-all">
+                <option *ngFor="let option of standingOptions" [value]="option.value">
+                    {{ option.label }} (Prix/m2)
+                </option>
+            </select>
+        </div>
+
+        <!-- Ajustement en temps réel : prix estimé -->
+        <div *ngIf="!isReadOnly" class="mb-10 flex justify-center">
+            <div class="w-full sm:w-auto min-w-[280px] rounded-xl border-2 border-[#B27D4B]/30 bg-[#FBF6F1] px-6 py-4 text-center">
+                <p class="text-xs font-semibold uppercase tracking-wide text-[#888888] mb-1">Ajustement en temps réel</p>
+                <p class="text-sm text-[#555555]">Prix total estimé du projet</p>
+                <p class="text-2xl font-bold text-[#B27D4B]">{{ estimatedCostLabel }}</p>
+                <p class="text-xs text-[#888888] mt-1">{{ formattedTotalSurface }} · {{ selectedStanding() }}</p>
             </div>
         </div>
 

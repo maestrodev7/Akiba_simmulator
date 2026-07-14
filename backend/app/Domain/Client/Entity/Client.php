@@ -17,6 +17,8 @@ final class Client
         private ?string $telephone = null,
         private ?string $adresse = null,
         private ?string $numeroRegistre = null,
+        private ?int $nombreEnfants = null,
+        private ?float $budgetPrevisionnel = null,
         private ?string $simulationPaymentStatus = null,
         private ?string $simulationPaidAt = null,
         private ?string $createdAt = null,
@@ -56,6 +58,16 @@ final class Client
     public function getNumeroRegistre(): ?string
     {
         return $this->numeroRegistre;
+    }
+
+    public function getNombreEnfants(): ?int
+    {
+        return $this->nombreEnfants;
+    }
+
+    public function getBudgetPrevisionnel(): ?float
+    {
+        return $this->budgetPrevisionnel;
     }
 
     public function getSimulationPaymentStatus(): ?string
@@ -112,6 +124,20 @@ final class Client
     {
         $clone = clone $this;
         $clone->numeroRegistre = $numeroRegistre;
+        return $clone;
+    }
+
+    public function withNombreEnfants(?int $nombreEnfants): self
+    {
+        $clone = clone $this;
+        $clone->nombreEnfants = $nombreEnfants;
+        return $clone;
+    }
+
+    public function withBudgetPrevisionnel(?float $budgetPrevisionnel): self
+    {
+        $clone = clone $this;
+        $clone->budgetPrevisionnel = $budgetPrevisionnel;
         return $clone;
     }
 

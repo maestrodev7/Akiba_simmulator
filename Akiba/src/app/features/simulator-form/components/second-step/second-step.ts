@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, effect, inject } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -10,8 +10,6 @@ import {
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CustomSelect } from '../../../../shared/components/custom-select/custom-select';
-import { CurrencyService } from '../../../../core/currency/currency.service';
-import { CurrencyCode } from '../../../../core/currency/currency.types';
 import {
   fromSquareMeters,
   SuperficieUnite,
@@ -35,38 +33,16 @@ export class SecondStep implements OnInit {
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
   private router = inject(Router);
-  readonly currencyService = inject(CurrencyService);
 
   private fb = inject(FormBuilder);
-  private budgetXafStored: number | null = null;
   private superficieM2Stored: number | null = null;
   private lastSuperficieUnite: SuperficieUnite = 'm2';
-  private lastCurrency: CurrencyCode = 'XAF';
   readonly superficieUnites: { value: SuperficieUnite; label: string }[] = [
     { value: 'm2', label: 'm²' },
     { value: 'ha', label: 'Hectare' },
   ];
 
-  constructor() {
-    effect(() => {
-      const next = this.currencyService.selectedCurrency();
-      if (this.lastCurrency === next) {
-        return;
-      }
-      const display = this.form.get('budget_previsionnel')?.value;
-      if (display != null && display !== '') {
-        const xaf = this.currencyService.toXaf(Number(display), this.lastCurrency);
-        this.budgetXafStored = xaf;
-        this.form.patchValue({
-          budget_previsionnel: this.currencyService.fromXaf(xaf, next),
-        });
-      }
-      this.lastCurrency = next;
-    });
-  }
-
   form: FormGroup = this.fb.group({
-    budget_previsionnel: [null, [Validators.required]],
     adresse: ['', [Validators.required]],
     superficie: [null, [Validators.required]],
     superficie_unite: ['m2' as SuperficieUnite, [Validators.required]],
@@ -82,12 +58,6 @@ export class SecondStep implements OnInit {
     const savedData = this.projectDataService.getProjectData();
     if (savedData.stepTwo?.data) {
       const raw = savedData.stepTwo.data;
-      this.budgetXafStored =
-        raw.budget_previsionnel != null ? Number(raw.budget_previsionnel) : null;
-      const displayBudget =
-        this.budgetXafStored != null
-          ? this.currencyService.fromXaf(this.budgetXafStored)
-          : null;
       const unite: SuperficieUnite =
         raw.superficie_unite === 'ha' ? 'ha' : 'm2';
       this.superficieM2Stored =
@@ -98,12 +68,10 @@ export class SecondStep implements OnInit {
           : null;
       this.form.patchValue({
         ...raw,
-        budget_previsionnel: displayBudget,
         superficie: displaySuperficie,
         superficie_unite: unite,
       });
     }
-    this.lastCurrency = this.currencyService.selectedCurrency();
     this.lastSuperficieUnite =
       (this.form.get('superficie_unite')?.value as SuperficieUnite) ?? 'm2';
     if (this.isReadOnly) {
@@ -241,10 +209,6 @@ export class SecondStep implements OnInit {
     }
 
     const val = { ...this.form.value };
-    const displayBudget = Number(val.budget_previsionnel);
-    const budgetXaf = this.currencyService.toXaf(displayBudget);
-    val.budget_previsionnel = budgetXaf;
-    this.budgetXafStored = budgetXaf;
 
     const unite = (val.superficie_unite as SuperficieUnite) ?? 'm2';
     const superficieM2 = toSquareMeters(Number(val.superficie), unite);

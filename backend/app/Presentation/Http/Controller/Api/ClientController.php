@@ -75,6 +75,8 @@ final class ClientController extends Controller
             'telephone' => $resource->telephone,
             'adresse' => $resource->adresse,
             'numero_registre' => $resource->numeroRegistre,
+            'nombre_enfants' => $resource->nombreEnfants,
+            'budget_previsionnel' => $resource->budgetPrevisionnel,
             'simulation_payment_status' => $resource->simulationPaymentStatus,
             'simulation_paid_at' => $resource->simulationPaidAt,
             'created_at' => $resource->createdAt,

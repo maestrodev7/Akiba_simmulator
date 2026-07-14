@@ -17,6 +17,8 @@ final class ClientResourceDto
         public readonly ?string $telephone = null,
         public readonly ?string $adresse = null,
         public readonly ?string $numeroRegistre = null,
+        public readonly ?int $nombreEnfants = null,
+        public readonly ?float $budgetPrevisionnel = null,
         public readonly ?string $simulationPaymentStatus = null,
         public readonly ?string $simulationPaidAt = null,
         public readonly ?string $createdAt = null,

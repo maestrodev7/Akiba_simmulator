@@ -1,10 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit, inject } from '@angular/core';
+import { Component, Input, OnInit, effect, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 
 import { ErrorMessage } from '../../../../shared/components/error-message/error-message';
 import { YourProject } from '../../../../services/project/your-project';
 import { ProjectData } from '../../../../services/project-data/project-data';
+import { CurrencyService } from '../../../../core/currency/currency.service';
+import { CurrencyCode } from '../../../../core/currency/currency.types';
 import { Router } from '@angular/router';
 
 @Component({
@@ -20,8 +22,11 @@ export class FirstStep implements OnInit {
   private projectService = inject(YourProject);
   private projectDataService = inject(ProjectData);
   private router = inject(Router);
+  readonly currencyService = inject(CurrencyService);
 
   private fb = inject(FormBuilder);
+  private budgetXafStored: number | null = null;
+  private lastCurrency: CurrencyCode = 'XAF';
 
   form: FormGroup = this.fb.group({
     nom: ['', Validators.required],
@@ -30,13 +35,44 @@ export class FirstStep implements OnInit {
     telephone: ['', [Validators.required, Validators.pattern('^[+0-9\\s]+$')]],
     adresse: ['', Validators.required],
     // numero_registre: ['', Validators.required],
+    nombre_enfants: [null],
+    budget_previsionnel: [null],
   });
+
+  constructor() {
+    effect(() => {
+      const next = this.currencyService.selectedCurrency();
+      if (this.lastCurrency === next) {
+        return;
+      }
+      const display = this.form.get('budget_previsionnel')?.value;
+      if (display != null && display !== '') {
+        const xaf = this.currencyService.toXaf(Number(display), this.lastCurrency);
+        this.budgetXafStored = xaf;
+        this.form.patchValue({
+          budget_previsionnel: this.currencyService.fromXaf(xaf, next),
+        });
+      }
+      this.lastCurrency = next;
+    });
+  }
 
   ngOnInit() {
     const savedData = this.projectDataService.getProjectData();
     if (savedData.stepOne?.data) {
-      this.form.patchValue(savedData.stepOne.data);
+      const raw = savedData.stepOne.data;
+      this.budgetXafStored =
+        raw.budget_previsionnel != null ? Number(raw.budget_previsionnel) : null;
+      const displayBudget =
+        this.budgetXafStored != null
+          ? this.currencyService.fromXaf(this.budgetXafStored)
+          : null;
+      this.form.patchValue({
+        ...raw,
+        budget_previsionnel: displayBudget,
+      });
     }
+    this.lastCurrency = this.currencyService.selectedCurrency();
     if (this.isReadOnly) {
       this.form.disable();
     }
@@ -60,6 +96,12 @@ export class FirstStep implements OnInit {
     }
 
     const val = this.form.value;
+    const budgetXaf =
+      val.budget_previsionnel != null && val.budget_previsionnel !== ''
+        ? this.currencyService.toXaf(Number(val.budget_previsionnel))
+        : null;
+    this.budgetXafStored = budgetXaf;
+
     const payload: any = {
       step: 1,
       data: {
@@ -69,6 +111,8 @@ export class FirstStep implements OnInit {
         telephone: val.telephone || "",
         adresse: val.adresse || "",
         // numero_registre: val.numero_registre || ""
+        nombre_enfants: val.nombre_enfants != null && val.nombre_enfants !== '' ? Number(val.nombre_enfants) : null,
+        budget_previsionnel: budgetXaf,
       }
     };
 

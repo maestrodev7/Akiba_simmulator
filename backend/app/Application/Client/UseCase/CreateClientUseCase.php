@@ -31,6 +31,8 @@ final class CreateClientUseCase
             telephone: $dto->telephone,
             adresse: $dto->adresse,
             numeroRegistre: $dto->numeroRegistre,
+            nombreEnfants: $dto->nombreEnfants,
+            budgetPrevisionnel: $dto->budgetPrevisionnel,
             simulationPaymentStatus: 'unpaid',
         );
         $this->clientRepository->save($client);
@@ -48,6 +50,8 @@ final class CreateClientUseCase
             telephone: $client->getTelephone(),
             adresse: $client->getAdresse(),
             numeroRegistre: $client->getNumeroRegistre(),
+            nombreEnfants: $client->getNombreEnfants(),
+            budgetPrevisionnel: $client->getBudgetPrevisionnel(),
             simulationPaymentStatus: $client->getSimulationPaymentStatus(),
             simulationPaidAt: $client->getSimulationPaidAt(),
             createdAt: $client->getCreatedAt(),

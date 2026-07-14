@@ -121,6 +121,8 @@ final class SimulatorDraftController extends Controller
             $client = new ClientModel();
         }
 
+        $nombreEnfants = $this->asSingleFloat($payload['nombre_enfants'] ?? null);
+
         $client->fill([
             'nom' => $payload['nom'] ?? $client->nom,
             'prenom' => $payload['prenom'] ?? $client->prenom,
@@ -128,6 +130,8 @@ final class SimulatorDraftController extends Controller
             'telephone' => $payload['telephone'] ?? $client->telephone,
             'adresse' => $payload['adresse'] ?? $client->adresse,
             'numero_registre' => $payload['numero_registre'] ?? $client->numero_registre,
+            'nombre_enfants' => $nombreEnfants !== null ? (int) $nombreEnfants : $client->nombre_enfants,
+            'budget_previsionnel' => $this->asSingleFloat($payload['budget_previsionnel'] ?? null) ?? $client->budget_previsionnel,
         ]);
         $client->save();
 
@@ -264,11 +268,15 @@ final class SimulatorDraftController extends Controller
             $allowed['materiaux']
         );
 
+        $client = ClientModel::query()->find($clientId);
+
         $produit->fill([
             'type_produit' => ($typeProduit !== null ? $typeProduit[0] : null) ?? $produit->type_produit,
             'materiaux' => ($materiauxProduit !== null ? $materiauxProduit[0] : null) ?? $produit->materiaux,
             'standing' => $this->asSingleString($payload['standing'] ?? null) ?? $produit->standing,
-            'budget_previsionnel' => $this->asSingleFloat($payload['budget_previsionnel'] ?? null) ?? $produit->budget_previsionnel,
+            'budget_previsionnel' => $this->asSingleFloat($payload['budget_previsionnel'] ?? null)
+                ?? $produit->budget_previsionnel
+                ?? $client?->budget_previsionnel,
             'caracteristiques' => $mergedCaracteristiques,
         ]);
         $produit->save();
