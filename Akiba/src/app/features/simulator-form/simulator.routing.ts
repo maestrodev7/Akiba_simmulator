@@ -36,10 +36,6 @@ const routes: Route[] = [
                 loadComponent: () => import('./components/fifth-step/fifth-step').then(m => m.FifthStep),
             },
             {
-                path: "sixth-step",
-                loadComponent: () => import('./components/sixth-step/sixth-step').then(m => m.SixthStep),
-            },
-            {
                 path: "payment-step",
                 loadComponent: () => import('./components/payment-step/payment-step').then(m => m.PaymentStep),
             },

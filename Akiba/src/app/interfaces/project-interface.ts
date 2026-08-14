@@ -199,6 +199,9 @@ export interface ProjectRecapLine {
 export interface ProjectRecapData {
   produit_id: string;
   superficie_totale_m2: number;
+  standing: 'standard' | 'moyen' | 'haut';
+  prix_par_m2: number;
+  indice_materiaux: number;
   cout_total_estime: number;
   budget_previsionnel: number;
   budget_suffisant: boolean;

@@ -98,6 +98,9 @@ final class SimulatorDraftController extends Controller
         return ApiResponse::success([
             'produit_id' => $produitId,
             'superficie_totale_m2' => $result->surfacePlancherTotale,
+            'standing' => $result->standing,
+            'prix_par_m2' => $result->prixParM2,
+            'indice_materiaux' => $result->indiceMateriaux,
             'cout_total_estime' => $result->coutTotal,
             'budget_previsionnel' => $budget,
             'budget_suffisant' => !$insuffisant,

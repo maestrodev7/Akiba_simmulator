@@ -17,6 +17,7 @@ final class SimulationResultDto
         public readonly float $coutTotal,               // Total en €
         public readonly ?float $budgetPrevisionnel,
         public readonly array $lignes,                  // détail par pièce
+        public readonly string $standing,               // standard | moyen | haut
     ) {
     }
 }

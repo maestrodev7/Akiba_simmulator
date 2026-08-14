@@ -78,6 +78,7 @@ final class CalculerSimulationUseCase
             coutTotal: round($coutTotal, 2),
             budgetPrevisionnel: $produit->getBudgetPrevisionnel(),
             lignes: $lignesDetail,
+            standing: $standingKey,
         );
     }
 
